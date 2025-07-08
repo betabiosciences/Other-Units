@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Cycle Regulation by Cohesin</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap">
+    <style>
+        :root {
+            --primary: #3a506b;
+            --secondary: #5bc0be;
+            --accent: #e55934;
+            --light: #f7f7ff;
+            --dark: #1c2541;
+            --success: #6a994e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; 
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            padding: 0;
+            margin: 0;
+            font-size: 16px;
+        }
+        
+        .container {
+            width: 100%;
+            padding: 15px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.8rem;
+            padding: 0 10px;
+        }
+        
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin: 1.2rem 0 0.8rem;
+            font-size: 1.5rem;
+        }
+        
+        h3 {
+            color: var(--dark);
+            margin: 1rem 0 0.6rem;
+            /* This H3 rule is now less specific for the text inside .process */
+            font-size: 1.7rem; 
+        }
+        
+        p {
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+        
+        .intro {
+            font-size: 1rem;
+            max-width: 100%;
+            margin: 0 auto 1.5rem;
+            text-align: center;
+            padding: 0 10px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .tab {
+            padding: 0.6rem 1rem;
+            background: white;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin: 0;
+            border-radius: 5px 5px 0 0;
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .tab.active {
+            background: var(--secondary);
+            color: white;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .cell-cycle-visual {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px; /* Increased gap for better spacing */
+            margin: 1.5rem 0;
+        }
+        
+        .phase {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid white;
+        }
+        
+        .phase:hover {
+            transform: scale(1.05);
+        }
+        
+        .phase.active {
+            border: 2px solid var(--accent);
+            transform: scale(1.05);
+        }
+        
+        .phase-label {
+            position: absolute;
+            bottom: -25px;
+            font-weight: 600;
+            text-align: center;
+            width: 100%;
+            font-size: 0.8rem;
+        }
+        
+        .phase-details {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-top: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+        
+        .phase-details.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .molecule {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: var(--secondary);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            margin: 0.1rem;
+            font-weight: 600;
+        }
+        
+        .process {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: var(--accent);
+            color: white;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            margin: 0.1rem;
+            font-weight: 600;
+        }
+
+        /* New style for mechanism headings to differentiate from highlight styling */
+        .mechanism-item h3 .process {
+            background: none; /* Remove background */
+            color: var(--primary); /* Change text color */
+            border-bottom: 2px solid var(--secondary); /* Add a border-bottom */
+            padding-bottom: 2px; /* Small padding for the border */
+            border-radius: 0; /* Remove border-radius */
+            display: inline; /* Keep it inline */
+            font-size: 0.9rem; /* Set font size to half of 1.8rem */
+        }
+        
+        .diagram-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            padding: 0.5rem 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .cohesin-diagram {
+            width: 400px; 
+            height: 150px;
+            background: #f0f4f8;
+            border-radius: 6px;
+            position: relative;
+            margin: 0 auto;
+        }
+        
+        .protein {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            animation: pulse 2s infinite;
+            z-index: 2;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        .protein-connectors {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .smc1 { background: #e63946; top: 45px; left: 80px; }
+        .smc3 { background: #457b9d; top: 45px; left: 220px; }
+        .rad21 { background: #a8dadc; top: 15px; left: 150px; color: var(--dark); }
+        .scc3 { background: #1d3557; top: 75px; left: 150px; }
+        
+        .chromatin {
+            position: absolute;
+            width: 90%;
+            height: 12px;
+            background: linear-gradient(90deg, #f1faee, #a8dadc);
+            bottom: 15px;
+            left: 5%;
+            border-radius: 6px;
+            z-index: 1;
+        }
+        
+        .interactive-list {
+            list-style: none;
+        }
+        
+        .interactive-list li {
+            padding: 0.6rem;
+            margin-bottom: 0.4rem;
+            background: white;
+            border-left: 3px solid var(--secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .interactive-list li:hover {
+            background: #f0f4f8;
+        }
+        
+        .interactive-list li.active {
+            background: #f0f4f8;
+            border-left: 3px solid var(--accent);
+        }
+        
+        .hidden-detail {
+            display: none;
+            padding: 0.8rem;
+            background: #f8f9fa;
+            margin-top: 0.4rem;
+            border-radius: 4px;
+            animation: fadeIn 0.2s ease;
+            font-size: 0.85rem;
+        }
+
+        /* Styles for the new image */
+        .cohesin-structure-image {
+            max-width: 100%; 
+            height: auto; 
+            display: block; 
+            margin: 1.5rem auto; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 1.5rem;
+            background: var(--dark);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        /* Define breathing animation */
+        @keyframes breathing {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Style for the Telegram link */
+        .telegram-link {
+            color: yellow; /* Yellow font color */
+            text-decoration: none; /* Remove underline */
+            display: inline-block; /* Required for transform to work correctly */
+            margin-top: 5px; /* Add a small margin above the link */
+            animation: breathing 2s infinite alternate; /* Apply breathing animation */
+        }
+
+        .telegram-link:hover {
+            text-decoration: underline; /* Add underline on hover */
+            /* Remove transform from hover to avoid conflict with continuous animation */
+            transform: scale(1); 
+        }
+        
+        .mechanism-item, .role-item {
+            margin-bottom: 1rem;
+        }
+        
+        /* Better touch targets */
+        button, .phase, .interactive-list li {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent zoom on input */
+        input, select, textarea {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Cell Cycle Regulation by Cohesin</h1>
+            <p class="intro">Explore the crucial role of the cohesin complex in chromosome segregation, DNA repair, and gene expression throughout the cell cycle.</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="overview">Overview</button>
+            <button class="tab" data-tab="structure">Structure</button>
+            <button class="tab" data-tab="regulation">Regulation</button>
+            <button class="tab" data-tab="mechanisms">Mechanisms</button>
+            <button class="tab" data-tab="roles">Roles</button>
+        </div>
+        
+        <div class="tab-content active" id="overview">
+            <div class="card">
+                <h2>Cohesin: The Chromosome Guardian</h2>
+                <p>Cohesin is a multi-protein complex essential for proper cell division. Its primary function is to hold sister chromatids together after DNA replication, ensuring accurate chromosome segregation during mitosis and meiosis.</p>
+                
+                <div class="diagram-container">
+                    <div class="cohesin-diagram">
+                        <div class="protein smc1">SMC1</div>
+                        <div class="protein smc3">SMC3</div>
+                        <div class="protein rad21">RAD21</div>
+                        <div class="protein scc3">SCC3</div>
+                        <div class="chromatin"></div>
+                        <!-- Connecting lines -->
+                        <svg class="protein-connectors" width="100%" height="100%" viewBox="0 0 400 150" preserveAspectRatio="xMidYMid meet">
+                            <!-- SMC1 to RAD21 -->
+                            <line x1="110" y1="75" x2="180" y2="45" stroke="#3a506b" stroke-width="2" stroke-dasharray="4,2"/>
+                            <!-- SMC3 to RAD21 -->
+                            <line x1="250" y1="75" x2="180" y2="45" stroke="#3a506b" stroke-width="2" stroke-dasharray="4,2"/>
+                            <!-- RAD21 to SCC3 -->
+                            <line x1="180" y1="45" x2="180" y2="105" stroke="#3a506b" stroke-width="2"/>
+                            <!-- SMC1 to SCC3 -->
+                            <line x1="110" y1="75" x2="180" y2="105" stroke="#3a506b" stroke-width="2" stroke-dasharray="4,2"/>
+                            <!-- SMC3 to SCC3 -->
+                            <line x1="250" y1="75" x2="180" y2="105" stroke="#3a506b" stroke-width="2" stroke-dasharray="4,2"/>
+                        </svg>
+                    </div>
+                </div>
+                
+                <p>Beyond chromosome cohesion, cohesin plays roles in DNA repair and gene regulation through chromatin loop formation. Dysregulation can lead to aneuploidy, developmental disorders, and cancer.</p>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="structure">
+            <div class="card">
+                <h2>Molecular Structure</h2>
+                <p>The cohesin complex forms a ring-like structure composed of four core subunits:</p>
+                
+                <ul class="interactive-list">
+                    <li data-detail="smc1-detail">
+                        <span class="molecule">SMC1</span> - Structural Maintenance of Chromosomes protein 1
+                        <div class="hidden-detail" id="smc1-detail">
+                            SMC1 forms one half of the ATPase motor that drives cohesin's DNA binding activity. It dimerizes with SMC3 to form the core of the cohesin ring.
+                        </div>
+                    </li>
+                    <li data-detail="smc3-detail">
+                        <span class="molecule">SMC3</span> - Structural Maintenance of Chromosomes protein 3
+                        <div class="hidden-detail" id="smc3-detail">
+                            SMC3 pairs with SMC1 to create the V-shaped hinge that can open and close the cohesin ring. It's essential for cohesin's dynamic loading and unloading.
+                        </div>
+                    </li>
+                    <li data-detail="rad21-detail">
+                        <span class="molecule">RAD21</span> (Scc1) - Kleisin subunit
+                        <div class="hidden-detail" id="rad21-detail">
+                            RAD21 bridges SMC1 and SMC3, completing the ring structure. It's cleaved by separase during anaphase to release sister chromatid cohesion.
+                        </div>
+                    </li>
+                    <li data-detail="scc3-detail">
+                        <span class="molecule">SCC3</span> (SA/STAG) - Regulatory subunit
+                        <div class="hidden-detail" id="scc3-detail">
+                            SCC3 binds RAD21 and interacts with other regulatory proteins. Different variants (SA1, SA2 in humans) determine cohesin's localization and function.
+                        </div>
+                    </li>
+                </ul>
+                
+                <p>The ring structure can topologically entrap DNA strands, allowing cohesin to physically link sister chromatids after DNA replication.</p>
+
+                <!-- New image added here -->
+                <img src="https://betabiosciences.github.io/Biochemistry-animations/Cohesin%20structure.jpg" alt="Cohesin Structure Diagram" class="cohesin-structure-image">
+            </div>
+        </div>
+        
+        <div class="tab-content" id="regulation">
+            <div class="card">
+                <h2>Cell Cycle Regulation</h2>
+                <p>Cohesin's activity is tightly regulated at each stage:</p>
+                
+                <div class="cell-cycle-visual">
+                    <div class="phase" data-phase="g1">
+                        <div>G1</div>
+                        <div class="phase-label">G1 Phase</div>
+                    </div>
+                    <div class="phase" data-phase="s">
+                        <div>S</div>
+                        <div class="phase-label">S Phase</div>
+                    </div>
+                    <div class="phase" data-phase="g2">
+                        <div>G2</div>
+                        <div class="phase-label">G2 Phase</div>
+                    </div>
+                    <div class="phase" data-phase="prophase">
+                        <div>P</div>
+                        <div class="phase-label">Prophase</div>
+                    </div>
+                    <div class="phase" data-phase="metaphase-anaphase">
+                        <div>M/A</div>
+                        <div class="phase-label">Meta/Anaphase</div>
+                    </div>
+                    <div class="phase" data-phase="telophase">
+                        <div>T</div>
+                        <div class="phase-label">Telophase</div>
+                    </div>
+                </div>
+                
+                <div class="phase-details" id="g1-details">
+                    <h3>G1 Phase</h3>
+                    <p>Cohesin is loaded onto chromatin by the <span class="molecule">Scc2-Scc4</span> (NIPBL-MAU2 in humans) complex.</p>
+                    <p>Binding is dynamic during this phase, with <span class="process">Wapl</span> promoting unloading. Continuous activity of loading machinery is required to maintain cohesin on chromatin.</p>
+                </div>
+                
+                <div class="phase-details" id="s-details">
+                    <h3>S Phase</h3>
+                    <p>Cohesion between sister chromatids is established as DNA replicates. Cohesin entraps the newly synthesized chromatids.</p>
+                    <p>Cohesin stability increases at this stage, transitioning from dynamic to stable binding.</p>
+                </div>
+                
+                <div class="phase-details" id="g2-details">
+                    <h3>G2 Phase</h3>
+                    <p>Cohesin maintains sister chromatid cohesion, preparing chromosomes for mitosis.</p>
+                    <p>The complex remains stably bound to chromatin throughout this phase.</p>
+                </div>
+                
+                <div class="phase-details" id="prophase-details">
+                    <h3>Prophase</h3>
+                    <p>Most cohesin is removed from chromosome arms via the "prophase pathway," but it remains at centromeres.</p>
+                    <p>This partial removal helps condense chromosomes while maintaining crucial centromeric cohesion.</p>
+                </div>
+                
+                <div class="phase-details" id="metaphase-anaphase-details">
+                    <h3>Metaphase-Anaphase Transition</h3>
+                    <p>At the metaphase-anaphase transition, the protease <span class="process">separase</span> cleaves the <span class="molecule">RAD21</span> subunit.</p>
+                    <p>This releases centromeric cohesin, allowing sister chromatids to separate. Separase is kept inactive by <span class="molecule">securin</span> until this point.</p>
+                </div>
+                
+                <div class="phase-details" id="telophase-details">
+                    <h3>Telophase</h3>
+                    <p>Cohesin is reloaded onto chromatin for the next cell cycle.</p>
+                    <p>This marks the beginning of a new cycle of cohesin loading and regulation.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="mechanisms">
+            <div class="card">
+                <h2>Regulation Mechanisms</h2>
+                <p>Cohesin's activity is controlled through several precise mechanisms:</p>
+                
+                <div class="mechanism-item">
+                    <h3><span class="process">Loading</span></h3>
+                    <p><span class="molecule">Scc2-Scc4</span> (NIPBL-MAU2 in humans) loads cohesin onto DNA, requiring ATP hydrolysis. This occurs primarily in G1 and telophase.</p>
+                </div>
+                
+                <div class="mechanism-item">
+                    <h3><span class="process">Establishment</span></h3>
+                    <p>During S phase, cohesin establishes stable cohesion as DNA is replicated. This process converts dynamically bound cohesin into stably bound cohesive complexes.</p>
+                </div>
+                
+                <div class="mechanism-item">
+                    <h3><span class="process">Release/Removal</span></h3>
+                    <p><span class="molecule">Wapl</span> and other factors promote cohesin release from chromatin, especially during G1 and prophase. This allows for chromatin reorganization.</p>
+                </div>
+                
+                <div class="mechanism-item">
+                    <h3><span class="process">Cleavage</span></h3>
+                    <p>At anaphase, <span class="process">separase</span> cleaves <span class="molecule">RAD21</span>, leading to chromatid separation. This irreversible step ensures proper chromosome segregation.</p>
+                </div>
+                
+                <div class="mechanism-item">
+                    <h3><span class="process">Phosphorylation</span></h3>
+                    <p>Phosphorylation and proteolysis of Scc2 regulate cohesin loading and activity, ensuring cell cycle specificity. Various kinases target cohesin subunits at different stages.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="roles">
+            <div class="card">
+                <h2>Additional Roles</h2>
+                <p>While best known for its role in sister chromatid cohesion, cohesin has several other important functions:</p>
+                
+                <div class="role-item">
+                    <h3>Gene Regulation</h3>
+                    <p>Cohesin mediates long-range chromatin interactions (chromatin looping), influencing gene expression and maintaining pluripotency. It works with CTCF to organize chromatin architecture.</p>
+                </div>
+                
+                <div class="role-item">
+                    <h3>DNA Repair</h3>
+                    <p>Cohesin helps repair double-strand DNA breaks by holding sister chromatids together as templates for repair. It's recruited to damage sites and facilitates homologous recombination.</p>
+                </div>
+                
+                <div class="role-item">
+                    <h3>Developmental Regulation</h3>
+                    <p>Mutations in cohesin or its regulators cause developmental disorders (cohesinopathies) like Cornelia de Lange syndrome, highlighting its importance beyond cell division.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>Interactive Learning Module: Cell Cycle Regulation by Cohesin</p>
+            <p id="security-email">betabiosciences@gmail.com</p>
+            <p><a href="https://t.me/betascience_csir" target="_blank" class="telegram-link">Join Our Telegram Channel</a></p>
+        </div>
+    </footer>
+    
+    <script>
+        // Security Layer: Check for the presence of the specific email in the footer
+        document.addEventListener('DOMContentLoaded', function() {
+            const expectedEmail = "betabiosciences@gmail.com";
+            const footerEmailElement = document.getElementById('security-email');
+            
+            if (!footerEmailElement || footerEmailElement.textContent.trim() !== expectedEmail) {
+                // If the element is missing or content is modified, clear the body to prevent loading
+                document.body.innerHTML = '';
+                return; // Stop further script execution
+            }
+
+            // Tab functionality - only runs if security check passes
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show corresponding content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === targetTab) {
+                            content.classList.add('active');
+                            
+                            // Initialize first phase as active when regulation tab is selected
+                            if (targetTab === 'regulation') {
+                                document.querySelector('.phase').click();
+                            }
+                        }
+                    });
+                });
+            });
+            
+            // Cell cycle phase interaction - only runs if security check passes
+            const phases = document.querySelectorAll('.phase');
+            const phaseDetails = document.querySelectorAll('.phase-details');
+            
+            phases.forEach(phase => {
+                phase.addEventListener('click', () => {
+                    const targetPhase = phase.dataset.phase;
+                    
+                    // Update active phase
+                    phases.forEach(p => p.classList.remove('active'));
+                    phase.classList.add('active');
+                    
+                    // Show corresponding details
+                    phaseDetails.forEach(detail => {
+                        detail.classList.remove('active');
+                        if (detail.id === `${targetPhase}-details`) {
+                            detail.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Interactive list items - only runs if security check passes
+            const listItems = document.querySelectorAll('.interactive-list li');
+            
+            listItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const detailId = item.dataset.detail;
+                    const detail = document.getElementById(detailId);
+                    
+                    // Close all other details first
+                    document.querySelectorAll('.hidden-detail').forEach(d => {
+                        if (d.id !== detailId) {
+                            d.style.display = 'none';
+                            d.parentElement.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current detail
+                    if (detail.style.display === 'block') {
+                        detail.style.display = 'none';
+                        item.classList.remove('active');
+                    } else {
+                        item.classList.add('active');
+                    }
+                });
+            });
+            
+            // Initialize first phase as active - only runs if security check passes
+            // This needs to be checked after all tabs and phases are set up
+            if (document.querySelector('.tab.active') && document.querySelector('.tab.active').dataset.tab === 'regulation') {
+                const firstPhase = document.querySelector('.phase');
+                if (firstPhase) {
+                    firstPhase.click();
+                }
+            }
+            
+            // Better touch handling - only runs if security check passes
+            document.addEventListener('touchstart', function() {}, {passive: true});
+        });
+    </script>
+</body>
+</html>
