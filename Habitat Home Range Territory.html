@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spatial Ecology Explorer</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #121212;
+            --darker-bg: #0a0a0a;
+            --primary: #4CAF50;
+            --primary-light: #81C784;
+            --secondary: #2196F3;
+            --secondary-light: #64B5F6;
+            --accent: #FF9800;
+            --text: #E0E0E0;
+            --text-light: #FFFFFF;
+            --text-dim: #B0B0B0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg); /* Dark background */
+            color: var(--text); /* Light text */
+            display: flex;
+            flex-direction: column; /* Changed to column to place footer at bottom */
+            justify-content: flex-start;
+            align-items: center; /* Center content horizontally */
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: var(--darker-bg); /* Slightly lighter dark background for container */
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            max-width: 1000px;
+            width: 100%;
+            display: none; /* Initially hide the container for security check */
+            flex-direction: column;
+            gap: 20px;
+            flex-grow: 1; /* Allow container to grow and push footer down */
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-light); /* Contrasting blue */
+            margin-bottom: 10px;
+        }
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+        }
+        /* Specific style for the introduction heading */
+        .header .intro-heading {
+            color: var(--accent); /* Applying accent color */
+            font-weight: 600;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .nav-button {
+            background-color: var(--darker-bg); /* Darker button background */
+            color: var(--text); /* Lighter blue text */
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+        }
+        .nav-button:hover {
+            background-color: var(--primary); /* Primary on hover */
+            color: var(--dark-bg);
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        .nav-button.active {
+            background-color: var(--primary); /* Active primary */
+            color: var(--dark-bg);
+            border-color: var(--primary-light);
+            box-shadow: 0 5px 10px rgba(76, 175, 80, 0.4); /* Shadow based on primary */
+        }
+        .content-section {
+            background-color: var(--darker-bg); /* Same as container for seamless look */
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid #333;
+            min-height: 300px;
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.5s ease-out;
+        }
+        .content-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .content-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-light); /* Primary light for headings */
+            margin-bottom: 15px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 8px;
+        }
+        .content-section h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--secondary-light); /* Secondary light for subheadings */
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .content-section p, .content-section ul, .content-section li, .content-section table {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text); /* Default text color */
+            margin-bottom: 10px;
+        }
+        .content-section ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        .content-section ul li {
+            margin-bottom: 5px;
+        }
+        .content-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.05); /* Slightly transparent white for table background */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .content-section th, .content-section td {
+            border: 1px solid #333;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        .content-section th {
+            background-color: rgba(255, 152, 0, 0.2); /* Accent color with transparency */
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        .content-section tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.02); /* Alternate row color */
+        }
+        .content-section strong {
+            color: var(--text-light); /* Highlight strong text */
+        }
+
+        /* Quiz specific styles */
+        .quiz-question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+        .quiz-question p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 10px;
+        }
+        .quiz-options label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background-color 0.2s ease;
+        }
+        .quiz-options label:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        .quiz-options input[type="radio"] {
+            margin-right: 10px;
+            accent-color: var(--primary); /* Style radio button */
+        }
+        .quiz-submit-button {
+            background-color: var(--accent);
+            color: var(--darker-bg);
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            margin-top: 20px;
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .quiz-submit-button:hover {
+            background-color: #FFB300; /* Lighter accent on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(255, 152, 0, 0.4);
+        }
+        .quiz-results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(76, 175, 80, 0.1); /* Light green background */
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            display: none; /* Hidden by default */
+        }
+        .quiz-feedback {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+        .quiz-feedback.correct {
+            color: var(--primary-light);
+        }
+        .quiz-feedback.incorrect {
+            color: #FF5252; /* Red for incorrect */
+        }
+        .quiz-feedback strong {
+            color: var(--text-light);
+        }
+
+        /* Footer styling */
+        .footer {
+            margin-top: 30px;
+            padding: 20px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+            width: 100%;
+            max-width: 1000px; /* Match container max-width */
+            display: flex; /* Use flexbox for centering logo and text */
+            flex-direction: column; /* Stack logo and text vertically */
+            align-items: center; /* Center items horizontally */
+            gap: 5px; /* Reduced space between logo and text */
+        }
+        .footer a {
+            color: var(--secondary-light);
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        .footer-logo {
+            max-width: 35px; /* Further decreased logo size */
+            height: auto;
+            margin-bottom: 0px; /* Adjusted space below logo */
+        }
+
+        /* Responsive adjustments for screens up to 768px wide */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px; /* Reduce overall padding on smaller screens */
+            }
+            .container {
+                padding: 15px; /* Reduce container padding */
+                border-radius: 10px; /* Slightly smaller border-radius */
+            }
+            .header h1 {
+                font-size: 2rem; /* Adjust header h1 font size */
+            }
+            .header p {
+                font-size: 0.95rem; /* Adjust header paragraph font size */
+            }
+            .nav-buttons {
+                flex-direction: column; /* Stack buttons vertically */
+                gap: 10px; /* Reduce gap between stacked buttons */
+                margin-bottom: 20px;
+            }
+            .nav-button {
+                width: 90%; /* Make buttons take up more width */
+                max-width: 300px; /* Limit button width */
+                padding: 10px 20px;
+                font-size: 0.95rem;
+            }
+            .content-section {
+                padding: 15px; /* Adjust content section padding */
+                min-height: auto; /* Allow height to adjust dynamically */
+            }
+            .content-section h2 {
+                font-size: 1.5rem; /* Adjust h2 font size */
+            }
+            .content-section h3 {
+                font-size: 1.2rem;
+            }
+            .content-section p, .content-section ul, .content-section li, .content-section table {
+                font-size: 0.9rem; /* Adjust general text font size */
+                line-height: 1.6; /* Adjust line height for readability */
+            }
+            .content-section ul {
+                margin-left: 15px; /* Adjust list indentation */
+            }
+            .content-section table {
+                display: block; /* Ensure table is block for overflow */
+                overflow-x: auto; /* Enable horizontal scrolling for the table */
+                -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+            }
+            /* Reset specific table element display properties for proper horizontal layout */
+            .content-section thead, .content-section tbody, .content-section th, .content-section td, .content-section tr {
+                display: table-row; /* Revert to table-row for proper horizontal layout */
+            }
+            .content-section th, .content-section td {
+                display: table-cell; /* Revert to table-cell */
+                padding: 8px 10px; /* Adjust table cell padding */
+                border-bottom: 1px solid #333; /* Keep bottom border for visual separation */
+                white-space: normal; /* Allow text to wrap within cells */
+            }
+            .content-section th {
+                text-align: left; /* Align table headers to left for consistency */
+            }
+            .content-section tr {
+                margin-bottom: 0; /* Remove extra margin between rows */
+                border: none; /* Remove border around each conceptual row */
+                border-radius: 0;
+                overflow: visible;
+            }
+            .content-section tr:nth-child(even) {
+                background-color: rgba(255, 255, 255, 0.02); /* Alternate row color */
+            }
+        }
+
+        /* Further adjustments for very small screens (e.g., old phones) */
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .header p {
+                font-size: 0.85rem;
+            }
+            .nav-button {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+            }
+            .content-section h2 {
+                font-size: 1.3rem;
+            }
+            .content-section h3 {
+                font-size: 1.1rem;
+            }
+            .content-section p, .content-section ul, .content-section li, .content-section table {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <div class="header">
+            <h1>HABITAT, HOME RANGE, AND TERRITORY – UNDERSTANDING ANIMAL SPACE</h1>
+            <p class="intro-heading">Introduction: The Significance of Spatial Ecology</p>
+            <p>The study of how animals occupy and interact within space forms a cornerstone of ecological understanding. By dissecting the spatial dimensions and characteristics of an organism's life, we gain invaluable insights into their individual behaviors, the dynamics of their populations, and their complex interactions within communities and ecosystems. This foundational knowledge is indispensable for developing effective conservation strategies, implementing sustainable wildlife management practices, and accurately predicting the ecological consequences of environmental changes on animal populations.</p>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="nav-button active" data-target="habitat">Habitat</button>
+            <button class="nav-button" data-target="home-range">Home Range</button>
+            <button class="nav-button" data-target="territory">Territory</button>
+            <button class="nav-button" data-target="key-differences">Key Differences</button>
+            <button class="nav-button" data-target="summary-importance">Summary & Importance</button>
+            <button class="nav-button" data-target="review-quiz">Review Quiz</button>
+        </div>
+
+        <div id="habitat" class="content-section active">
+            <h2>Habitat: The Natural Home of an Organism</h2>
+            <h3>Definition:</h3>
+            <p>In ecology, habitat refers to the specific physical and biological environment where an organism or a population naturally lives and where it finds all the resources and conditions necessary for its survival, growth, and reproduction. It is often described as the "address" of a species, encompassing the sum of environmental factors that dictate its presence and persistence.</p>
+            <h3>Characteristics:</h3>
+            <ul>
+                <li><strong>Resource Provision:</strong> A suitable habitat unfailingly provides the fundamental resources vital for life: readily available food sources, clean water, adequate shelter or cover (for resting, protection from elements and predators), and appropriate sites for breeding, nesting, or denning.</li>
+                <li><strong>Abiotic Factors:</strong> These are the non-living components that define the physical conditions of the habitat. Examples include specific ranges of temperature, precipitation patterns, soil type and chemistry, water availability, light intensity, humidity, and topographical features. These physical parameters must fall within the physiological tolerance limits of the species.</li>
+                <li><strong>Biotic Factors:</strong> These comprise the living components within the habitat that interact with the organism. This includes the presence and abundance of appropriate plant life (e.g., for food, structural support, or cover), the availability of prey species, the presence or absence of specific predators, and the dynamics of competition and mutualistic relationships with other species.</li>
+                <li><strong>Specificity and Breadth:</strong> Habitats can vary immensely in their scale and specificity. Some species are highly specialized, requiring very particular microhabits (e.g., specific old-growth tree cavities for certain owls). Others are generalists, capable of utilizing broad habitat types (e.g., a wide range of forest types, or even adapting to urban environments). Critically, habitat is species-specific; an environment that is a perfect habitat for one species might be entirely unsuitable for another.</li>
+            </ul>
+            <h3>Examples:</h3>
+            <ul>
+                <li><strong>Forest Habitat:</strong> Provides a mosaic of niches. For example, deer browse on understory vegetation, squirrels utilize trees for nesting and forage for nuts, bears may den in cavities and forage across forest floors, and various bird species find nesting sites and insectivorous diets.</li>
+                <li><strong>Desert Habitat:</strong> Defined by extreme aridity and temperature fluctuations. It supports species with specialized adaptations, such as cacti (water storage), camels (water conservation, heat tolerance), and fennec foxes (large ears for heat dissipation, nocturnal activity).</li>
+                <li><strong>Marine Habitat (Coral Reef):</strong> These highly biodiverse ecosystems demand specific conditions: warm, clear, sunlit waters with stable salinity. They host an immense variety of fish, coral species, and invertebrates, many of which depend on the symbiotic algae within corals.</li>
+                <li><strong>Grassland Habitat:</strong> Characterized by dominant grasses and open expanses. These areas support large grazing animals like zebras and wildebeest, which, in turn, sustain apex predators suchs as lions.</li>
+                <li><strong>Urban Habitat:</strong> Though significantly modified by human infrastructure, urban areas serve as habitats for adaptable species like pigeons (nesting on buildings, exploiting human refuse), rats, raccoons, and certain bird species that have learned to exploit anthropogenically generated resources and structures.</li>
+            </ul>
+        </div>
+
+        <div id="home-range" class="content-section">
+            <h2>Home Range: The "Living Area" or Activity Space</h2>
+            <h3>Definition:</h3>
+            <p>A home range is the non-defended geographical area within which an individual animal or a social group regularly moves and conducts its normal activities, such as foraging for food, seeking mates, rearing young, and finding shelter. It represents the total spatial area an animal utilizes over a specific period, encompassing its routine daily and seasonal movements. A key defining characteristic is that, unlike a territory, a home range is generally not actively defended against other members of the same species.</p>
+            <h3>Characteristics:</h3>
+            <ul>
+                <li><strong>Lack of Active Defense:</strong> The boundaries of a home range are fluid and permeable. Overlap between the home ranges of multiple individuals or groups of the same species is a common and expected occurrence. Interactions within shared home range areas might involve avoidance or passive competition, but typically not overt aggression aimed at exclusion.</li>
+                <li><strong>Variable Size:</strong> The size of a home range is highly plastic and influenced by numerous factors. These include the species (larger animals generally require more extensive ranges due to higher metabolic demands), individual body size, the abundance and spatial distribution of critical resources (scarce or dispersed resources necessitate larger ranges), the animal's sex (e.g., males often have larger ranges than females), age, and the overall population density (higher density can lead to smaller individual ranges).</li>
+                <li><strong>Dynamic Nature:</strong> Home ranges are not static; they can change considerably over time. Factors such as seasonal fluctuations in resource availability (e.g., migratory patterns for food or water), shifts in breeding cycles, or human disturbances (e.g., habitat fragmentation, increased human presence) can lead to alterations in an animal's spatial use patterns.</li>
+                <li><strong>Methods of Study:</strong> Scientists meticulously study home ranges using various tracking and monitoring techniques. These include radio-telemetry (attaching transmitters to animals), GPS tracking (providing highly accurate and continuous location data), and direct observation combined with mapping.</li>
+            </ul>
+            <h3>Examples:</h3>
+            <ul>
+                <li><strong>Deer:</strong> A white-tailed deer might utilize a home range spanning several hundred acres, consistently moving within it to browse on vegetation, locate water sources, and find suitable cover. It is common for these individual home ranges to extensively overlap with those of other deer.</li>
+                <li><strong>Coyote:</strong> A coyote pack's home range can extend over many square miles, encompassing sufficient hunting grounds, denning sites, and access to water. Significant spatial overlap with the home ranges of neighboring coyote packs is typical, especially in peripheral areas.</li>
+                <li><strong>Elephant:</strong> Elephant herds, particularly in arid regions, are known to maintain vast home ranges, sometimes covering thousands of square kilometers, necessitating extensive journeys to access widely dispersed water and food sources.</li>
+                <li><strong>Non-Territorial Birds:</strong> Many bird species, especially outside their breeding season, exhibit non-defended home ranges where they forage, often forming flocks that move collectively across considerable areas.</li>
+            </ul>
+        </div>
+
+        <div id="territory" class="content-section">
+            <h2>Territory: The "Defended Property"</h2>
+            <h3>Definition:</h3>
+            <p>A territory is an area that an individual animal or a social group actively defends against intrusion by other members of the same species (conspecifics), and sometimes against other species. Crucially, a territory is a subset of the home range that is specifically demarcated and defended to ensure exclusive or prioritized access to critical, often limited, resources.</p>
+            <h3>Characteristics:</h3>
+            <ul>
+                <li><strong>Active Defense:</strong> The hallmark of a territory is its active defense. Animals employ a diverse repertoire of behaviors to deter rivals, including:
+                    <ul>
+                        <li><strong>Vocalizations:</strong> Distinct calls, songs (e.g., bird song), or howls (e.g., wolves) to announce presence and warn off intruders.</li>
+                        <li><strong>Scent Marking:</strong> Depositing urine, feces, or secretions from specialized glands to chemically demarcate boundaries.</li>
+                        <li><strong>Aggressive Displays:</strong> Visual cues such as posturing, feather ruffling, charging, or ritualized fighting.</li>
+                        <li><strong>Direct Confrontations:</strong> Physical aggression, though often a last resort due to energy expenditure and injury risk.</li>
+                    </ul>
+                </li>
+                <li><strong>Resource-Driven:</strong> The primary motivation for establishing and defending a territory is to secure exclusive access to vital, often critical or limited, resources. These resources can include food sources, nesting or denning sites, mates, or safe refugia from predators.</li>
+                <li><strong>Variable Size:</strong> The size of a territory is not fixed and is dynamically adjusted based on: the density and quality of the resources being defended, the specific needs and body size of the species, and the level of pressure or competition from other conspecifics in the population.</li>
+                <li><strong>Temporal Nature:</strong> Territories can be maintained for different durations. Some species defend territories year-round (e.g., certain birds of prey requiring consistent hunting grounds). More commonly, territories are defended seasonally, particularly during breeding or nesting periods (e.g., many songbirds defending their nest sites).</li>
+                <li><strong>Exclusive Use:</strong> Successful defense of a territory typically leads to exclusive or near-exclusive use of the resources within that demarcated area by the defending individual or group, thereby significantly reducing direct competition from rivals.</li>
+            </ul>
+            <h3>Examples:</h3>
+            <ul>
+                <li><strong>Robins (Birds):</strong> During the breeding season, male robins establish and vigorously defend a territory through persistent song. This ensures sufficient food resources for their developing offspring and a prime location to attract a mate. Intruders are usually met with aggressive chases.</li>
+                <li><strong>Wolves:</strong> A wolf pack maintains and defends a large territory from other wolf packs. This is paramount for securing exclusive hunting grounds to support the pack and for protecting their den sites and pups. Defense involves extensive scent marking, coordinated howling, and direct aggressive encounters with encroaching packs.</li>
+                <li><strong>Lions:</strong> Lionesses within a pride actively defend their collective territory from other prides, particularly when prey is abundant. This ensures exclusive hunting rights for their pride members.</li>
+                <li><strong>Fish (e.g., Bettas):</strong> Male Betta fish are well-known for their extreme territoriality. They will fiercely display aggression and physically fight other males to defend a small breeding space, which typically includes their self-built bubble nest.</li>
+                <li><strong>Male Deer (Rut):</strong> During the rutting (mating) season, male deer (bucks) establish temporary territories to attract and herd females. They defend these territories from rival males through displays of dominance, vocalizations, and direct combat (sparring with antlers).</li>
+            </ul>
+        </div>
+
+        <div id="key-differences" class="content-section">
+            <h2>Key Differences and Overlaps: A Comparative Summary</h2>
+            <p>Understanding the distinct nuances between these three ecological concepts is fundamental. While <strong>a habitat</strong> represents the overarching environmental context, a home range defines the broader area of an animal's regular activity within that habitat, and a territory is a specifically defended portion of the home range aimed at securing exclusive resource access.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Habitat</th>
+                        <th>Home Range</th>
+                        <th>Territory</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Definition</td>
+                        <td>The natural environment where a species lives and finds necessary resources.</td>
+                        <td>"The area an animal regularly uses for its routine activities (e.g., foraging, breeding)."</td>
+                        <td>"A defended portion of the home range, ensuring exclusive resource access."</td>
+                    </tr>
+                    <tr>
+                        <td>Defense</td>
+                        <td>Not applicable (it's a descriptive environmental context).</td>
+                        <td>Not actively defended; significant overlap with conspecifics is common.</td>
+                        <td>Actively defended against conspecifics (and sometimes other species).</td>
+                    </tr>
+                    <tr>
+                        <td>Purpose</td>
+                        <td>Provides all the fundamental environmental conditions for survival and reproduction.</td>
+                        <td>"Facilitates access to general, often widely distributed, resources for daily life."</td>
+                        <td>"Secures exclusive access to critical, often limited, resources (e.g., mates, prime foraging sites, nesting areas)."</td>
+                    </tr>
+                    <tr>
+                        <td>Overlap</td>
+                        <td>Many different species can share the same general habitat type.</td>
+                        <td>Common for home ranges of multiple conspecifics to overlap.</td>
+                        <td>Little to no overlap with conspecifics within the defended area.</td>
+                    </tr>
+                    <tr>
+                        <td>Analogy</td>
+                        <td>"Your city, country, or even biome."</td>
+                        <td>"Your entire neighborhood, including routes to work, shops, and friends' houses."</td>
+                        <td>"Your specific house or apartment, which you actively protect from unauthorized entry."</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="summary-importance" class="content-section">
+            <h2>Summary & Importance</h2>
+            <p>In summary, habitat delineates the foundational environmental context and specific conditions essential for a species' existence. The home range describes the broader spatial area an animal consistently utilizes to meet its daily and seasonal needs, often in shared space with conspecifics. The territory, a crucial subset of the home range, signifies an actively defended area that ensures an individual or group maintains exclusive access to vital, often limited, resources.</p>
+            <p>The ability to accurately distinguish and apply these interconnected ecological concepts is of paramount importance across various scientific and applied fields:</p>
+            <ul>
+                <li><strong>Ecological Research:</strong> For rigorous study of population dynamics, species distribution patterns, inter-species relationships, and behavioral ecology.</li>
+                <li><strong>Wildlife Management:</strong> For designing effective strategies to manage wildlife populations, prevent over-harvesting, mitigate human-wildlife conflicts, and manage habitat quality.</li>
+                <li><strong>Conservation Efforts:</strong> For identifying and prioritizing critical habitats, assessing the impact of habitat loss and fragmentation, and establishing and managing protected areas to ensure the long-term viability and genetic diversity of species.</li>
+            </ul>
+            <p>By clearly understanding these distinctions and their ecological implications, we are far better equipped to protect, manage, and sustainably interact with animal populations and their indispensable living spaces.</p>
+        </div>
+
+        <div id="review-quiz" class="content-section">
+            <h2>Review Quiz: Test Your Knowledge!</h2>
+            <form id="quizForm">
+                <div class="quiz-question">
+                    <p>1. What is the primary characteristic that distinguishes a "territory" from a "home range"?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="a"> A territory is larger than a home range.</label>
+                        <label><input type="radio" name="q1" value="b"> A home range is actively defended, while a territory is not.</label>
+                        <label><input type="radio" name="q1" value="c"> A territory is actively defended against conspecifics, while a home range is generally not.</label>
+                        <label><input type="radio" name="q1" value="d"> A home range provides all necessary resources, while a territory only provides some.</label>
+                    </div>
+                    <div class="quiz-feedback" id="feedback-q1"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>2. Which of the following is an example of an abiotic factor defining a habitat?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="a"> Presence of prey species</label>
+                        <label><input type="radio" name="q2" value="b"> Soil type and chemistry</label>
+                        <label><input type="radio" name="q2" value="c"> Competition with other species</label>
+                        <label><input type="radio" name="q2" value="d"> Availability of plant life</label>
+                    </div>
+                    <div class="quiz-feedback" id="feedback-q2"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>3. What is the main purpose of an animal establishing and defending a territory?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q3" value="a"> To interact passively with other members of the same species.</label>
+                        <label><input type="radio" name="q3" value="b"> To secure exclusive access to critical, often limited, resources.</label>
+                        <label><input type="radio" name="q3" value="c"> To allow significant overlap with other conspecifics.</label>
+                        <label><input type="radio" name="q3" value="d"> To explore new and unfamiliar environments.</label>
+                    </div>
+                    <div class="quiz-feedback" id="feedback-q3"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>4. A highly specialized species requiring very particular microhabitats, such as specific old-growth tree cavities for certain owls, is an example of what characteristic of habitat?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q4" value="a"> Resource Provision</label>
+                        <label><input type="radio" name="q4" value="b"> Abiotic Factors</label>
+                        <label><input type="radio" name="q4" value="c"> Specificity and Breadth</label>
+                        <label><input type="radio" name="q4" value="d"> Biotic Factors</label>
+                    </div>
+                    <div class="quiz-feedback" id="feedback-q4"></div>
+                </div>
+
+                <div class="quiz-question">
+                    <p>5. Which of these animals is described as exhibiting non-defended home ranges, especially outside their breeding season, often forming flocks?</p>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q5" value="a"> Male Betta fish</label>
+                        <label><input type="radio" name="q5" value="b"> Wolves</label>
+                        <label><input type="radio" name="q5" value="c"> Non-Territorial Birds</label>
+                        <label><input type="radio" name="q5" value="d"> Male deer during the rutting season</label>
+                    </div>
+                    <div class="quiz-feedback" id="feedback-q5"></div>
+                </div>
+
+                <button type="submit" class="quiz-submit-button">Submit Quiz</button>
+            </form>
+            <div class="quiz-results" id="quizResults"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo" onerror="this.onerror=null;this.src='https://placehold.co/35x35/333/fff?text=Logo';" />
+        <p>&copy; 2025 BETA Biosciences. All rights reserved.</p>
+        <p>Email: <a href="mailto:betabiosciences@gmail.com">betabiosciences@gmail.com</a></p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const allowedDomain = "https://betabiosciences.github.io";
+            const currentOrigin = window.location.origin;
+            const mainContainer = document.getElementById('mainContainer');
+
+            // Check if the current origin matches the allowed domain
+            if (currentOrigin === allowedDomain) {
+                // If it matches, display the container
+                mainContainer.style.display = 'flex';
+
+                // Existing navigation logic
+                const navButtons = document.querySelectorAll('.nav-button');
+                const contentSections = document.querySelectorAll('.content-section');
+
+                navButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        navButtons.forEach(btn => btn.classList.remove('active'));
+                        contentSections.forEach(section => section.classList.remove('active'));
+                        button.classList.add('active');
+                        const targetId = button.dataset.target;
+                        document.getElementById(targetId).classList.add('active');
+                    });
+                });
+
+                // Quiz Logic
+                const quizForm = document.getElementById('quizForm');
+                const quizResultsDiv = document.getElementById('quizResults');
+
+                // Define quiz questions and correct answers
+                const quizQuestions = {
+                    q1: {
+                        answer: 'c',
+                        feedback: 'A territory is actively defended against conspecifics, while a home range is generally not.'
+                    },
+                    q2: {
+                        answer: 'b',
+                        feedback: 'Soil type and chemistry is an abiotic (non-living) factor.'
+                    },
+                    q3: {
+                        answer: 'b',
+                        feedback: 'The main purpose of a territory is to secure exclusive access to critical resources.'
+                    },
+                    q4: {
+                        answer: 'c',
+                        feedback: 'Requiring very particular microhabitats relates to the specificity and breadth of a habitat.'
+                    },
+                    q5: {
+                        answer: 'c',
+                        feedback: 'Non-Territorial Birds often form flocks and exhibit non-defended home ranges outside breeding season.'
+                    }
+                };
+
+                quizForm.addEventListener('submit', (event) => {
+                    event.preventDefault(); // Prevent default form submission
+
+                    let score = 0;
+                    let totalQuestions = Object.keys(quizQuestions).length;
+                    let resultsHtml = `<h3>Your Quiz Results:</h3>`;
+
+                    for (const qId in quizQuestions) {
+                        const selectedOption = document.querySelector(`input[name="${qId}"]:checked`);
+                        const feedbackDiv = document.getElementById(`feedback-${qId}`);
+
+                        feedbackDiv.innerHTML = ''; // Clear previous feedback
+                        feedbackDiv.classList.remove('correct', 'incorrect');
+
+                        if (selectedOption) {
+                            const isCorrect = selectedOption.value === quizQuestions[qId].answer;
+                            if (isCorrect) {
+                                score++;
+                                feedbackDiv.innerHTML = `<strong>Correct!</strong>`;
+                                feedbackDiv.classList.add('correct');
+                            } else {
+                                feedbackDiv.innerHTML = `<strong>Incorrect.</strong> The correct answer was: ${quizQuestions[qId].feedback}`;
+                                feedbackDiv.classList.add('incorrect');
+                            }
+                        } else {
+                            feedbackDiv.innerHTML = `<strong>Please select an answer for this question.</strong> The correct answer was: ${quizQuestions[qId].feedback}`;
+                            feedbackDiv.classList.add('incorrect');
+                        }
+
+                        // Disable radio buttons after submission
+                        const radioButtons = document.querySelectorAll(`input[name="${qId}"]`);
+                        radioButtons.forEach(radio => radio.disabled = true);
+                    }
+
+                    resultsHtml += `<p>You scored ${score} out of ${totalQuestions}!</p>`;
+                    quizResultsDiv.innerHTML = resultsHtml;
+                    quizResultsDiv.style.display = 'block'; // Show results
+                });
+            } else {
+                // If the origin does not match, keep the container hidden.
+                // No error message is displayed as per user request.
+                console.log("Access denied: This page can only be loaded from " + allowedDomain);
+            }
+        });
+    </script>
+</body>
+</html>
