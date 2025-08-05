@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niche Width and Niche Overlap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c;
+            color: #e2e8f0;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .section-title {
+            border-bottom: 2px solid #63b3ed;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            background-color: #2d3748;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .accent-text {
+            color: #9f7aea;
+        }
+        .question-card {
+            background-color: #2d3748;
+            border-left: 4px solid #48bb78;
+        }
+        .answer-option {
+            background-color: #4a5568;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .answer-option:hover {
+            background-color: #63b3ed;
+        }
+        .hidden-section {
+            display: none;
+        }
+        .nav-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .nav-button:hover {
+            transform: translateY(-2px);
+        }
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #content-wrapper {
+            display: none;
+        }
+        .correct-answer {
+            background-color: #48bb78 !important; /* Green */
+        }
+        .incorrect-answer {
+            background-color: #e53e3e !important; /* Red */
+        }
+    </style>
+    <script>
+        (function() {
+            const allowedDomain = 'https://betabiosciences.github.io';
+            const currentDomain = window.location.origin;
+            
+            if (currentDomain === allowedDomain) {
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.getElementById('content-wrapper').style.display = 'block';
+                    initializePage();
+                });
+            }
+            
+            function initializePage() {
+                var sections = document.querySelectorAll('main section');
+                var prevBtn = document.getElementById('prevBtn');
+                var nextBtn = document.getElementById('nextBtn');
+                var currentIndex = 0;
+                var correctAnswers = {
+                    0: 1, // 0-indexed: 2nd option
+                    1: 3, // 0-indexed: 4th option
+                    2: 3, // 0-indexed: 4th option
+                    3: 2, // 0-indexed: 3rd option
+                    4: 3, // 0-indexed: 4th option
+                    5: 0, // 0-indexed: 1st option
+                    6: 0, // 0-indexed: 1st option
+                    7: 2, // 0-indexed: 3rd option
+                    8: 3, // 0-indexed: 4th option
+                    9: 2  // 0-indexed: 3rd option
+                };
+
+                function showSection(index) {
+                    for (var i = 0; i < sections.length; i++) {
+                        sections[i].classList.add('hidden-section');
+                    }
+                    sections[index].classList.remove('hidden-section');
+                    prevBtn.disabled = (index === 0);
+                    nextBtn.disabled = (index === sections.length - 1);
+                }
+
+                function handleAnswerClick(event) {
+                    const questionCard = event.target.closest('.question-card');
+                    if (!questionCard.classList.contains('answered')) {
+                        const questionIndex = Array.from(document.querySelectorAll('.question-card')).indexOf(questionCard);
+                        const allOptions = questionCard.querySelectorAll('.answer-option');
+                        const selectedOption = event.target;
+                        const selectedIndex = Array.from(allOptions).indexOf(selectedOption);
+                        
+                        if (selectedIndex === correctAnswers[questionIndex]) {
+                            selectedOption.classList.add('correct-answer');
+                        } else {
+                            selectedOption.classList.add('incorrect-answer');
+                            allOptions[correctAnswers[questionIndex]].classList.add('correct-answer');
+                        }
+                        questionCard.classList.add('answered');
+                    }
+                }
+
+                document.querySelectorAll('.answer-option').forEach(option => {
+                    option.addEventListener('click', handleAnswerClick);
+                });
+
+                nextBtn.addEventListener('click', function() {
+                    if (currentIndex < sections.length - 1) {
+                        currentIndex++;
+                        showSection(currentIndex);
+                    }
+                });
+
+                prevBtn.addEventListener('click', function() {
+                    if (currentIndex > 0) {
+                        currentIndex--;
+                        showSection(currentIndex);
+                    }
+                });
+
+                showSection(currentIndex);
+            }
+        })();
+    </script>
+</head>
+<body class="p-4">
+    <div id="content-wrapper" class="container mx-auto">
+        <header class="text-center py-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 p-4 shadow-lg">Niche Width and Niche Overlap</h1>
+        </header>
+
+        <main>
+            <section id="section-1" class="mb-8 card p-6">
+                <h2 class="text-2xl font-semibold section-title">Ⅰ . The Ecological Niche: Defining a Species' Role</h2>
+                <p class="mb-4">
+                    An ecological niche is the specific role a species plays within its ecosystem. It is a multi-dimensional concept, representing all the environmental conditions and resources a species requires to survive, grow, and reproduce. This idea was famously conceptualized by G.E. Hutchinson as an <span class="accent-text">"n-dimensional hypervolume,"</span> where each dimension represents a different ecological factor, such as food type, temperature, pH, or light availability.
+                </p>
+                <p class="mb-4">
+                    There are two key components of a species' niche:
+                </p>
+                <ul class="list-disc list-inside pl-4 mb-4">
+                    <li class="mb-2">
+                        <span class="font-bold accent-text">Fundamental Niche:</span> The full range of environmental conditions and resources a species could potentially use in the absence of biotic interactions like competition or predation.
+                    </li>
+                    <li>
+                        <span class="font-bold accent-text">Realized Niche:</span> The actual, more limited range of conditions and resources a species does use due to those interspecific interactions. The realized niche is always a subset of the fundamental niche, as competition and predation restrict a species' ability to exploit its full potential range.
+                    </li>
+                </ul>
+                <div class="mb-4 flex justify-center">
+                    <img src="https://betabiosciences.github.io/Other-Units/Ecology%20resource%20utilization%20curve.jpg" alt="Resource Utilization Curves Diagram" class="rounded-lg shadow-md max-w-full h-auto">
+                </div>
+            </section>
+
+            <section id="section-2" class="mb-8 card p-6 hidden-section">
+                <h2 class="text-2xl font-semibold section-title">II. Niche Width (or Niche Breadth)</h2>
+                <p class="mb-4">
+                    Niche width is a measure of a species' flexibility and its capacity to tolerate a range of environmental conditions and utilize various resources. It is the primary characteristic that distinguishes a specialist from a generalist species.
+                </p>
+                <ul class="list-disc list-inside pl-4 mb-4">
+                    <li class="mb-2">
+                        <span class="font-bold accent-text">Specialists:</span> These species have a narrow niche, highly adapted to a very specific set of conditions or resources. They are extremely efficient within their niche but are vulnerable to any changes in their specific environment or the disappearance of their key resources. The koala, which feeds almost exclusively on a few species of eucalyptus leaves, is a classic example. The giant panda, which relies almost entirely on bamboo, is another.
+                    </li>
+                    <li>
+                        <span class="font-bold accent-text">Generalists:</span> These species possess a broad niche and are able to utilize a wide variety of resources and live in many different environments. They are more adaptable to changing conditions but are often less efficient than a specialist at exploiting any single resource. A raccoon is an excellent example of a generalist, thriving in diverse habitats and consuming a wide range of food sources.
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-semibold mt-6 mb-3 accent-text">Levins' Measure of Niche Width</h3>
+                <p class="mb-4">
+                    Levins' measure is a quantitative method to calculate niche breadth (B) based on the proportional use of resources. The formula is:
+                </p>
+                <p class="text-center font-mono text-lg bg-gray-700 p-3 rounded-md mb-4">
+                    B = 1 / (Σ p<sub>i</sub><sup>2</sup>)
+                </p>
+                <p class="mb-4">
+                    Where p<sub>i</sub> is the proportion of individuals that use resource i, or the proportion of a population's diet composed of resource i. The denominator, Σ p<sub>i</sub><sup>2</sup>, is a measure of the concentration of resource use.
+                </p>
+                <ul class="list-disc list-inside pl-4 mb-4">
+                    <li class="mb-2">
+                        A <span class="font-bold accent-text">low B value</span> (closer to 1) indicates a narrow, specialized niche. This occurs when a species is heavily reliant on one or a few resources, making the p<sub>i</sub> for those resources high, which in turn makes the sum of squares large and the final B value small.
+                    </li>
+                    <li>
+                        A <span class="font-bold accent-text">high B value</span> (closer to N, the total number of available resources) indicates a broad, generalist niche. This occurs when a species uses all available resources more or less equally, resulting in low, similar p<sub>i</sub> values and a small sum of squares, leading to a large B value.
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-semibold mt-6 mb-3 accent-text">Components of Niche Breadth</h3>
+                <p class="mb-4">
+                    Niche breadth can be divided into two main components based on how individuals within a population utilize resources:
+                </p>
+                <ul class="list-disc list-inside pl-4 mb-4">
+                    <li class="mb-2">
+                        <span class="font-bold accent-text">Within-Phenotype Niche Breadth:</span> This occurs when every individual in a population uses the entire range of resources available to the species. There is no individual specialization; all individuals are generalists.
+                    </li>
+                    <li>
+                        <span class="font-bold accent-text">Between-Phenotype Niche Breadth:</span> This occurs when each individual in a population uses only a narrow part of the population's overall niche. This means there is high specialization among individuals, with different individuals or groups focusing on different parts of the resource spectrum.
+                    </li>
+                </ul>
+
+                <h3 class="text-xl font-semibold mt-6 mb-3 accent-text">Factors Influencing Niche Width</h3>
+                <p class="mb-4">
+                    A species' niche width is not static and is shaped by several key ecological factors:
+                </p>
+                <ul class="list-disc list-inside pl-4 mb-4">
+                    <li class="mb-2">
+                        <span class="font-bold accent-text">Environmental Stability:</span> Stable, predictable environments often favor specialists, as there is strong selective pressure to become highly efficient at exploiting a consistent, specific resource. In contrast, unstable or changing environments favor generalists, who are more adaptable to fluctuations.
+                    </li>
+                    <li class="mb-2">
+                        <span class="font-bold accent-text">Resource Availability:</span> Limited resources can drive a species to become a specialist to avoid competition. Conversely, abundant and varied resources can support a generalist lifestyle.
+                    </li>
+                    <li class="mb-2">
+                        <span class="font-bold accent-text">Competition:</span> Intense interspecific competition can force species to narrow their niche and specialize on a particular resource to avoid competitive exclusion. This is a key driver of resource partitioning.
+                    </li>
+                    <li>
+                        <span class="font-bold accent-text">Predation:</span> The presence of a dominant predator can also influence niche width. A species may broaden its niche to exploit resources in different habitats or at different times to avoid being preyed upon.
+                    </li>
+                </ul>
+            </section>
+
+            <section id="section-3" class="mb-8 card p-6 hidden-section">
+                <h2 class="text-2xl font-semibold section-title">III. Niche Overlap</h2>
+                <p class="mb-4">
+                    Niche overlap occurs when two or more species share a portion of the same niche, meaning they compete for the same limited resources like food, space, or light. The degree of overlap is directly proportional to the intensity of interspecific competition.
+                </p>
+                <p class="mb-4">
+                    The consequences of niche overlap can lead to one of three outcomes:
+                </p>
+                <ul class="list-disc list-inside pl-4 mb-4">
+                    <li class="mb-2">
+                        <span class="font-bold accent-text">Competitive Exclusion:</span> This principle, also known as Gause's Law, states that two species cannot coexist indefinitely if they occupy the exact same niche. The superior competitor will eventually drive the other to local extinction. Classic laboratory experiments by G.F. Gause demonstrated this with two species of <span class="italic">Paramecium</span> competing for the same food source.
+                    </li>
+                    <li class="mb-2">
+                        <span class="font-bold accent-text">Resource Partitioning:</span> This is a mechanism for coexistence where species with overlapping niches divide shared resources. This can happen through behavioral changes, such as feeding at different times or in different locations, which reduces the intensity of direct competition. A famous example is Robert MacArthur's study of warblers, which coexisted in the same tree species by foraging in different parts of the trees.
+                    </li>
+                    <li>
+                        <span class="font-bold accent-text">Character Displacement:</span> This is an evolutionary response to competition where species that overlap have evolved differences in traits to reduce competition. These differences are more pronounced in areas where the species coexist than where they live alone. The variation in beak sizes of Galápagos finches, which evolved to specialize on different seed sizes, is a well-known example of this phenomenon.
+                    </li>
+                </ul>
+            </section>
+
+            <section id="section-4" class="mb-8 card p-6 hidden-section">
+                <h2 class="text-2xl font-semibold section-title">Test your knowledge</h2>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">Which of the following best describes a specialist species?</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species that is able to compete effectively with other species for shared resources.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species that has a narrow niche and requires specific resources or environmental conditions to survive.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species that has a global distribution and is found in multiple biomes.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species that can adapt to a wide range of environmental conditions and food sources.</div></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">An ecological niche is best defined as:</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">The physical location where a species lives.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">The total number of individuals of a species in a given area.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">The process by which a species evolves to adapt to its environment.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">The role and position a species has in its environment, including all biotic and abiotic interactions.</div></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">What does a high degree of niche overlap between two species indicate?</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They are specialist species.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They have a symbiotic relationship.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They are likely to live in different habitats.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They are competing for the same limited resources.</div></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">Which of the following is a characteristic of a generalist species?</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They are highly susceptible to environmental changes.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They have a narrow geographic range.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They have a broad niche and can utilize a wide variety of resources.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They are at the top of the food chain in their ecosystem.</div></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">Levin's measure of niche breadth, represented by the formula B = 1 / Σ p<sub>i</sub><sup>2</sup>, where p<sub>i</sub> is the proportion of a resource used in category i, would result in a value of 1 for which of the following scenarios?</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species with a very broad niche.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species with significant niche overlap with another species.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species that uses all resource categories equally.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species that uses only a single resource category.</div></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">A high value of Levin's measure of niche breadth (B) indicates:</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species with a broad niche that uses a variety of resources.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species with a very specialized diet.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species with a narrow niche.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A species that is highly susceptible to competition.</div></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">The principle of competitive exclusion states that two species cannot coexist if:</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They have the same fundamental niche.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They occupy different trophic levels.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">They have different geographic ranges.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">One species is a specialist and the other is a generalist</div></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">Consider two species of birds, Species A and Species B. Species A eats seeds of all sizes, while Species B eats only small seeds. What is the relationship between their niches?</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">Species A and B are both specialists.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">There is no niche overlap between the two species.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">Species A is a generalist, and Species B is a specialist, and there is niche overlap.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">Species B is a generalist, and Species A is a specialist.</div></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">Which of the following scenarios is an example of a specialist species?</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">An alligator that hunts fish, birds, and turtles in a wetland.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A coyote that can eat small mammals, birds, fruits, and insects.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A raccoon that thrives in urban, suburban, and rural environments.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A giant panda that feeds almost exclusively on bamboo.</div></li>
+                    </ul>
+                </div>
+
+                <div class="mb-6 question-card p-4 rounded-lg">
+                    <p class="font-semibold mb-3">Two species of deer graze in the same forest, but one species eats grass and low shrubs, while the other species eats leaves from taller trees. This is an example of:</p>
+                    <ul class="space-y-2">
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">High niche overlap.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">A specialist and a generalist species.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">Niche partitioning.</div></li>
+                        <li><div class="answer-option p-3 rounded-md cursor-pointer">Competitive exclusion.</div></li>
+                    </ul>
+                </div>
+
+            </section>
+        </main>
+
+        <footer class="text-center py-6">
+            <div class="flex justify-center mb-4">
+                <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="h-16">
+            </div>
+            <p class="text-gray-400 text-sm">© 2025 BETA Biosciences. All rights reserved.</p>
+            <p class="text-gray-400 text-sm">Email: betabiosciences@gmail.com</p>
+        </footer>
+
+        <div class="flex justify-between mt-8 pb-8">
+            <button id="prevBtn" class="nav-button bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75">Previous</button>
+            <button id="nextBtn" class="nav-button bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75">Next</button>
+        </div>
+    </div>
+</body>
+</html>
