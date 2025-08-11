@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+        (function() {
+            const allowedOrigin = "https://betabiosciences.github.io";
+            if (window.location.origin !== allowedOrigin) {
+                document.documentElement.innerHTML = "";
+                document.write("");
+                document.close();
+            }
+        })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Displacement: Evolutionary Responses to Competition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            margin: 0 auto;
+            flex-grow: 1;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            border-radius: 20px;
+            padding: 30px 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .nav-tabs {
+            display: flex;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px;
+            backdrop-filter: blur(10px);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .nav-tabs::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .tab-button {
+            flex: 0 0 auto;
+            background: transparent;
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .tab-button.active {
+            background: linear-gradient(135deg, #00d4ff 0%, #0084ff 100%);
+            color: #ffffff;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3);
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .content-card h2 {
+            color: #00d4ff;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .content-card h3 {
+            color: #ff6b35;
+            font-size: 1.2rem;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+        
+        .content-card p {
+            margin-bottom: 15px;
+            color: #e0e0e0;
+            text-align: justify;
+        }
+        
+        .content-card ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+        
+        .content-card li {
+            margin-bottom: 10px;
+            color: #e0e0e0;
+        }
+        
+        .content-card strong {
+            color: #00d4ff;
+            font-weight: 700;
+        }
+        
+        .quiz-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .question {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .question h4 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #ffffff;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #00d4ff;
+        }
+        
+        .option.selected {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: #00d4ff;
+            color: #ffffff;
+        }
+        
+        .option.correct {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+        }
+        
+        .option.incorrect {
+            background: rgba(255, 0, 85, 0.2);
+            border-color: #ff0055;
+        }
+        
+        .score-display {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            color: #ffffff;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+        }
+        
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 8px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(135deg, #00d4ff 0%, #0084ff 100%);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .highlight {
+            background: rgba(255, 107, 53, 0.2);
+            padding: 2px 6px;
+            border-radius: 6px;
+            color: #ff6b35;
+            font-weight: 600;
+        }
+        
+        .example-box {
+            background: rgba(0, 212, 255, 0.1);
+            border-left: 4px solid #00d4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .footer {
+            background-color: rgba(0, 0, 0, 0.3);
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer img {
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        
+        .footer p {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .content-card {
+                padding: 20px;
+            }
+            
+            .tab-button {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+            
+            .footer img {
+                height: 40px;
+            }
+        }
+        
+        .floating-action {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(255, 107, 53, 0.4);
+            font-weight: 600;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CHARACTER DISPLACEMENT: EVOLUTIONARY RESPONSES TO COMPETITION</h1>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="tab-button active" onclick="showSection('definition')">Definition</button>
+            <button class="tab-button" onclick="showSection('history')">History</button>
+            <button class="tab-button" onclick="showSection('forms')">Forms</button>
+            <button class="tab-button" onclick="showSection('examples')">Examples</button>
+            <button class="tab-button" onclick="showSection('experiments')">Experiments</button>
+            <button class="tab-button" onclick="showSection('implications')">Implications</button>
+            <button class="tab-button" onclick="showSection('quiz')">Quiz</button>
+        </div>
+        
+        <div id="definition" class="content-section active">
+            <div class="content-card">
+                <h2>Definition and Evolutionary Basis</h2>
+                <p><strong>Character Displacement</strong> is an evolutionary phenomenon where two or more similar species, when co-occurring in the same geographic area (sympatry), exhibit greater differences in their characteristics compared to when they are found in isolation (allopatry). These divergent characteristics can manifest across various traits, including morphology, ecology, behavior, or physiology. This divergence in traits is driven by natural selection, which favors individuals with characteristics that reduce interspecific competition for shared, limited resources. The ultimate outcome is a minimization of competition through niche divergence.</p>
+            </div>
+        </div>
+        
+        <div id="history" class="content-section">
+            <div class="content-card">
+                <h2>Historical Context</h2>
+                <p>The conceptual roots of character displacement can be traced back to Charles Darwin's "principle of divergence of character," which he proposed to explain how new species arise and diversify through competitive interactions. The term "character displacement" was formally coined by American entomologists William L. Brown and Edward O. Wilson in 1956. Their observations of morphological differences in ant species when co-occurring versus when found in isolation provided the empirical basis for this important concept.</p>
+            </div>
+        </div>
+        
+        <div id="forms" class="content-section">
+            <div class="content-card">
+                <h2>Forms of Character Displacement</h2>
+                <p>While character displacement can take several forms, the most relevant in the context of competitive exclusion and resource partitioning is:</p>
+                <ul>
+                    <li><strong>Ecological Character Displacement (ECD):</strong> This form is caused by indirect (exploitative) competition between species for common resources, such as food or nesting sites. ECD typically results in a reduction of resource overlap through niche divergence. Other forms include Reproductive Character Displacement (RCD), driven by reproductive interference, and Agonistic Character Displacement (ACD), driven by aggressive interference.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="examples" class="content-section">
+            <div class="content-card">
+                <h2>Classic Examples and Observational Evidence</h2>
+                
+                <div class="example-box">
+                    <h3>Darwin's Finches (Galapagos Islands):</h3>
+                    <p>A quintessential example of character displacement. On Daphne Major, the medium ground finch (<em>Geospiza fortis</em>) diverged significantly in beak size from the large ground finch (<em>G. magnirostris</em>) approximately 22 years after <em>G. magnirostris</em> arrived on the island and both species jointly and severely depleted the shared food supply. This observed evolutionary response to natural selection was one of the strongest recorded in 33 years of study, consistent with the high heritability of beak size. The distinct beak shapes and sizes allow these finch species to specialize on different food sources, thereby reducing competition.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Anole Lizards (Caribbean Islands):</h3>
+                    <p>Different <em>Anolis</em> species have evolved distinct morphological characteristics, such as differences in body size and limb length, which enable them to occupy different ecological niches and reduce competition.</p>
+                </div>
+                
+                <div class="example-box">
+                    <h3>Ant Species (Brown & Wilson):</h3>
+                    <p>The initial observations by Brown and Wilson highlighted that two species of ants exhibited more distinct morphological characteristics when co-occurring than when found in isolation, providing early evidence for the phenomenon.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="experiments" class="content-section">
+            <div class="content-card">
+                <h2>Experimental Evidence for Character Displacement</h2>
+                <p>Demonstrating character displacement requires fulfilling rigorous criteria, including ruling out patterns formed by chance and establishing a genetic basis for the observed trait differences.</p>
+                
+                <h3>Common Garden Experiments:</h3>
+                <p>These experiments are crucial for demonstrating the genetic basis of trait differences. Individuals from sympatric and allopatric populations of a species are grown together in a common, controlled environment. If the trait differences persist under these uniform conditions, it strongly indicates a genetic basis rather than mere plastic responses to environmental variations. For example, Armbruster (1985) conducted common garden experiments with <em>Dalechampia scandens</em>, growing both rootstock and seeds from various populations. The observed divergence in reproductive traits (e.g., resin gland size) in the greenhouse matched those in their source populations, greatly strengthening the case for character displacement in this system.</p>
+                
+                <h3>Reciprocal Transplants:</h3>
+                <p>This is another method used to test for evolved plasticity in response to competition, where individuals are moved between sympatric and allopatric sites.</p>
+                
+                <h3>Direct Tests of Natural Selection:</h3>
+                <p>Recent studies have focused on documenting character displacement as it unfolds in real-time in the wild, identifying the role of directional selection during the initial stages of sympatry. For instance, in a study of two ecologically similar lizards (<em>Anolis sagrei</em> and <em>A. cristatellus</em>) experiencing novel contact, researchers documented directional selection leading to repeated trait divergence in the new community. This directly links short-timescale natural selection to broader patterns of character displacement at larger spatial and temporal scales.</p>
+                
+                <h3>"Natural Experiments":</h3>
+                <p>Long-term field studies, such as those on Darwin's finches by Grant and Grant (2006), have provided compelling direct observations of character displacement occurring in natural populations.</p>
+            </div>
+        </div>
+        
+        <div id="implications" class="content-section">
+            <div class="content-card">
+                <h2>Implications for Speciation and Community Structure</h2>
+                <p>Character displacement is widely considered a major force in structuring ecological communities, influencing which species can coexist and how they interact. It plays a vital role in the generation of phenotypic diversity and is a key explanation for how new species arise and diversify. By driving evolutionary divergence and reducing competition, character displacement can enable species coexistence, leading to increased diversity and complexity within ecological communities.</p>
+                
+                <p>Beyond interspecific interactions, competition can also drive divergence <em>within</em> a species, a process termed <strong>intraspecific character displacement</strong>. This occurs when selection acts to reduce competition among individuals of the same species, leading to "niche width expansion" or "ecological release". This process is frequently observed in isolated environments, such as islands or lakes, where a species encounters few heterospecific competitors. In such scenarios, the population can adaptively expand its niche to exploit previously underutilized resources, thereby reducing intraspecific competition. This can drive the evolution of novel resource-use phenotypes and potentially trigger adaptive radiation, where a single ancestral species rapidly diversifies into many new forms adapted to different niches. This broadens the scope of character displacement beyond just interspecific interactions, demonstrating its fundamental role in shaping diversity within species and in driving macroevolutionary processes like adaptive radiation. It shows that competitive pressures, whether interspecific or intraspecific, are powerful engines of evolutionary change.</p>
+            </div>
+        </div>
+        
+        <div id="quiz" class="content-section">
+            <div class="quiz-container">
+                <h2 style="color: white; text-align: center; margin-bottom: 20px;">Test Your Knowledge</h2>
+                <div id="scoreDisplay" class="score-display" style="display: none;"></div>
+                
+                <div class="question">
+                    <h4>1. What is the primary driving force behind character displacement?</h4>
+                    <div class="option" onclick="selectOption(this, false)">Predation pressure</div>
+                    <div class="option" onclick="selectOption(this, false)">Reproductive isolation</div>
+                    <div class="option" onclick="selectOption(this, false)">Intraspecific competition</div>
+                    <div class="option" onclick="selectOption(this, true)">Interspecific competition for limited resources</div>
+                </div>
+                
+                <div class="question">
+                    <h4>2. The term "sympatric" describes a situation where two or more similar species are:</h4>
+                    <div class="option" onclick="selectOption(this, false)">Found in separate geographic areas</div>
+                    <div class="option" onclick="selectOption(this, true)">Co-occurring in the same geographic area</div>
+                    <div class="option" onclick="selectOption(this, false)">Interbreeding to form a hybrid species</div>
+                    <div class="option" onclick="selectOption(this, false)">Evolving in a completely isolated environment</div>
+                </div>
+                
+                <div class="question">
+                    <h4>3. Which of the following is a classic example of character displacement?</h4>
+                    <div class="option" onclick="selectOption(this, true)">Anole lizards in the Caribbean Islands</div>
+                    <div class="option" onclick="selectOption(this, false)">The evolution of the horse</div>
+                    <div class="option" onclick="selectOption(this, false)">The domestication of dogs</div>
+                    <div class="option" onclick="selectOption(this, false)">The formation of coral reefs</div>
+                </div>
+                
+                <div class="question">
+                    <h4>4. In the example of Darwin's finches on Daphne Major, what was the initial effect of the 1977 drought on the Geospiza fortis population?</h4>
+                    <div class="option" onclick="selectOption(this, false)">Mean beak size decreased due to lack of large seeds.</div>
+                    <div class="option" onclick="selectOption(this, false)">The finches all died out due to lack of food.</div>
+                    <div class="option" onclick="selectOption(this, true)">Mean beak size increased as larger-beaked finches were able to survive on bigger seeds.</div>
+                    <div class="option" onclick="selectOption(this, false)">The finches migrated to a different island.</div>
+                </div>
+                
+                <div class="question">
+                    <h4>5. What is the difference between Ecological Character Displacement (ECD) and other forms like Reproductive Character Displacement (RCD)?</h4>
+                    <div class="option" onclick="selectOption(this, false)">ECD is caused by direct aggression, while RCD is caused by resource competition.</div>
+                    <div class="option" onclick="selectOption(this, false)">ECD is driven by interspecies competition, while RCD is driven by intraspecies competition.</div>
+                    <div class="option" onclick="selectOption(this, true)">ECD is caused by resource competition, while RCD is driven by reproductive interference.</div>
+                    <div class="option" onclick="selectOption(this, false)">ECD only occurs in plants, while RCD only occurs in animals.</div>
+                </div>
+                
+                <div class="question">
+                    <h4>6. The concept of "intraspecific character displacement" refers to:</h4>
+                    <div class="option" onclick="selectOption(this, false)">Evolutionary divergence between two different species.</div>
+                    <div class="option" onclick="selectOption(this, true)">The reduction of competition among individuals of the same species.</div>
+                    <div class="option" onclick="selectOption(this, false)">A process that always leads to the extinction of a species.</div>
+                    <div class="option" onclick="selectOption(this, false)">A phenomenon that only occurs in mainland populations.</div>
+                </div>
+                
+                <div class="question">
+                    <h4>7. Based on the meta-analysis by Kaplan and Denno, what is the effect of resource partitioning on competition?</h4>
+                    <div class="option" onclick="selectOption(this, false)">It completely eliminates competition.</div>
+                    <div class="option" onclick="selectOption(this, false)">It has no effect on competition.</div>
+                    <div class="option" onclick="selectOption(this, true)">It dampens but does not completely prevent competition.</div>
+                    <div class="option" onclick="selectOption(this, false)">It intensifies competition.</div>
+                </div>
+                
+                <div class="question">
+                    <h4>8. Character displacement is a major force in shaping ecological communities by:</h4>
+                    <div class="option" onclick="selectOption(this, false)">Eliminating all competition between species.</div>
+                    <div class="option" onclick="selectOption(this, false)">Reducing the total number of species in an ecosystem</div>
+                    <div class="option" onclick="selectOption(this, true)">Influencing which species can coexist and how they interact.</div>
+                    <div class="option" onclick="selectOption(this, false)">Increasing the population size of all species involved.</div>
+                </div>
+                
+                <div class="question">
+                    <h4>9. The term "allopatric" is used to describe species that</h4>
+                    <div class="option" onclick="selectOption(this, false)">Coexist in the same geographical area.</div>
+                    <div class="option" onclick="selectOption(this, false)">Have diverged in character due to competition.</div>
+                    <div class="option" onclick="selectOption(this, true)">Occur in different geographical areas.</div>
+                    <div class="option" onclick="selectOption(this, false)">Are able to interbreed successfully.</div>
+                </div>
+                
+                <div class="question">
+                    <h4>10. What did the observations by Peter and Rosemary Grant on Daphne Major Island demonstrate about character displacement?</h4>
+                    <div class="option" onclick="selectOption(this, false)">That it is a phenomenon that only occurs over millions of years.</div>
+                    <div class="option" onclick="selectOption(this, true)">That it can be observed in real-time in natural populations.</div>
+                    <div class="option" onclick="selectOption(this, false)">That it is solely a result of changes in rainfall.</div>
+                    <div class="option" onclick="selectOption(this, false)">That it only affects beak size in finches, and no other traits.</div>
+                </div>
+                
+                <button class="floating-action" onclick="calculateScore()">Calculate Score</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo">
+        <p>© 2025 BETA Biosciences. All rights reserved.<br>Email: betabiosciences@gmail.com</p>
+    </footer>
+    
+    <script>
+        let currentSection = 'definition';
+        let quizAnswered = 0;
+        let correctAnswers = 0;
+        
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab-button');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Find the button that was clicked and add the active class
+            const allButtons = document.querySelectorAll('.tab-button');
+            allButtons.forEach(button => {
+                if (button.textContent.toLowerCase().includes(sectionId.toLowerCase())) {
+                    button.classList.add('active');
+                }
+            });
+            
+            currentSection = sectionId;
+            updateProgress();
+        }
+        
+        function updateProgress() {
+            const sections = ['definition', 'history', 'forms', 'examples', 'experiments', 'implications', 'quiz'];
+            const currentIndex = sections.indexOf(currentSection);
+            const progress = ((currentIndex + 1) / sections.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+        
+        function selectOption(element, isCorrect) {
+            // Remove selection from other options in the same question
+            const question = element.parentElement;
+            const options = question.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Mark selected option
+            element.classList.add('selected');
+            
+            // Store answer
+            element.parentElement.dataset.answered = 'true';
+            element.parentElement.dataset.correct = isCorrect;
+        }
+        
+        function calculateScore() {
+            const questions = document.querySelectorAll('.question');
+            let answered = 0;
+            let correct = 0;
+            
+            questions.forEach(question => {
+                const options = question.querySelectorAll('.option');
+                let questionAnswered = false;
+                let questionCorrect = false;
+                
+                options.forEach(opt => {
+                    // Check if this is a correct answer
+                    const isCorrectAnswer = opt.onclick.toString().includes('true');
+                    
+                    // If this option was selected
+                    if (opt.classList.contains('selected')) {
+                        questionAnswered = true;
+                        if (isCorrectAnswer) {
+                            opt.classList.add('correct');
+                            questionCorrect = true;
+                        } else {
+                            opt.classList.add('incorrect');
+                        }
+                    }
+                    
+                    // Always highlight the correct answer
+                    if (isCorrectAnswer) {
+                        opt.classList.add('correct');
+                    }
+                });
+                
+                if (questionAnswered) {
+                    answered++;
+                    if (questionCorrect) {
+                        correct++;
+                    }
+                }
+            });
+            
+            // Calculate score for all 10 questions
+            const totalQuestions = 10;
+            const percentage = answered > 0 ? Math.round((correct / totalQuestions) * 100) : 0;
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            scoreDisplay.textContent = `Score: ${correct}/${totalQuestions} questions correct (${percentage}%) | Answered: ${answered}/${totalQuestions}`;
+            scoreDisplay.style.display = 'block';
+            
+            // Scroll to score
+            scoreDisplay.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Initialize progress bar
+        updateProgress();
+    </script>
+</body>
+</html>
