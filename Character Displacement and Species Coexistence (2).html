@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Displacement and Species Coexistence</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(124, 58, 237, 0.2);
+        }
+
+        .section:hover::before {
+            left: 100%;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #a855f7;
+            margin-bottom: 5px;
+        }
+
+        .section-content {
+            max-height: none;
+            overflow: visible;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            text-align: justify;
+        }
+
+        .key-term {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+            margin: 0 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .key-term:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(124, 58, 237, 0.4);
+        }
+
+        .species-name {
+            color: #10b981;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .section.hidden {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.6);
+        }
+
+        .nav-btn:disabled {
+            background: linear-gradient(135deg, #64748b, #94a3b8);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .nav-btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+        }
+
+        .bottom-navigation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 40px 0 20px 0;
+            padding: 20px;
+        }
+
+        .bottom-nav-btn {
+            padding: 12px 20px;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+            min-width: 100px;
+        }
+
+        .bottom-nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(124, 58, 237, 0.6);
+        }
+
+        .bottom-nav-btn:disabled {
+            background: linear-gradient(135deg, #64748b, #94a3b8);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .bottom-nav-btn:disabled:hover {
+            transform: none;
+            box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+        }
+
+        .section-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .indicator-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(124, 58, 237, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .indicator-dot.active {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            transform: scale(1.2);
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.5);
+        }
+
+        .section-counter {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #7c3aed, #a855f7);
+            transition: width 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            color: #e2e8f0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            max-width: 250px;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .tooltip.show {
+            opacity: 1;
+        }
+
+        .section-image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .section-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(124, 58, 237, 0.5);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border-top: 1px solid rgba(124, 58, 237, 0.2);
+            margin-top: auto;
+        }
+        
+        .footer-logo {
+            max-width: 50px;
+            height: auto;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .footer-text {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .section {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            p {
+                font-size: 0.95rem;
+            }
+
+            .navigation {
+                bottom: 15px;
+                right: 15px;
+            }
+
+            .nav-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+
+            .bottom-navigation {
+                gap: 10px;
+                margin: 30px 0 15px 0;
+                padding: 15px;
+            }
+
+            .bottom-nav-btn {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+                min-width: 80px;
+            }
+
+            .section-counter {
+                font-size: 0.9rem;
+            }
+
+            .indicator-dot {
+                width: 10px;
+                height: 10px;
+            }
+
+            .footer-logo {
+                max-width: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .section {
+                padding: 18px;
+                margin-bottom: 20px;
+            }
+
+            .section-title {
+                font-size: 1.1rem;
+            }
+
+            p {
+                font-size: 0.9rem;
+            }
+
+            .bottom-navigation {
+                flex-direction: column;
+                gap: 12px;
+                margin: 25px 0 10px 0;
+            }
+
+            .bottom-nav-btn {
+                width: 100%;
+                max-width: 200px;
+                padding: 12px 20px;
+            }
+
+            .section-counter {
+                font-size: 0.85rem;
+            }
+
+            .indicator-dot {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .footer-logo {
+                max-width: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // CRITICAL SECURITY SCRIPT
+        // This script must be at the very top of the body to prevent any content from rendering if the domain is incorrect.
+        if (window.location.hostname !== 'betabiosciences.github.io') {
+            document.documentElement.innerHTML = '';
+        }
+    </script>
+    <div class="progress-bar" id="progressBar"></div>
+    
+    <div class="container">
+        <header class="header">
+            <h1>Character Displacement and Species Coexistence</h1>
+        </header>
+
+        <div class="section-counter" id="sectionCounter">Section 1 of 6</div>
+        
+        <div class="section-indicator" id="sectionIndicator">
+            <div class="indicator-dot active" data-section="0"></div>
+            <div class="indicator-dot" data-section="1"></div>
+            <div class="indicator-dot" data-section="2"></div>
+            <div class="indicator-dot" data-section="3"></div>
+            <div class="indicator-dot" data-section="4"></div>
+            <div class="indicator-dot" data-section="5"></div>
+        </div>
+
+        <div class="section active" id="section1">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Introduction & Hutchinson's Hypothesis</h2>
+                </div>
+            </div>
+            <div class="section-content">
+                <p>Morphological differences can allow species to coexist by reducing competition for resources. Yale biologist G. Evelyn Hutchinson (1959) observed that when closely related species live in the same geographic area (<span class="key-term">sympatric</span>), they often have different feeding-related body parts, such as mouthparts, compared to when they live in separate areas (<span class="key-term">allopatric</span>).</p>
+                <p>Hutchinson's hypothesis was that sympatric species specialize in different food types to avoid direct competition. This specialization is reflected in the size of their <span class="key-term">feeding characters</span>. This evolutionary process, where two species diverge in their morphology and resource use due to competition, is called <span class="key-term">character displacement</span>.</p>
+            </div>
+        </div>
+
+        <div class="section hidden" id="section2">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Darwin's Finches - Classic Example</h2>
+                </div>
+            </div>
+            <div class="section-content">
+                <p>A classic example of character displacement comes from Charles Darwin's finches on the Galápagos Islands, studied by David Lack (1947). On islands where three finch species—<span class="species-name">Geospiza fuliginosa</span>, <span class="species-name">Geospiza fortis</span>, and <span class="species-name">Geospiza magnirostris</span>—live together, their beak depths are different. <span class="species-name">G. fuliginosa</span> has a smaller beak for cracking small seeds, <span class="species-name">G. fortis</span> has a larger beak for bigger seeds, and <span class="species-name">G. magnirostris</span> has an even larger beak. However, when <span class="species-name">G. fuliginosa</span> and <span class="species-name">G. fortis</span> live on separate islands, their beak depths are more similar. Lack concluded that these differences evolved to minimize competition.</p>
+                <!-- Image for Darwin's Finches -->
+                <div class="section-image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Resource%20partitioning1.jpg" alt="A diagram illustrating different beak sizes of Darwin's finches on various islands." class="section-image" onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e293b/e2e8f0?text=Image+Not+Found';">
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden" id="section3">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Grant's Research - Modern Evidence</h2>
+                </div>
+            </div>
+            <div class="section-content">
+                <p>More recent research by Peter and Rosemary Grant (2006) provides further support for this idea. They studied the medium ground finch (<span class="species-name">G. fortis</span>) on Daphne Major. After a severe drought in 1977 reduced the number of small seeds, only finches with larger beaks could crack the remaining bigger seeds. Consequently, the average beak size in the population increased. When a new competitor, the large ground finch (<span class="species-name">G. magnirostris</span>), arrived in 1982, competition intensified, especially during another drought. The beak size of surviving <span class="species-name">G. fortis</span> finches decreased, enabling them to use smaller seeds and reduce competition with the larger-beaked <span class="species-name">G. magnirostris</span>.</p>
+                <!-- Image for Grant's Research -->
+                <div class="section-image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Resource%20partitioning2.jpg" alt="A graph showing the change in beak depth of medium ground finches over time due to competition." class="section-image" onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e293b/e2e8f0?text=Image+Not+Found';">
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden" id="section4">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Hutchinson's Ratio & Coexistence</h2>
+                </div>
+            </div>
+            <div class="section-content">
+                <p>Hutchinson proposed that a difference of about 30% (a ratio of 1.3) in feeding characters might be necessary for two competing species to coexist. While some ecologists debate this specific ratio, studies by Hutchinson and the Grants demonstrate that interspecific competition can indeed drive character displacement in nature.</p>
+            </div>
+        </div>
+
+        <div class="section hidden" id="section5">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Resource Partitioning Evidence</h2>
+                </div>
+            </div>
+            <div class="section-content">
+                <p>The broader evidence suggests that partitioning resources can reduce but not entirely eliminate competition. For example, a meta-analysis by Ian Kaplan and Bob Denno (2007) on plant-feeding insects found that even when herbivores fed on different parts of a plant or at different times, some level of competition still occurred.</p>
+                <!-- Image for Resource Partitioning -->
+                <div class="section-image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Resource%20partitioning3.jpg" alt="A diagram illustrating resource partitioning among different insect species on a plant." class="section-image" onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e293b/e2e8f0?text=Image+Not+Found';">
+                </div>
+            </div>
+        </div>
+
+        <div class="section hidden" id="section6">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Summary & Conclusions</h2>
+                </div>
+            </div>
+            <div class="section-content">
+                <p>In summary, competition is common in nature. While competition for the same limited resource can lead to the extinction of one species, coexistence is possible if species reduce niche overlap through <span class="key-term">resource partitioning</span> or <span class="key-term">character displacement</span>. The outcome of these interactions can also be influenced by other environmental factors, such as predation, parasitism, or herbivory, which may keep population densities low enough to prevent intense competition from occurring in the first place.</p>
+            </div>
+        </div>
+
+        <div class="bottom-navigation">
+            <button class="bottom-nav-btn" id="prevBtn">← Previous</button>
+            <button class="bottom-nav-btn" id="nextBtn">Next →</button>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="scrollTop" title="Scroll to top">↑</button>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <footer class="footer">
+        <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo" onerror="this.onerror=null; this.src='https://placehold.co/200x50/1e293b/e2e8f0?text=Logo';">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="footer-text">Email: betabiosciences@gmail.com</p>
+    </footer>
+
+    <script>
+        // Section navigation functionality
+        const sections = document.querySelectorAll('.section');
+        const indicatorDots = document.querySelectorAll('.indicator-dot');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const sectionCounter = document.getElementById('sectionCounter');
+        let currentSection = 0;
+        const totalSections = sections.length;
+
+        // Update section display and controls
+        function updateSectionDisplay() {
+            sections.forEach(section => {
+                section.classList.remove('active');
+                section.classList.add('hidden');
+            });
+            
+            sections[currentSection].classList.remove('hidden');
+            sections[currentSection].classList.add('active');
+            
+            indicatorDots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSection);
+            });
+            
+            sectionCounter.textContent = `Section ${currentSection + 1} of ${totalSections}`;
+            
+            prevBtn.disabled = currentSection === 0;
+            nextBtn.disabled = currentSection === totalSections - 1;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Navigation button events
+        prevBtn.addEventListener('click', () => {
+            if (currentSection > 0) {
+                currentSection--;
+                updateSectionDisplay();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSection < totalSections - 1) {
+                currentSection++;
+                updateSectionDisplay();
+            }
+        });
+
+        // Indicator dot navigation
+        indicatorDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSection = index;
+                updateSectionDisplay();
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' && currentSection > 0) {
+                currentSection--;
+                updateSectionDisplay();
+            } else if (e.key === 'ArrowRight' && currentSection < totalSections - 1) {
+                currentSection++;
+                updateSectionDisplay();
+            }
+        });
+
+        // Scroll to top button
+        document.getElementById('scrollTop').addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Progress bar (based on section progress)
+        function updateProgressBar() {
+            const progress = ((currentSection + 1) / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Key term tooltips
+        const keyTerms = document.querySelectorAll('.key-term');
+        const tooltip = document.getElementById('tooltip');
+        
+        const tooltipData = {
+            'sympatric': 'Species living in the same geographic area',
+            'allopatric': 'Species living in separate geographic areas',
+            'feeding characters': 'Physical traits related to feeding, such as beak size and shape',
+            'character displacement': 'Evolutionary process where competing species diverge in morphology and resource use',
+            'resource partitioning': 'Division of limited resources among competing species to reduce competition'
+        };
+
+        keyTerms.forEach(term => {
+            term.addEventListener('mouseenter', (e) => {
+                const termText = e.target.textContent;
+                const tooltipText = tooltipData[termText];
+                
+                if (tooltipText) {
+                    tooltip.textContent = tooltipText;
+                    tooltip.classList.add('show');
+                    
+                    const rect = e.target.getBoundingClientRect();
+                    tooltip.style.left = rect.left + 'px';
+                    tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
+                }
+            });
+
+            term.addEventListener('mouseleave', () => {
+                tooltip.classList.remove('show');
+            });
+        });
+
+        // Touch swipe navigation for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0 && currentSection > 0) {
+                    currentSection--;
+                    updateSectionDisplay();
+                } else if (swipeDistance < 0 && currentSection < totalSections - 1) {
+                    currentSection++;
+                    updateSectionDisplay();
+                }
+            }
+        }
+
+        // Initialize display
+        updateSectionDisplay();
+        updateProgressBar();
+    </script>
+</body>
+</html>
