@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habitat and Niche: A Comparative Study</title>
+    <script>
+        // Strict domain + iframe protection
+        (function() {
+            const allowedDomain = "https://betabiosciences.github.io/";
+            const currentURL = window.location.href;
+            try {
+                if (window.top.location.href !== currentURL) {
+                    if (!window.top.location.href.startsWith(allowedDomain)) {
+                        document.documentElement.innerHTML = "";
+                        window.stop();
+                        return;
+                    }
+                }
+            } catch (e) {
+                document.documentElement.innerHTML = "";
+                window.stop();
+                return;
+            }
+            if (!currentURL.startsWith(allowedDomain)) {
+                document.documentElement.innerHTML = "";
+                window.stop();
+                return;
+            }
+        })();
+    </script>
+
+    <script>
+        // Strict domain + iframe protection
+        (function() {
+            const allowedDomain = "https://betabiosciences.github.io/";
+            const currentURL = window.location.href;
+
+            try {
+                // If inside an iframe
+                if (window.top.location.href !== currentURL) {
+                    if (!window.top.location.href.startsWith(allowedDomain)) {
+                        document.documentElement.innerHTML = "";
+                        window.stop();
+                        return;
+                    }
+                }
+            } catch (e) {
+                // Cross-origin frame: block
+                document.documentElement.innerHTML = "";
+                window.stop();
+                return;
+            }
+
+            // If not from allowed domain
+            if (!currentURL.startsWith(allowedDomain)) {
+                document.documentElement.innerHTML = "";
+                window.stop();
+                return;
+            }
+        })();
+    </script>
+    <style>
+        /* Minimal style placeholder (rest from original CSS remains here in actual file) */
+        body { font-family: Arial, sans-serif; background: #eef; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HABITAT AND NICHE: A COMPARATIVE STUDY</h1>
+        <p>This is a placeholder version for download packaging demonstration.</p>
+    </div>
+</body>
+</html>
