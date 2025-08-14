@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Competitive Exclusion Principle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        /* All content is initially hidden to prevent rendering on unauthorized domains. */
+        #main-content {
+            display: none;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #f0f0f0;
+            font-style: italic;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .section {
+            display: none;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h2 {
+            color: #ffeb3b;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .section h3 {
+            color: #81c784;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        .section p {
+            margin-bottom: 15px;
+            text-align: justify;
+            font-size: 16px;
+        }
+
+        .highlight {
+            background: rgba(255, 235, 59, 0.3);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .quote {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #81c784;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 10px 10px 0;
+            font-style: italic;
+        }
+
+        .quiz-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .question h4 {
+            color: #ffeb3b;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .option {
+            display: block;
+            margin: 10px 0;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+
+        .option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #81c784, #4caf50);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            gap: 20px;
+        }
+
+        .bottom-nav-btn {
+            padding: 15px 30px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .bottom-nav-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .bottom-nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 30px 20px;
+            margin-top: 50px;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .footer-logo {
+            height: 80px;
+            margin-bottom: 15px;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .footer-text {
+            color: #e0e0e0;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .logo-fallback {
+            margin-bottom: 15px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: bold;
+            color: #81c784;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-buttons {
+                gap: 10px;
+            }
+            
+            .nav-btn {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .section h2 {
+                font-size: 1.5em;
+            }
+            
+            .section h3 {
+                font-size: 1.2em;
+            }
+            
+            .section p {
+                font-size: 14px;
+            }
+
+            .bottom-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .bottom-nav-btn {
+                max-width: none;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .footer-logo {
+                height: 60px;
+            }
+
+            .footer-text {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 
+        The security script now waits for the page to be fully loaded before checking the domain.
+        This ensures the script runs after the #main-content element is available in the DOM,
+        which should fix the issue of the content not being displayed.
+    -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const allowedDomain = 'betabiosciences.github.io';
+            const currentDomain = window.location.hostname;
+            const mainContent = document.getElementById('main-content');
+            
+            if (mainContent) {
+                if (currentDomain === allowedDomain || currentDomain === 'localhost' || currentDomain === '127.0.0.1') {
+                    // If the domain is correct, show the content.
+                    mainContent.style.display = 'block';
+                } else {
+                    // If the domain is not correct, keep it hidden and log an error.
+                    console.error('Access Denied: The webpage is not loaded from an authorized domain.');
+                }
+            } else {
+                console.error('Content container not found. Check HTML structure.');
+            }
+        });
+    </script>
+    
+    <div id="main-content">
+        <div class="container">
+            <div class="header">
+                <h1>THE COMPETITIVE EXCLUSION PRINCIPLE</h1>
+                <div class="subtitle">(GAUSE'S LAW)</div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showSection('definition')">Definition</button>
+                <button class="nav-btn" onclick="showSection('history')">History</button>
+                <button class="nav-btn" onclick="showSection('experiments')">Experiments</button>
+                <button class="nav-btn" onclick="showSection('examples')">Examples</button>
+                <button class="nav-btn" onclick="showSection('limitations')">Limitations</button>
+                <button class="nav-btn" onclick="showSection('quiz')">Test Knowledge</button>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div id="definition" class="section active">
+                <h2>Definition and Core Tenet</h2>
+                <p>The <span class="highlight">Competitive Exclusion Principle</span>, frequently referred to as Gause's Law, is a foundational proposition in ecology. It asserts that two species competing for the exact same limited resource cannot coexist indefinitely at constant population values. This principle is often encapsulated by the maxim: "complete competitors cannot coexist". The implication is that even if one species possesses only a slight advantage in acquiring or utilizing a shared resource, it will eventually dominate. This dominance can lead either to the local extinction of the competitively weaker species or compel that species to undergo an evolutionary or behavioral shift towards occupying a different ecological niche.</p>
+            </div>
+
+            <div id="history" class="section">
+                <h2>Historical Context and Key Proponents</h2>
+                <p>While the principle is classically attributed to Georgy Gause, it is noteworthy that he did not explicitly formulate it as a universal law in its modern phrasing. The conceptual underpinnings of competitive exclusion can be traced back to Charles Darwin's theory of natural selection, where the struggle for existence inherently implies competitive outcomes. Joseph Grinnell, an American naturalist, articulated an early version of the principle based on field observations in 1904, stating:</p>
+                <div class="quote">"Two species of approximately the same food habits are not likely to remain long evenly balanced in numbers in the same region. One will crowd out the other".</div>
+                <p>Georgy Gause's significant contribution in the 1930s was to provide rigorous laboratory experimental validation, which cemented the principle's scientific standing.</p>
+            </div>
+
+            <div id="experiments" class="section">
+                <h2>Classic Experimental Evidence: Gause's Paramecium Experiments</h2>
+                <p>Gause's groundbreaking studies on the effects of interspecific competition utilized two closely related species of single-celled ciliates, <em>Paramecium aurelia</em> and <em>Paramecium caudatum</em>. Both species primarily feed on bacteria, yeast, and algae.</p>
+                
+                <p>In his experimental design, Gause first grew each <em>Paramecium</em> species in separate culture tubes, providing a consistent daily supply of bacteria and yeast as food along with fresh water. This allowed him to observe their individual population growth dynamics. Subsequently, he introduced both species into the same culture tube, maintaining identical and constant environmental conditions, including food and water supply. The constancy of these ecological factors was a critical aspect of his experimental setup, as the competitive exclusion principle is understood to apply most strictly under such stable conditions.</p>
+
+                <p>The observed outcomes were clear: When cultured individually, both <em>Paramecium</em> species thrived, exhibiting logistic population growth patterns.</p>
+
+                <p><em>Paramecium aurelia</em> demonstrated a faster growth rate and achieved higher population densities compared to <em>Paramecium caudatum</em>. However, when grown together in the same culture, both species initially increased in number, but</p>
+
+                <p><em>Paramecium caudatum</em> eventually declined and became extinct.</p>
+
+                <p><em>Paramecium aurelia</em> consistently outcompeted <em>Paramecium caudatum</em> for the shared food resources. Gause attributed this outcome to the requirement for "but a single niche" under the constant conditions of his experiment. It is interesting to note that</p>
+
+                <p><em>Paramecium caudatum</em> is approximately four times the size of <em>Paramecium aurelia</em>, a size difference that could have played a role in the competitive dynamics. Importantly, Gause also demonstrated that</p>
+
+                <p><em>Paramecium caudatum</em> could survive if the environmental parameters, such as food or water availability, were varied. This finding underscored the strict conditions under which competitive exclusion operates, highlighting its dependence on environmental constancy.</p>
+
+                <h3>Other Experimental and Theoretical Support</h3>
+                <p>The competitive exclusion principle is not solely supported by Gause's pioneering work. It is robustly predicted by various mathematical and theoretical models, including the Lotka-Volterra models of competition, which describe the population dynamics of competing species and predict conditions under which competitive exclusion is likely to occur. Beyond Gause, other laboratory experiments, such as those conducted by Park (1948, 1954, 1962) on two species of flour beetle, <em>Tribolium confusum</em> and <em>Tribolium castaneum</em>, have further illustrated the principle.</p>
+
+                <p>In applied ecology, the competitive exclusion principle finds modern utility in pest control strategies like the Sterile Insect Technique (SIT). This technique involves the release of sterile individuals into a population to outcompete wild populations for mating opportunities, thereby leading to a reduction or eradication of the target pest population. This practical application demonstrates the principle's predictive power in real-world scenarios.</p>
+            </div>
+
+            <div id="examples" class="section">
+                <h2>Real-World Examples</h2>
+                <p>Several instances in natural systems appear to exemplify competitive exclusion. A prominent example is the replacement of the native red squirrel by the introduced grey squirrel in Britain. The decline of the red squirrel population is attributed to a combination of factors, including direct competitive exclusion for resources, disease transmission, and differing abilities to utilize available food sources like hazelnuts. In other ecosystems, the competitive exclusion exerted by voles has been observed to influence the amount and quality of resources accessible to deer mice, consequently shaping patterns of ecological succession in those communities.</p>
+            </div>
+
+            <div id="limitations" class="section">
+                <h2>Limitations and the "Paradox of the Plankton"</h2>
+                <p>Despite its strong theoretical foundation and experimental validation in controlled settings, competitive exclusion is surprisingly rarely observed as a direct cause of extinction in complex natural ecosystems. Many biological communities appear to defy Gause's law, maintaining high levels of biodiversity even when species share seemingly similar resource requirements.</p>
+
+                <p>A classic illustration of this apparent contradiction is the "paradox of the plankton." Numerous plankton species coexist in aquatic environments, despite relying on a very limited set of fundamental resources, primarily solar energy and dissolved minerals in the water. According to the competitive exclusion principle, only a small number of plankton species should be able to coexist under such resource limitations. This discrepancy suggests that natural conditions are seldom constant enough for direct competitive exclusion to run its full course. The principle, while powerful, serves more as a fundamental selective pressure in nature rather than a universally observed outcome of outright extinction. Its limitations highlight the dynamic interplay of environmental variability and species adaptations that actively prevent outright exclusion, thus promoting biodiversity.</p>
+
+                <p>The intensity of interspecific competition is closely linked to the functional similarity between species. Hypotheses such as the competitive-relatedness hypothesis and the phylogenetic limiting similarity hypothesis propose that competition is most intense among species that possess similar functional traits and therefore compete for similar resources and habitats. The consequence of such intense competition, if it leads to exclusion, is a reduction in the number of closely related species and a more even distribution of species across functional trait space, a pattern known as phylogenetic overdispersion. This suggests a deeper connection between the micro-level competitive interactions and the macro-level patterns of community assembly and evolutionary diversification. If competitive exclusion acts as a filter, eliminating species that are too similar, then the species that successfully coexist in a community should, on average, be less functionally or phylogenetically similar than expected by chance. This indicates that competition acts as an evolutionary force, shaping the functional and phylogenetic diversity of ecosystems by favoring species that are sufficiently distinct to avoid direct competitive overlap.</p>
+            </div>
+
+            <div id="quiz" class="section">
+                <h2>Test Your Knowledge</h2>
+                <div class="quiz-container">
+                    <div class="question">
+                        <h4>1. What is the central idea of the Competitive Exclusion Principle?</h4>
+                        <div class="option" onclick="selectOption(this, false)">a. The weaker of two competing species will always undergo a change in its behavior or niche.</div>
+                        <div class="option" onclick="selectOption(this, false)">b. Two species competing for the exact same limited resources can coexist indefinitely if their population sizes are constant.</div>
+                        <div class="option" onclick="selectOption(this, false)">c. All forms of competition between species inevitably lead to extinction.</div>
+                        <div class="option" onclick="selectOption(this, true)">d. Two species cannot indefinitely coexist if they are competing for the same limited resources.</div>
+                    </div>
+
+                    <div class="question">
+                        <h4>2. The experiments by Georgy Gause on Paramecium species are considered classic evidence for the Competitive Exclusion Principle because they demonstrated:</h4>
+                        <div class="option" onclick="selectOption(this, false)">a. that the larger of two competing species will always be the superior competitor.</div>
+                        <div class="option" onclick="selectOption(this, false)">b. that interspecific competition is a rare occurrence in natural environments.</div>
+                        <div class="option" onclick="selectOption(this, false)">c. that two species with different niches can thrive when grown together.</div>
+                        <div class="option" onclick="selectOption(this, true)">d. that one species can outcompete and lead to the extinction of a competitor when sharing a niche under stable conditions.</div>
+                    </div>
+
+                    <div class="question">
+                        <h4>3. The "Paradox of the Plankton" is a limitation of the Competitive Exclusion Principle because it shows that:</h4>
+                        <div class="option" onclick="selectOption(this, false)">a. competition is not a significant force in aquatic ecosystems.</div>
+                        <div class="option" onclick="selectOption(this, false)">b. competitive exclusion is a more common outcome in natural settings than in laboratory experiments.</div>
+                        <div class="option" onclick="selectOption(this, true)">c. many plankton species can coexist in an environment with limited resources.</div>
+                        <div class="option" onclick="selectOption(this, false)">d. only a small number of species can survive in a fluctuating environment.</div>
+                    </div>
+
+                    <div class="question">
+                        <h4>4. The Lotka-Volterra models of competition provide support for the Competitive Exclusion Principle by:</h4>
+                        <div class="option" onclick="selectOption(this, true)">a. predicting the conditions under which competitive exclusion is likely to occur.</div>
+                        <div class="option" onclick="selectOption(this, false)">b. providing historical accounts of species replacement.</div>
+                        <div class="option" onclick="selectOption(this, false)">c. validating the principle through laboratory experiments.</div>
+                        <div class="option" onclick="selectOption(this, false)">d. analyzing field data from real-world ecosystems.</div>
+                    </div>
+
+                    <div class="question">
+                        <h4>5. A real-world example that appears to demonstrate the Competitive Exclusion Principle is:</h4>
+                        <div class="option" onclick="selectOption(this, false)">a. The coexistence of different species of birds in the same forest.</div>
+                        <div class="option" onclick="selectOption(this, false)">b. the fact that many different species of plants grow in a field.</div>
+                        <div class="option" onclick="selectOption(this, true)">c. the replacement of native red squirrels by introduced grey squirrels</div>
+                        <div class="option" onclick="selectOption(this, false)">d. the use of the Sterile Insect Technique in pest control.</div>
+                    </div>
+
+                    <div class="question">
+                        <h4>6. Which statement accurately describes a key finding from Gause's Paramecium experiments?</h4>
+                        <div class="option" onclick="selectOption(this, false)">a. When grown together, the larger P.caudatum outcompeted the smaller P.aurelia</div>
+                        <div class="option" onclick="selectOption(this, false)">b. Both species thrived and coexisted indefinitely when cultured together.</div>
+                        <div class="option" onclick="selectOption(this, true)">c. The extinction of one species occurred only when environmental conditions were kept constant.</div>
+                        <div class="option" onclick="selectOption(this, false)">d. When cultured individually, only one of the species exhibited logistic population growth.</div>
+                    </div>
+
+                    <div class="question">
+                        <h4>7. The principle states that a competitively weaker species may undergo an 'evolutionary or behavioral shift towards occupying a different ecological niche'. This process is known as:</h4>
+                        <div class="option" onclick="selectOption(this, true)">a. character displacement</div>
+                        <div class="option" onclick="selectOption(this, false)">b. symbiosis</div>
+                        <div class="option" onclick="selectOption(this, false)">c. competitive reinforcement</div>
+                        <div class="option" onclick="selectOption(this, false)">d. genetic drift</div>
+                    </div>
+
+                    <div class="question">
+                        <h4>8. According to the competitive-relatedness hypothesis, competition is most intense among species that are:</h4>
+                        <div class="option" onclick="selectOption(this, false)">a. found in different geographical locations.</div>
+                        <div class="option" onclick="selectOption(this, false)">b. distantly related and have very different functional traits.</div>
+                        <div class="option" onclick="selectOption(this, true)">c. closely related and have similar functional traits.</div>
+                        <div class="option" onclick="selectOption(this, false)">d. predators and prey in the same ecosystem.</div>
+                    </div>
+
+                    <div class="question">
+                        <h4>9. The use of the Sterile Insect Technique (SIT) for pest control is an example of applying the Competitive Exclusion Principle in a practical way because:</h4>
+                        <div class="option" onclick="selectOption(this, true)">a. it outcompetes the wild population for mating opportunities.</div>
+                        <div class="option" onclick="selectOption(this, false)">b. it introduces a new predator species to eliminate the pest</div>
+                        <div class="option" onclick="selectOption(this, false)">c. it modifies the environment to make it inhospitable for the pest.</div>
+                        <div class="option" onclick="selectOption(this, false)">d. it introduces a disease that specifically targets the pest species</div>
+                    </div>
+
+                    <div class="question">
+                        <h4>10. Joseph Grinnell's early formulation of the principle differed from Gause's later validation in that it was based on:</h4>
+                        <div class="option" onclick="selectOption(this, true)">a. field observations in natural settings.</div>
+                        <div class="option" onclick="selectOption(this, false)">b. philosophical arguments derived from Charles Darwin's work.</div>
+                        <div class="option" onclick="selectOption(this, false)">c. laboratory experiments.</div>
+                        <div class="option" onclick="selectOption(this, false)">d. rigorous mathematical modeling.</div>
+                    </div>
+
+                    <div class="score" id="scoreDisplay" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <button class="bottom-nav-btn" id="prevBtn" onclick="navigateSection(-1)">← Previous</button>
+                <button class="bottom-nav-btn" id="nextBtn" onclick="navigateSection(1)">Next →</button>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo" onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='block';">
+                <div class="logo-fallback" style="display: none;">
+                    <div class="logo-text">BETA Biosciences</div>
+                </div>
+                <p class="footer-text">© 2025 BETA Biosciences. All rights reserved. Email: betabiosciences@gmail.com</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let currentSection = 'definition';
+        let quizAnswered = 0;
+        let quizCorrect = 0;
+        let totalQuestions = 10;
+        const sections = ['definition', 'history', 'experiments', 'examples', 'limitations', 'quiz'];
+
+        function showSection(sectionName) {
+            const allSections = document.querySelectorAll('.section');
+            allSections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            document.getElementById(sectionName).classList.add('active');
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            } else {
+                buttons.forEach(btn => {
+                    if (btn.textContent.toLowerCase().includes(sectionName) || 
+                        (sectionName === 'quiz' && btn.textContent.includes('Test'))) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+
+            currentSection = sectionName;
+            updateProgress();
+            updateBottomNav();
+        }
+
+        function navigateSection(direction) {
+            const currentIndex = sections.indexOf(currentSection);
+            const newIndex = currentIndex + direction;
+            
+            if (newIndex >= 0 && newIndex < sections.length) {
+                showSection(sections[newIndex]);
+            }
+        }
+
+        function updateBottomNav() {
+            const currentIndex = sections.indexOf(currentSection);
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === sections.length - 1;
+        }
+
+        function updateProgress() {
+            const currentIndex = sections.indexOf(currentSection);
+            const progress = ((currentIndex + 1) / sections.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function selectOption(element, isCorrect) {
+            const question = element.parentElement;
+            const options = question.querySelectorAll('.option');
+            
+            options.forEach(option => {
+                option.classList.remove('correct', 'incorrect');
+            });
+
+            if (isCorrect) {
+                element.classList.add('correct');
+                quizCorrect++;
+            } else {
+                element.classList.add('incorrect');
+                options.forEach(option => {
+                    if (option.onclick.toString().includes('true')) {
+                        option.classList.add('correct');
+                    }
+                });
+            }
+
+            options.forEach(option => {
+                option.onclick = null;
+                option.style.cursor = 'default';
+            });
+
+            quizAnswered++;
+            
+            if (quizAnswered === totalQuestions) {
+                showScore();
+            }
+        }
+
+        function showScore() {
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const percentage = Math.round((quizCorrect / totalQuestions) * 100);
+            
+            let message = '';
+            if (percentage >= 90) {
+                message = 'Excellent! You have mastered the Competitive Exclusion Principle!';
+            } else if (percentage >= 70) {
+                message = 'Good job! You have a solid understanding of the principle.';
+            } else if (percentage >= 50) {
+                message = 'Not bad! Review the material and try again to improve your score.';
+            } else {
+                message = 'Keep studying! The competitive exclusion principle requires more review.';
+            }
+
+            scoreDisplay.innerHTML = `
+                <h3>Quiz Complete!</h3>
+                <p>Score: ${quizCorrect}/${totalQuestions} (${percentage}%)</p>
+                <p>${message}</p>
+            `;
+            scoreDisplay.style.display = 'block';
+        }
+
+        // Initialize progress bar and navigation
+        updateProgress();
+        updateBottomNav();
+        // The rest of the script remains the same as it was not part of the security fix.
+    </script>
+</body>
+</html>
