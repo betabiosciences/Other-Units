@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Population Density and Its Measurement</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .section {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+        }
+
+        .expand-icon {
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            color: #60a5fa;
+            margin-left: auto;
+        }
+
+        .section.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .section.expanded .section-content {
+            max-height: 5000px;
+        }
+
+        .section.collapsed {
+            opacity: 0.6;
+        }
+
+        .intro-text {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+            margin-bottom: 2rem;
+        }
+
+        .method-card {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .method-title {
+            color: #a78bfa;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .formula-container {
+            background: rgba(245, 158, 11, 0.1);
+            border: 2px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .quiz-container {
+            background: rgba(236, 72, 153, 0.1);
+            border: 2px solid rgba(236, 72, 153, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .question {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin: 1rem 0;
+            border: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        .question-number {
+            color: #ec4899;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .option {
+            background: rgba(71, 85, 105, 0.3);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .option.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #6ee7b7;
+        }
+
+        .option.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #60a5fa;
+            margin: 1rem 0;
+        }
+
+        .reset-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin: 1rem 0;
+            width: 100%;
+        }
+
+        .reset-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .highlight {
+            background: rgba(245, 158, 11, 0.2);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            color: #fbbf24;
+        }
+
+        ul, ol {
+            padding-left: 1.5rem;
+            margin: 0.75rem 0;
+        }
+
+        li {
+            margin: 0.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0.75rem;
+            }
+            
+            .section {
+                padding: 1.25rem;
+                margin-bottom: 1rem;
+            }
+            
+            .header {
+                padding: 1.5rem 0;
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(71, 85, 105, 0.3);
+            border-radius: 3px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        /* New footer styles */
+        .footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: rgba(30, 41, 59, 0.6);
+            border-top: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 16px;
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .footer-logo {
+            width: 60px;
+            height: auto;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-text {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+ <script>
+        // CRITICAL SECURITY SCRIPT
+        // This script must be at the very top of the body to prevent any content from rendering if the domain is incorrect.
+        if (window.location.hostname !== 'betabiosciences.github.io') {
+            document.documentElement.innerHTML = '';
+        }
+
+    <div class="container">
+        <div class="header">
+            <h1>POPULATION DENSITY AND ITS MEASUREMENT</h1>
+            <p>An Interactive Guide to Ecological Methods</p>
+        </div>
+
+        <div class="intro-text">
+            <p>A population is defined as a group of interbreeding individuals of the same species occupying a specific area at the same time. The boundaries of a population can be well-defined by geographic features like a lake or an island, or they can be fluid, with individuals moving into (immigrating) or out of (emigrating) the area.</p>
+            
+            <p style="margin-top: 1rem;">Population density, a key ecological measure, is the number of individuals in a given unit of area or volume. Ecologists use a variety of techniques to measure population densities, from simple visual counts to complex methods for mobile or hidden species. The choice of technique depends on the organism's size, mobility, and the habitat it occupies.</p>
+        </div>
+
+        <div class="section" onclick="toggleSection(this)">
+            <div class="section-header">
+                <h2 class="section-title">Techniques for Quantifying Population Density</h2>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="section-content">
+                
+                <div class="method-card">
+                    <div class="method-title">1. Direct Counts and Sampling for Stationary Organisms</div>
+                    <p>For plants, algae, and other organisms that are sessile (fixed in one place), direct counting within a defined area is the most common approach.</p>
+                    
+                    <ul>
+                        <li><span class="highlight">Quadrats:</span> A quadrat is a square frame of a specific size (e.g., 0.25 m2 or 1 m2). To use this method, you must first determine an appropriate quadrat size for the species you are studying. Randomly select multiple locations within your study area, perhaps using a grid system and a random number generator. At each location, place the quadrat and count every individual of the target species inside the frame. For a reliable estimate, a sufficient number of samples (often 20-30 or more) are needed. The average count per quadrat is then extrapolated to estimate the density for the entire area.</li>
+                        
+                        <li><span class="highlight">Transects:</span> For larger areas or organisms like trees, line and belt transects are effective. A line transect involves stretching a long tape or rope and counting individuals that touch the line at set intervals. A more robust belt transect involves counting all individuals within a fixed, short distance on both sides of the line. This method is particularly useful for studying how density changes along an environmental gradient (e.g., from a shoreline inland).</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">2. Methods for Mobile Organisms</div>
+                    
+                    <p><strong>For Insects:</strong></p>
+                    <ul>
+                        <li><span class="highlight">Suction Traps:</span> These devices use fans to draw air and flying insects into a collecting cone. To use them, place traps in representative areas and record the trapping duration and air volume. The collected insects are then sorted to estimate the number of individuals per cubic meter of air.</li>
+                        
+                        <li><span class="highlight">Sweep Nets:</span> A standardized net is swept through vegetation. To use this method, maintain a consistent net size and sweeping motion. The number of sweeps and the area covered must be recorded to calculate a rough estimate of density per area.</li>
+                        
+                        <li><span class="highlight">Berlese Funnel:</span> This technique is used for soil-dwelling or leaf litter organisms. A sample of known volume is placed in a funnel under a warming light. The organisms, moving away from the heat, drop into a collecting fluid below, where they can be counted and identified.</li>
+                    </ul>
+                    
+                    <p><strong>For Animals in General:</strong></p>
+                    <ul>
+                        <li><span class="highlight">Passive Trapping:</span> Pitfall traps (for ground-dwellers), mist nets (for birds and bats), and light traps (for nocturnal insects) can be used to capture animals. While these methods often provide relative density (e.g., number caught per trap or per trapping effort), they are cost-effective for monitoring trends.</li>
+                    </ul>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">3. Mark-Recapture Technique</div>
+                    <p>This method is the primary approach for estimating the population size of mobile animals.</p>
+                    
+                    <p><strong>How to Use Mark-Recapture:</strong></p>
+                    <ol>
+                        <li>Initial Capture and Marking: Capture a sample of individuals, mark them in a non-harmful way (e.g., ear tags, leg bands, paint), and record the number of marked individuals.</li>
+                        <li>Release and Mixing: Release the marked animals back into the population and allow enough time for them to randomly mix with the unmarked individuals.</li>
+                        <li>Recapture: Conduct a second trapping effort using the same methods as the first. Count the total number of animals captured and the number of them that are marked.</li>
+                        <li>Calculation: Use the following formula to estimate the total population size (N):</li>
+                    </ol>
+                    
+                    <div class="formula-container">
+                        <p><strong>N = (M × C) / R</strong></p>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem;">Where: N = Total population size, M = Number marked in first capture, C = Total captured in second sample, R = Number of marked individuals recaptured</p>
+                    </div>
+                    
+                    <p><strong>Potential Biases:</strong> This technique assumes a closed population and that marking does not affect the animal's behavior. If marked animals become "trap-shy," the population size will be overestimated. Conversely, if they become "trap-happy," the population size will be underestimated.</p>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-title">4. Novel and Relative Methods</div>
+                    <ul>
+                        <li><span class="highlight">Telemetry:</span> For large animals, individuals can be fitted with radio-collars. Researchers use tracking devices to follow the animals' movements and determine their home ranges. This data can be used to estimate population size based on the number of animals per unit of available habitat.</li>
+                        
+                        <li><span class="highlight">Catch Per Unit Effort (CPUE):</span> This method is useful for tracking relative population changes over time, especially in commercial industries like fisheries. For example, the number of fish caught per 100 hours of trawling provides an index of abundance. While it doesn't give an absolute population size, it is a valuable tool for management and monitoring.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" onclick="toggleSection(this)">
+            <div class="section-header">
+                <h2 class="section-title">The Relationship Between Body Size and Population Density</h2>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="section-content">
+                <p>There is a general negative relationship between an organism's body mass and its population density. This means that a given area can support fewer large organisms than small ones. However, this relationship is not absolute and is influenced by an organism's lifestyle and trophic level; for instance, carnivores of a given weight typically have lower population densities than herbivores of the same weight.</p>
+            </div>
+        </div>
+
+        <div class="quiz-container">
+            <h2 style="color: #ec4899; margin-bottom: 1rem;">Test Your Knowledge</h2>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="score-display" id="scoreDisplay">Score: 0/10</div>
+            
+            <div class="question">
+                <div class="question-number">1. Which of the following methods is most suitable for estimating the population density of a population of trees along a path from a shoreline to an inland forest?</div>
+                <div class="option" onclick="selectOption(this, false)">a. Using a Berlese funnel.</div>
+                <div class="option" onclick="selectOption(this, true)">b. Using a belt transect.</div>
+                <div class="option" onclick="selectOption(this, false)">c. Using a quadrat grid.</div>
+                <div class="option" onclick="selectOption(this, false)">d. Using a suction trap.</div>
+            </div>
+
+            <div class="question">
+                <div class="question-number">2. An ecologist studying fish in a lake catches, marks, and releases 150 fish. A week later, they catch 120 fish, 30 of which have marks. What is the best estimate for the total population size (N)?</div>
+                <div class="option" onclick="selectOption(this, true)">a. 600</div>
+                <div class="option" onclick="selectOption(this, false)">b. 4500</div>
+                <div class="option" onclick="selectOption(this, false)">c. 1200</div>
+                <div class="option" onclick="selectOption(this, false)">d. 270</div>
+            </div>
+
+            <div class="question">
+                <div class="question-number">3. What is a potential source of bias when using the mark-recapture technique if the marked animals become "trap-shy"?</div>
+                <div class="option" onclick="selectOption(this, false)">a. The population density will be underestimated.</div>
+                <div class="option" onclick="selectOption(this, true)">b. The estimated population size will be overestimated.</div>
+                <div class="option" onclick="selectOption(this, false)">c. The estimated population size will be accurate.</div>
+                <div class="option" onclick="selectOption(this, false)">d. The estimated population size will be underestimated.</div>
+            </div>
+
+            <div class="question">
+                <div class="question-number">4. Which of the following is a relative density method that is particularly useful for tracking changes in fish populations over time?</div>
+                <div class="option" onclick="selectOption(this, true)">a. Catch Per Unit Effort (CPUE)</div>
+                <div class="option" onclick="selectOption(this, false)">b. Telemetry.</div>
+                <div class="option" onclick="selectOption(this, false)">c. Belt transect.</div>
+                <div class="option" onclick="selectOption(this, false)">d. Mark-recapture.</div>
+            </div>
+
+            <div class="question">
+                <div class="question-number">5. A team of researchers wants to estimate the population of small, ground-dwelling beetles in a forest. Which of the following trapping methods would be most appropriate for this task?</div>
+                <div class="option" onclick="selectOption(this, false)">a. A Berlese funnel.</div>
+                <div class="option" onclick="selectOption(this, false)">b. A suction trap</div>
+                <div class="option" onclick="selectOption(this, true)">c. A pitfall trap.</div>
+                <div class="option" onclick="selectOption(this, false)">d. A mist net</div>
+            </div>
+
+            <div class="question">
+                <div class="question-number">6. Which of the following statements about the relationship between body size and population density is most accurate?</div>
+                <div class="option" onclick="selectOption(this, false)">a. There is no discernible relationship between body mass and population density.</div>
+                <div class="option" onclick="selectOption(this, false)">b. Population density increases as body mass increases.</div>
+                <div class="option" onclick="selectOption(this, true)">c. Carnivores of a given weight typically have lower population densities than herbivores of the same weight.</div>
+                <div class="option" onclick="selectOption(this, false)">d. The relationship is not influenced by an organism's trophic level</div>
+            </div>
+
+            <div class="question">
+                <div class="question-number">7. A biologist is studying a population of algae in a small pond. Which of the following methods would be the most straightforward and effective for estimating their population density?</div>
+                <div class="option" onclick="selectOption(this, true)">a. Using a quadrat.</div>
+                <div class="option" onclick="selectOption(this, false)">b. Mark-recapture.</div>
+                <div class="option" onclick="selectOption(this, false)">c. Using a line transect.</div>
+                <div class="option" onclick="selectOption(this, false)">d. Using a Berlese funnel.</div>
+            </div>
+
+            <div class="question">
+                <div class="question-number">8. For a study on flying insect populations, a researcher places a device that uses a fan to collect insects into a cone. The insects are later sorted and counted to estimate density. What is this device called?</div>
+                <div class="option" onclick="selectOption(this, false)">a. A pitfall trap.</div>
+                <div class="option" onclick="selectOption(this, true)">b. A suction trap.</div>
+                <div class="option" onclick="selectOption(this, false)">c. A sweep net.</div>
+                <div class="option" onclick="selectOption(this, false)">d. A Berlese funnel.</div>
+            </div>
+
+            <div class="question">
+                <div class="question-number">9. Which statement best describes the difference between a line transect and a belt transect?</div>
+                <div class="option" onclick="selectOption(this, true)">a. A line transect counts individuals touching a rope at intervals, while a belt transect counts individuals within a fixed distance on both sides of a line.</div>
+                <div class="option" onclick="selectOption(this, false)">b. A line transect counts organisms that are near a line, while a belt transect counts organisms that touch the line.</div>
+                <div class="option" onclick="selectOption(this, false)">c. Both methods are used for mobile organisms, but one is more accurate.</div>
+                <div class="option" onclick="selectOption(this, false)">d. A belt transect is a faster method than a line transect.</div>
+            </div>
+
+            <div class="question">
+                <div class="question-number">10. For which type of organism would a Berlese funnel be the most appropriate tool for estimating population density?</div>
+                <div class="option" onclick="selectOption(this, true)">a. Soil-dwelling organisms.</div>
+                <div class="option" onclick="selectOption(this, false)">b. Sessile marine organisms</div>
+                <div class="option" onclick="selectOption(this, false)">c. Large, mobile animals.</div>
+                <div class="option" onclick="selectOption(this, false)">d. Flying insects.</div>
+            </div>
+            
+            <button class="reset-button" onclick="resetQuiz()">Reset Quiz</button>
+        </div>
+        
+        <!-- New Footer Section -->
+        <div class="footer">
+            <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+            <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+            <p class="footer-text">Email: betabiosciences@gmail.com</p>
+        </div>
+        
+    </div>
+
+    <script>
+        let score = 0;
+        let totalQuestions = 10;
+        let answeredQuestions = 0;
+
+        function toggleSection(element) {
+            const allSections = document.querySelectorAll('.section');
+            
+            // If clicking on an already expanded section, collapse all
+            if (element.classList.contains('expanded')) {
+                allSections.forEach(section => {
+                    section.classList.remove('expanded', 'collapsed');
+                });
+            } else {
+                // Collapse all sections first
+                allSections.forEach(section => {
+                    section.classList.remove('expanded');
+                    section.classList.add('collapsed');
+                });
+                
+                // Expand the clicked section
+                element.classList.remove('collapsed');
+                element.classList.add('expanded');
+            }
+        }
+
+        function selectOption(element, isCorrect) {
+            const question = element.parentElement;
+            const options = question.querySelectorAll('.option');
+            
+            // Check if this question was already answered
+            let alreadyAnswered = false;
+            options.forEach(opt => {
+                if (opt.classList.contains('correct') || opt.classList.contains('incorrect')) {
+                    alreadyAnswered = true;
+                }
+            });
+            
+            if (alreadyAnswered) return;
+            
+            // Mark all options and show correct answer
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt === element) {
+                    if (isCorrect) {
+                        opt.classList.add('correct');
+                        score++;
+                    } else {
+                        opt.classList.add('incorrect');
+                    }
+                } else if (opt.onclick.toString().includes('true')) {
+                    opt.classList.add('correct');
+                }
+            });
+            
+            answeredQuestions++;
+            updateScore();
+        }
+
+        function updateScore() {
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const progressFill = document.getElementById('progressFill');
+            
+            scoreDisplay.textContent = `Score: ${score}/${totalQuestions}`;
+            progressFill.style.width = `${(answeredQuestions / totalQuestions) * 100}%`;
+        }
+
+        function resetQuiz() {
+            score = 0;
+            answeredQuestions = 0;
+            
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+                opt.style.pointerEvents = 'auto';
+            });
+            
+            updateScore();
+        }
+
+        // Initialize with no sections expanded
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('expanded');
+            });
+        });
+    </script>
+</body>
+</html>
