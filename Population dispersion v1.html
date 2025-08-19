@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Population Dispersion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Dark theme background */
+            color: #e2e8f0; /* Light text for contrast */
+        }
+        .container {
+            max-width: 800px;
+        }
+        .section-content {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .text-section-title {
+            color: #06b6d4; /* Fluorescent cyan */
+            font-weight: 700;
+        }
+        .text-section-subtitle {
+            color: #d1d5db; /* Lighter gray for subtitle */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col items-center min-h-screen">
+
+    <div id="content-container" class="bg-gray-900 p-6 sm:p-8 rounded-2xl shadow-xl w-full max-w-2xl mb-6">
+    </div>
+
+    <div class="flex justify-between items-center w-full max-w-2xl mb-12">
+        <button id="prev-btn" class="bg-gray-700 text-gray-300 font-bold py-2 px-4 rounded-full shadow-md hover:bg-gray-600 transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+        <div id="page-counter" class="text-sm text-gray-400"></div>
+        <button id="next-btn" class="bg-lime-500 text-gray-900 font-bold py-2 px-4 rounded-full shadow-md hover:bg-lime-400 transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+    </div>
+    
+    <!-- Footer Section -->
+    <footer class="w-full max-w-2xl text-center text-gray-400 text-sm mt-auto p-4 border-t border-gray-700">
+        <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="mx-auto w-14 h-auto mb-2">
+        <p>&copy; 2025 BETA Biosciences. All rights reserved.</p>
+        <p>Email: betabiosciences@gmail.com</p>
+    </footer>
+
+    <script>
+        // Content data from the document
+        const sections = [
+            {
+                title: 'POPULATION DISPERSION',
+                subtitle: 'Introduction',
+                content: `Population dispersion , also known as  spatial distribution , refers to the pattern of spacing of individuals within a population. These patterns are not random; they are shaped by a complex interplay of ecological factors, including resource availability, social interactions, and environmental conditions. Understanding these patterns is crucial for ecologists as they provide valuable insights into the dynamics and structure of a population, as well as the underlying processes that govern its survival and growth. The three main patterns of dispersion are  clumped, uniform, and random , each with distinct characteristics and causal factors.`
+            },
+            {
+                title: 'Patterns of Spacing',
+                subtitle: 'Clumped Distribution: The Rule, Not the Exception',
+                image: 'https://betabiosciences.github.io/Other-Units/Population%20dispersion1.jpg',
+                image_alt: 'A group of mushrooms growing together in a forest, demonstrating a clumped distribution.',
+                description: `Clumped distribution is the most common and widespread pattern observed in nature. In this arrangement, individuals aggregate in groups or clusters, forming distinct patches of high density separated by areas of low or zero density.`,
+                causalFactors: `<b>Causal Factors:</b><br>
+                    <b>Resource Aggregation:</b> The primary driver of clumped distribution is the non-uniform distribution of essential resources. Organisms, whether plants or animals, tend to gather in areas where resources like food, water, sunlight, or suitable nesting sites are abundant. For instance, plants that require specific soil types or moisture levels will be found in clusters where these conditions are met.<br>
+                    <b>Social Behavior:</b> Many species exhibit social behaviors that lead to aggregation. Examples include cooperative hunting (wolves), defense against predators (fish schools, bird flocks), and reproductive strategies (herds of grazing animals). These social bonds create a strong attraction between individuals, resulting in a clumped pattern.<br>
+                    <b>Reproductive Patterns:</b> Certain reproductive strategies can also lead to clumped distributions. For example, a single parent or a breeding pair may produce multiple offspring that remain in close proximity, forming a family unit or colony.`,
+                examples: `<b>Examples:</b><br>
+                    <b>Animals:</b> A pack of wolves, a herd of elephants, a colony of ants, or a flock of migrating birds are all classic examples of clumped distribution driven by social interactions.<br>
+                    <b>Plants:</b> Patches of ferns growing in a moist, shaded forest floor or a cluster of desert plants around a water source demonstrate clumping due to resource availability.`
+            },
+            {
+                title: 'Patterns of Spacing',
+                subtitle: 'Uniform Distribution: The Pattern of Repulsion',
+                image: 'https://betabiosciences.github.io/Other-Units/Population%20dispersion2.jpg',
+                image_alt: 'Gannets on a cliff face, with each nest spaced at a relatively equal distance, demonstrating uniform distribution.',
+                description: `Uniform distribution, also known as regular or even distribution, is characterized by a relatively equal distance between individuals. The spacing is consistent and predictable, giving the population a highly structured appearance.`,
+                causalFactors: `<b>Causal Factors:</b><br>
+                    <b>Intense Competition:</b> Competition for limited resources is a major driver of uniform distribution. When resources are scarce, individuals may actively repel each other to secure their share. This is particularly evident in plant populations, where root systems compete for water and nutrients, and canopies compete for sunlight. This competition can lead to a state of "self-thinning," where weaker individuals die, leaving the stronger, more evenly spaced ones.<br>
+                    <b>Territoriality:</b> In many animal species, territorial behavior is the key factor in creating a uniform pattern. Individuals or pairs defend a specific area (a territory) for feeding, mating, and raising offspring. This defense mechanism ensures that each individual or pair has sufficient resources, leading to an even spacing.<br>
+                    <b>Allelochemicals:</b> In some plants, the production of allelochemicals (chemicals that inhibit the growth of other plants) can create a uniform pattern. These chemicals are released into the soil and prevent other plants from growing too close, effectively creating a "no-go" zone around the individual.`,
+                examples: `<b>Examples:</b><br>
+                    <b>Animals:</b> The nesting patterns of certain bird species, such as gannets or penguins, are often uniform due to territoriality. In the desert, creosote bushes release toxins that inhibit the growth of other plants nearby, leading to a uniform distribution.<br>
+                    <b>Plants:</b> A plantation of commercial trees, which are often planted at uniform intervals, is an artificial example, but natural forests can also exhibit this pattern due to resource competition.`
+            },
+            {
+                title: 'Patterns of Spacing',
+                subtitle: 'Random Distribution: The Pattern of Chance',
+                image: 'https://betabiosciences.github.io/Other-Units/Population%20dispersion3.jpg',
+                image_alt: 'A field with dandelions scattered randomly across the area, showing no clear pattern of spacing.',
+                description: `Random distribution is the rarest of the three patterns. It is characterized by the absence of any predictable spacing. The position of one individual has no influence on the position of another.`,
+                causalFactors: `<b>Causal Factors:</b><br>
+                    <b>Uniform Resources:</b> For a random distribution to occur, resources must be abundant and evenly distributed throughout the habitat. There should be no "hotspots" of resources that would cause individuals to clump.<br>
+                    <b>No Strong Interactions:</b> This pattern is only possible when there are no strong attractions or repulsions between individuals. Social behaviors like herding or territoriality are absent.<br>
+                    <b>Stochastic Processes:</b> The placement of individuals is governed by chance events, such as the dispersal of seeds by wind or the random death of a predator.`,
+                examples: `<b>Examples:</b><br>
+                    <b>Plants:</b> Dandelions in a wind-dispersed field or certain insect species in a large, uniform agricultural field may exhibit a random distribution. However, even these examples can be influenced by subtle variations in soil or microclimate, making truly random distributions rare in nature.`
+            },
+            {
+                title: 'Clark-Evans Nearest Neighbor Method',
+                content: `<b>Concept:</b> This method provides a quantitative measure of dispersion by comparing the average distance between nearest neighbors in the observed population to the distance expected in a randomly distributed population.
+                    <br><br>
+                    <b>Calculation:</b> The method uses a ratio, R, which is calculated as follows: R=(mean nearest neighbor distance)×2 √ density. To utilize the Clark-Evans nearest neighbor method, researchers examine a population of a single species. The distance of an individual to its nearest neighbor is recorded for each individual in the sample. For two individuals that are each other's nearest neighbor, the distance is recorded twice, once for each individual. To receive accurate results, it is suggested that the number of distance measurements is at least 50. The average distance between nearest neighbours is compared to the expected distance in the case of random distribution to give the ratio<br><br>
+                    <b>Interpretation:</b>
+                    <ul>
+                        <li><b>R=1:</b> The observed mean distance is equal to the expected distance for a random distribution.</li>
+                        <li><b>R>1:</b> The observed mean distance is greater than the expected distance, indicating individuals are further apart than expected, which is characteristic of a uniform distribution.</li>
+                        <li><b>R<1:</b> The observed mean distance is less than the expected distance, indicating individuals are closer together than expected, a hallmark of a clumped distribution.</li>
+                    </ul>`
+            },
+            {
+                title: 'Variance/Mean Ratio',
+                content: `<b>Concept:</b> This method is based on the Poisson distribution, a statistical model that describes the number of events in a fixed interval of time or space. For a random distribution, the variance of the number of individuals in a sample plot is expected to be equal to the mean.
+                    <br><br>
+                    <b>Calculation:</b> The ratio is calculated by dividing the variance of the number of individuals in a series of sample plots by the mean. To utilize the Variance/Mean ratio method, data is collected from several random samples of a given population. In this analysis, it is imperative that data from at least 50 sample plots is considered. The number of individuals present in each sample is compared to the expected counts in the case of random distribution. The expected distribution can be found using Poisson distribution.<br><br>
+                    <b>Interpretation:</b>
+                    <ul>
+                        <li><b>Variance/Mean Ratio = 1:</b> The distribution is random. The observed variation in the number of individuals per plot is consistent with a random pattern.</li>
+                        <li><b>Variance/Mean Ratio > 1:</b> The distribution is clumped. The variance is greater than the mean because some plots have a very high number of individuals (clumps) while others have very few, leading to a large spread in the data.</li>
+                        <li><b>Variance/Mean Ratio < 1:</b> The distribution is uniform. The variance is less than the mean because the number of individuals per plot is relatively consistent, indicating an even spacing.</li>
+                    </ul>`
+            },
+            {
+                title: 'How Fragmentation Affects Spatial Dispersion: A Human-Induced Change',
+                content: `Habitat fragmentation is a major threat to global biodiversity. It is the process by which a large, continuous habitat is broken into smaller, isolated patches. This process, driven by human activities such as deforestation, agriculture, and urbanization, has profound impacts on population dispersion.`,
+                types: `<b>Types of Fragmentation:</b><br>
+                    <b>Fragmented Habitat:</b> The most common form, where large areas are cleared, leaving behind small, isolated "islands" of the original habitat. These fragments are often surrounded by a "matrix" of human-modified land, such as farms or suburbs.<br>
+                    <img src="https://betabiosciences.github.io/Other-Units/Population%20dispersion4.jpg" alt="A cleared landscape with small, disconnected forest patches remaining."><br><br>
+                    <b>Perforated Habitat:</b> Small holes or clearings are created within a largely intact habitat. While the overall habitat remains, the interior is no longer continuous, which can disrupt the movements of certain species.<br>
+                    <img src="https://betabiosciences.github.io/Other-Units/Population%20dispersion5.jpg" alt="A forest with small, man-made clearings or 'holes' within the main habitat."><br><br>
+                    <b>Internal Fragmentation:</b> Linear barriers like roads, power lines, or fences are built through a habitat, dividing it without necessarily changing the land use on either side. These barriers can act as significant obstacles, preventing gene flow and movement. The Interstate 75 example with the Florida panther is a prime example of this, where a key migration corridor is bisected, leading to increased mortality and reduced genetic connectivity.<br>
+                    <img src="https://betabiosciences.github.io/Other-Units/Population%20dispersion6.jpg" alt="A linear road cutting directly through a continuous forest, dividing it.">`
+            },
+            {
+                title: 'Impacts on Dispersion',
+                content: `<b>Shift from Uniform to Clumped:</b> Fragmentation often forces a shift in a population's dispersion pattern from uniform or random to clumped. Species that once had a wide, continuous range are now confined to isolated patches. This effectively "clumps" them into these remaining habitat islands.<br><br>
+                    <b>Reduced Home Range and Territory:</b> Many species, especially large carnivores like cougars and grizzly bears, require extensive territories or home ranges. When a habitat is fragmented, the remaining patches may be too small to support their needs, leading to a decline in their numbers and an increase in human-wildlife conflict as they venture out of the fragments in search of food or mates.<br><br>
+                    <b>Loss of Migration Corridors:</b> Fragmentation isolates populations, cutting off migration routes. This can lead to reduced genetic diversity, as individuals are no longer able to breed with those from other populations. The case of the wild reindeer in Norway is a clear example; human development has split their herds, preventing their historical long-distance migrations, which necessitates active management to ensure their survival.<br><br>
+                    <b>Edge Effects:</b> Fragmented habitats have a higher proportion of "edge" habitat (the boundary between the fragment and the surrounding matrix). This edge is often exposed to different environmental conditions (more light, wind, and invasive species) than the interior. For area-sensitive species, such as certain forest birds, the small size and high proportion of edge habitat in a fragment can make it unsuitable for breeding, further contributing to their decline.`
+            },
+            {
+                title: 'Summary',
+                content: `Population dispersion refers to the spatial arrangement of individuals within a population, which is shaped by a combination of ecological factors and social interactions. There are three primary patterns of dispersion. Clumped distribution is the most common, where individuals gather in groups due to the patchy availability of resources or social behaviors like flocking or herding. Uniform distribution, a much rarer pattern, is characterized by an even spacing between individuals, typically caused by intense competition for limited resources or by territoriality. The rarest pattern is random distribution, which occurs when resources are abundant and there are no strong forces of attraction or repulsion between individuals. To quantify these patterns, ecologists use methods such as the Clark-Evans Nearest Neighbor Method, which compares the average distance between individuals to an expected distance for a random distribution, and the Variance/Mean Ratio, which analyzes the spread of individuals in a series of sample plots. Human activities, particularly habitat fragmentation, have a significant impact on dispersion patterns. By breaking up large, continuous habitats into smaller, isolated patches, fragmentation often forces populations that were once uniformly or randomly distributed into a clumped pattern, leading to negative consequences such as reduced territory size, loss of migration corridors, and increased vulnerability to environmental changes.`
+            },
+            {
+                title: 'Test Your Knowledge',
+                content: `
+                    <div class="space-y-4">
+                        <div class="question-block" data-answer="Clumped distribution">
+                            <p>1. Which of the following is the most common pattern of spatial dispersion in nature?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Random distribution</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Clumped distribution</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Normal distribution</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Uniform distribution</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="Clumped distribution">
+                            <p>2. A group of elephants migrating together in a herd is a classic example of which type of population dispersion?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Random distribution</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Fragmented distribution</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Uniform distribution</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Clumped distribution</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="Intense competition for limited resources">
+                            <p>3. Which of the following factors would most likely lead to a uniform population distribution?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Intense competition for limited resources</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Random dispersal of seeds by wind</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Abundant and evenly spaced resources</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Cooperative hunting and defense</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="Uniform">
+                            <p>4. In a forest, creosote bushes release chemicals that inhibit the growth of other plants nearby, leading to a specific spacing pattern. This is an example of which type of distribution?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Random</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Perforated</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Clumped</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Uniform</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="Random">
+                            <p>5. A researcher is studying a population of plants that grow in moist, fertile soil. The researcher notes that the location of one plant seems to have no influence on the location of another. This is most likely an example of which distribution pattern?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Random</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Fragmented</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Clumped</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Uniform</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="The population is uniformly distributed.">
+                            <p>6. A scientist uses the Clark-Evans Nearest Neighbor Method and calculates an R value of 1.5. According to this result, what can be concluded about the population's dispersion pattern?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population is fragmented.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population is randomly distributed.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population is clumped</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population is uniformly distributed.</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="R≈0.67; Clumped distribution">
+                            <p>7. In a study, the average distance between nearest neighbors in a population is measured to be 0.8 m. The calculated expected distance for a random distribution is 1.2 m. Using the Clark-Evans method, what is the approximate R value and what does it indicate?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">R≈1.5; Clumped distribution</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">R≈1.5; Uniform distribution</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">R≈0.67; Uniform distribution</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">R≈0.67; Clumped distribution</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="The distribution is uniform.">
+                            <p>8. A researcher collects data on a plant species and finds a Variance/Mean ratio of 0.5. What can be concluded about the dispersion pattern of this species?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The distribution is clumped.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The distribution is uniform.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The distribution is random.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The distribution is fragmented.</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="The population is clumped.">
+                            <p>9. In a study of a field mouse population, researchers find that the variance of individuals in their sample plots is 20 and the mean is 10. What does this data indicate about the population's dispersion?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population is uniform.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population is in a perforated habitat.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population is random.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population is clumped.</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="It isolates populations in remaining patches of habitat.">
+                            <p>10. Habitat fragmentation can change a species' dispersion pattern from uniform or random to clumped. Why does this occur?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">It isolates populations in remaining patches of habitat.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">It increases the overall size of the habitat.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">It creates a more even distribution of resources.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Habitat fragmentation promotes territoriality, forcing individuals to spread out.</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="Internal fragmentation">
+                            <p>11. A new road is built that cuts through a large, continuous forest, dividing the habitat and restricting the movement of animals between the two sides. This is an example of which type of fragmentation?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Internal fragmentation</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Clumped fragmentation</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Perforated habitat</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Fragmented habitat</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="Fragmented habitat">
+                            <p>12. What is the term for small, isolated patches of habitat that are left intact after a large area has been cleared?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Clumped habitat</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Fragmented habitat</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Perforated habitat</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Internal fragmentation</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="The birds are territorial and defend their nesting sites.">
+                            <p>13. An ecologist discovers a population of nesting birds where each nest is at a relatively equal distance from all neighboring nests. Which of the following is the most likely cause of this spacing pattern?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The nesting sites are clumped in a few specific resource-rich areas.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The nesting sites are randomly distributed across the habitat.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The birds are highly social and build nests close to each other.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The birds are territorial and defend their nesting sites.</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="Reduced genetic diversity and increased vulnerability to disease.">
+                            <p>14. What is the primary ecological consequence for a species that has its migration corridors cut off due to habitat fragmentation?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Increased genetic diversity due to isolated populations.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Reduced genetic diversity and increased vulnerability to disease.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">A shift from a uniform to a random dispersion pattern.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">Greater access to new resources.</button>
+                            </div>
+                        </div>
+
+                        <div class="question-block" data-answer="The population has a uniform distribution.">
+                            <p>15. A researcher is using the Variance/Mean ratio to study the population dispersion of a species. They find that in 50 sample plots, the variance is 3.5 and the mean is 5.0. What does this result tell them about the population?</p>
+                            <div class="flex flex-col space-y-2 mt-2">
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population has a random distribution.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population has an edge effect.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population has a uniform distribution.</button>
+                                <button class="answer-btn bg-gray-700 text-gray-200 py-2 px-4 rounded-lg hover:bg-gray-600 transition duration-300 ease-in-out">The population has a clumped distribution.</button>
+                            </div>
+                        </div>
+                    </div>`
+            }
+        ];
+
+        let currentIndex = 0;
+        const container = document.getElementById('content-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const pageCounter = document.getElementById('page-counter');
+
+        function renderSection(index) {
+            const section = sections[index];
+            container.innerHTML = `
+                <div class="section-content">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-section-title mb-2">${section.title}</h1>
+                    ${section.subtitle ? `<h2 class="text-xl sm:text-2xl font-semibold text-section-subtitle mb-4">${section.subtitle}</h2>` : ''}
+                    ${section.image ? `<img src="${section.image}" alt="${section.image_alt}" class="w-full h-auto rounded-lg shadow-md mb-4">` : ''}
+                    <p class="text-base sm:text-lg leading-relaxed text-gray-300">${section.content || ''}</p>
+                    ${section.description ? `<p class="text-base sm:text-lg leading-relaxed text-gray-300 mt-4">${section.description}</p>` : ''}
+                    ${section.causalFactors ? `<p class="text-base sm:text-lg leading-relaxed text-gray-300 mt-4">${section.causalFactors}</p>` : ''}
+                    ${section.examples ? `<p class="text-base sm:text-lg leading-relaxed text-gray-300 mt-4">${section.examples}</p>` : ''}
+                    ${section.types ? `<p class="text-base sm:text-lg leading-relaxed text-gray-300 mt-4">${section.types}</p>` : ''}
+                </div>
+            `;
+            updateButtons();
+        }
+
+        function updateButtons() {
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === sections.length - 1;
+            pageCounter.textContent = `Page ${currentIndex + 1} of ${sections.length}`;
+            
+            if (currentIndex === sections.length - 1) {
+                attachQuizListeners();
+            }
+        }
+
+        function attachQuizListeners() {
+            const quizContainer = document.querySelector('.section-content');
+            if (quizContainer) {
+                const buttons = quizContainer.querySelectorAll('.answer-btn');
+                buttons.forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const questionBlock = event.target.closest('.question-block');
+                        const correctAnswer = questionBlock.dataset.answer;
+                        const selectedAnswer = event.target.textContent;
+                        
+                        // Reset all buttons in the block
+                        questionBlock.querySelectorAll('.answer-btn').forEach(btn => {
+                            btn.classList.remove('bg-green-400', 'bg-rose-500', 'text-gray-900', 'text-white');
+                            btn.classList.add('bg-gray-700', 'text-gray-200');
+                        });
+
+                        if (selectedAnswer.trim() === correctAnswer.trim()) {
+                            event.target.classList.remove('bg-gray-700');
+                            event.target.classList.add('bg-green-400', 'text-gray-900');
+                        } else {
+                            event.target.classList.remove('bg-gray-700');
+                            event.target.classList.add('bg-rose-500', 'text-white');
+                            // Highlight the correct answer
+                            const correctBtn = Array.from(questionBlock.querySelectorAll('.answer-btn')).find(btn => btn.textContent.trim() === correctAnswer.trim());
+                            if (correctBtn) {
+                                correctBtn.classList.remove('bg-gray-700');
+                                correctBtn.classList.add('bg-green-400', 'text-gray-900');
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderSection(currentIndex);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < sections.length - 1) {
+                currentIndex++;
+                renderSection(currentIndex);
+            }
+        });
+
+        // Initial render
+        renderSection(currentIndex);
+
+    </script>
+
+</body>
+</html>
