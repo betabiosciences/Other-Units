@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Concept of Metapopulations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #e0e6ed;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100vw;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 1rem;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .section {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section h2 {
+            color: #00d2ff;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(0, 210, 255, 0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        .section h3 {
+            color: #3a7bd5;
+            font-size: 1.2rem;
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+        }
+
+        .section p {
+            line-height: 1.7;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #b8c6db;
+        }
+
+        .section ul, .section ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+            color: #b8c6db;
+        }
+
+        .formula {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+            color: #00d2ff;
+        }
+
+        .example-box {
+            background: rgba(58, 123, 213, 0.1);
+            border: 1px solid rgba(58, 123, 213, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .quiz-question {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .quiz-options {
+            list-style: none;
+            margin: 0.5rem 0;
+        }
+
+        .quiz-options li {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-options li:hover {
+            background: rgba(0, 210, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .quiz-options li.correct {
+            background: rgba(0, 255, 127, 0.2);
+            border: 1px solid rgba(0, 255, 127, 0.5);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .section-counter {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .section-list {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            z-index: 50;
+            min-width: 250px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .section-list.show {
+            display: block;
+        }
+
+        .section-item {
+            padding: 0.5rem;
+            cursor: pointer;
+            border-radius: 6px;
+            margin: 0.2rem 0;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .section-item:hover {
+            background: rgba(0, 210, 255, 0.2);
+        }
+
+        .section-item.current {
+            background: rgba(58, 123, 213, 0.3);
+            color: #00d2ff;
+        }
+
+        .responsive-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1.5rem auto;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .footer-logo {
+            height: 40px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer p {
+            font-size: 0.8rem;
+            color: #b8c6db;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .content-area {
+                padding: 1rem;
+            }
+            
+            .section {
+                padding: 1rem;
+            }
+            
+            .navigation {
+                padding: 1rem;
+            }
+            
+            .nav-btn {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <!-- MathJax configuration to process dollar signs -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            },
+            startup: {
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                }
+            }
+        };
+    </script>
+    <!-- Add MathJax to render LaTeX formulas correctly -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>THE CONCEPT OF METAPOPULATIONS</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- Section 1: Introduction -->
+            <div class="section active" data-section="1">
+                <h2>Introduction</h2>
+                <p>A metapopulation, or a "population of populations," is a set of spatially separated populations of the same species that are linked by dispersal. This concept is particularly relevant in today's world, where habitat fragmentation due to human activities creates a patchwork of isolated habitat "islands." The persistence of a species in a fragmented landscape often depends not on the survival of a single population, but on the dynamic interplay of multiple subpopulations.</p>
+            </div>
+
+            <!-- Section 2: Key Characteristics -->
+            <div class="section" data-section="2">
+                <h2>Key Characteristics of a Metapopulation</h2>
+                <p>The defining features of a metapopulation distinguish it from a single, contiguous population:</p>
+                <ul>
+                    <li><strong>Spatially Fragmented Habitat:</strong> The species' range is not a continuous, uniform expanse but is fragmented into a series of discrete habitat patches. This spatial structure is a prerequisite for metapopulation dynamics.</li>
+                    <li><strong>Distinct Local Subpopulations:</strong> The species exists as a collection of subpopulations, each confined to a single habitat patch. These subpopulations are small and therefore inherently vulnerable to extinction.</li>
+                    <li><strong>Inter-Patch Connectivity via Dispersal:</strong> The subpopulations are not isolated entities. Individuals disperse (move from their natal patch to another) between patches, creating a crucial link. This movement is the mechanism by which patches are recolonized following a local extinction.</li>
+                    <li><strong>Balance of Extinction and Colonization:</strong> The metapopulation as a whole persists through a dynamic equilibrium. Local extinctions of individual subpopulations are common, but vacant patches are subsequently recolonized by immigrants from other surviving subpopulations.</li>
+                    <li><strong>High Immigration and Emigration:</strong> The dynamics of any subpopulation within a metapopulation differ from a normal population because immigration and emigration rates are significantly higher, which is essential for the system's persistence.</li>
+                </ul>
+            </div>
+
+            <!-- Section 3: Core Dynamics -->
+            <div class="section" data-section="3">
+                <h2>The Core Dynamics: A Balance of Extinction and Colonization</h2>
+                <p>The fundamental principle of a metapopulation is a delicate balance between local extinctions and recolonizations. Local catastrophes, such as fires, floods, or even random fluctuations in population size (stochasticity), can wipe out a small subpopulation in a single habitat patch. However, the metapopulation as a whole survives because other subpopulations in different patches provide a source of new individuals, or "colonists," who can disperse and repopulate the empty patches.</p>
+                
+                <p>This dynamic was first mathematically modelled by Richard Levins (1969). His model predicted that the proportion of occupied patches (P) would stabilize over time at an equilibrium point:</p>
+                
+                <div class="formula">
+                    $P = 1 - (e/m)$
+                </div>
+                
+                <p>Where:</p>
+                <ul>
+                    <li><strong>e</strong> represents the local extinction rate ($e$ is the proportion of occupied patches that go extinct per unit time. This rate is influenced by factors such as population size, patch size, and the frequency of local catastrophes.)</li>
+                    <li><strong>m</strong> represents the colonization or movement rate ($m$ is the proportion of empty patches that are colonized per unit time. This rate is a function of the number of dispersing individuals and the rate of successful establishment)</li>
+                </ul>
+                
+                <div class="example-box">
+                    <p>The Levins model assumes that patches are identical in quality and equally accessible, and that all extinctions and colonizations are independent events. While a simplification, it serves as a powerful conceptual tool for predicting population viability and highlighting the critical importance of dispersal for persistence.</p>
+                </div>
+            </div>
+
+            <!-- Section 4: Example -->
+            <div class="section" data-section="4">
+                <h2>Example: The Marsh Rabbit Metapopulation in the Florida Keys</h2>
+                <p>Ecologists are studying a metapopulation of marsh rabbits (Sylvilagus palustris hefneri) living in a network of small, isolated mangrove islands in the Florida Keys. Over a five-year period, they have meticulously monitored 20 different islands, recording the presence or absence of the rabbit population each year.</p>
+                
+                <h3>Step 1: Data Collection to Determine Rates</h3>
+                <p>To use the Levins model, the researchers need to estimate two key parameters: the local extinction rate (e) and the colonization rate (m).</p>
+                
+                <ul>
+                    <li><strong>Extinction Rate (e):</strong> The ecologists observed that in year 1, 15 out of the 20 islands had rabbit populations. By year 2, three of those 15 populations had disappeared due to a combination of flooding and a disease outbreak. This gives an observed extinction rate of $3/15=0.20$ per year. Over the five-year study, they repeated this process, finding an average local extinction rate of $e=0.25$. This means that, on average, a quarter of the occupied patches go extinct each year.</li>
+                    <li><strong>Colonization Rate (m):</strong> The same researchers also observed the empty patches. In year 1, 5 islands were empty. By year 2, two of those five empty patches had been recolonized by new rabbit populations, likely due to dispersing individuals swimming from nearby occupied islands. This gives an observed colonization rate of $2/5=0.40$. The average colonization rate over the study period was calculated to be $m=0.50$.</li>
+                </ul>
+                
+                <h3>Step 2: Calculation using the Levins Model</h3>
+                <p>Using the data they collected, the ecologists can now calculate the predicted proportion of occupied patches at equilibrium (P) using the Levins formula:</p>
+                
+                <div class="formula">
+                    $P = 1 - (e/m)$<br>
+                    $P = 1 - (0.25/0.50)$<br>
+                    $P = 1 - 0.50$<br>
+                    $P = 0.50$
+                </div>
+            </div>
+
+            <!-- Section 5: Interpretation -->
+            <div class="section" data-section="5">
+                <h2>Step 3: Interpretation of the Data</h2>
+                <p>The calculated value of $P=0.50$ provides crucial information about the marsh rabbit metapopulation:</p>
+                
+                <ul>
+                    <li><strong>Prediction for Stability:</strong> The model predicts that if the current rates of extinction and colonization continue, the metapopulation will be stable, with approximately 50% of the islands occupied at any given time.</li>
+                    <li><strong>Conservation Implications:</strong> The researchers can now compare this predicted value to their observed data. If they find that the actual proportion of occupied islands is consistently lower than 50% (e.g., only 30% of patches are occupied), it suggests the metapopulation is likely in a state of decline, perhaps trending toward a nonequilibrium scenario. This would signal the need for conservation intervention, such as habitat restoration or the creation of more stepping-stone patches to increase the colonization rate (m).</li>
+                    <li><strong>Critical Threshold:</strong> The calculation also demonstrates the critical threshold for the metapopulation's survival. For the metapopulation to persist, the colonization rate (m) must be greater than the extinction rate (e). In this example, with $m=0.50$ and $e=0.25$, the condition for persistence ($0.50>0.25$) is met. However, if habitat destruction were to increase the extinction rate to, say, $e=0.60$, the result would be $1 - (0.60/0.50) = 1 - 1.2 = -0.2$, which is biologically impossible. This negative value indicates that the metapopulation cannot persist under those conditions and is heading toward regional extinction.</li>
+                </ul>
+            </div>
+
+            <!-- Section 6: Significance -->
+            <div class="section" data-section="6">
+                <h2>Significance</h2>
+                <p>The significance of the Levins model extends far beyond its simple mathematical equation. It is considered a foundational and revolutionary concept in ecology and conservation for several key reasons:</p>
+                
+                <ol>
+                    <li><strong>Shift in Paradigm from Local to Landscape Scale:</strong> Prior to the Levins model, population ecology primarily focused on the dynamics of single, isolated populations. The Levins model introduced the radical idea that the long-term survival of a species might not depend on the persistence of any single local population, but on the regional dynamics of an entire network of interacting populations. This conceptual shift laid the groundwork for the modern field of landscape ecology.</li>
+                    <li><strong>Explicitly Incorporates Extinction and Colonization:</strong> The model was one of the first to formally recognize and mathematically link the two central processes that govern species persistence in fragmented habitats: local extinction and colonization. It demonstrated that even if local extinctions are a regular occurrence, a species can still thrive as a metapopulation, as long as colonization can balance out the loss of populations.</li>
+                    <li><strong>A Simple, Testable Framework:</strong> The Levins model provides a simple, predictive formula ($P=1-e/m$) that can be tested with real-world data. This allowed ecologists to move from qualitative descriptions to quantitative assessments of population viability. By monitoring extinction and colonization rates, researchers could make predictions about the stability of a metapopulation and identify if a species was at risk of regional decline.</li>
+                    <li><strong>Highlighting the Importance of Connectivity:</strong> The model's formula makes it clear that the colonization rate ($m$) is a critical parameter for a metapopulation's survival. This mathematically underscored the importance of dispersal and habitat connectivity, even if the patches themselves are not perfect. It provided a powerful theoretical justification for conservation strategies that aim to maintain or restore corridors and other landscape linkages.</li>
+                    <li><strong>A Basis for Further, More Complex Models:</strong> While the Levins model has been critiqued for its simplifying assumptions (e.g., all patches are identical, dispersal is random, no spatial structure), its importance lies in being the conceptual and mathematical starting point for all subsequent metapopulation models. Later models, such as core-satellite and nonequilibrium models, and even more complex spatially explicit models, are essentially modifications or extensions of the basic Levins framework that add more ecological realism, such as varying patch sizes, different habitat qualities (source-sink dynamics), and the influence of distance.</li>
+                </ol>
+                
+                <p>In essence, the Levins model's significance is not its perfect accuracy but its profound conceptual power. It fundamentally altered how ecologists and conservation biologists think about population persistence in fragmented landscapes, shifting the focus from individual populations to the interconnected network—a perspective that is more relevant today than ever before.</p>
+            </div>
+
+            <!-- Section 7: Classifications -->
+            <div class="section" data-section="7">
+                <h2>Four Classifications of Metapopulations</h2>
+                <p>While the classic Levins model provides a foundational understanding, ecologists like Susan Harrison (1991) have identified four distinct types of metapopulations in nature, each with unique dynamics:</p>
+                <img src="https://betabiosciences.github.io/Other-Units/Concept%20of%20metapopulation%20fig.jpg" alt="A diagram showing the four classifications of metapopulations: Classic, Core-Satellite, Patchy, and Nonequilibrium." class="responsive-image">
+                <ol>
+                    <li><strong>Classic Metapopulation (Levins Metapopulation):</strong> This is the quintessential model. It consists of many small, equally-sized patches. All local populations are vulnerable to extinction, and there is no single "mainland" source. The persistence of the overall population is a result of the collective balance between extinctions and recolonizations across the entire network of patches.</li>
+                    <li><strong>Core-Satellite Metapopulation (Mainland-Island Metapopulation):</strong> This is a more common scenario, characterized by one or more large, highly stable "core" populations that are resistant to extinction. These core populations act as the primary sources of colonists, constantly "rescuing" or recolonizing smaller, more ephemeral "satellite" populations in peripheral patches. The survival of the entire metapopulation is critically dependent on the health and persistence of the core population. The Bay checkerspot butterfly is a prime example, where a single large population at Morgan Hill served as the source for all other smaller, surrounding populations.</li>
+                    <li><strong>Patchy Population:</strong> In this system, dispersal between patches is so frequent and high that it essentially eliminates the possibility of local extinction. Dispersing individuals continuously "rescue" declining populations before they can go extinct. This high level of connectivity means the system effectively functions as a single, large, extinction-resistant population rather than a series of independent subpopulations.</li>
+                    <li><strong>Nonequilibrium Metapopulation:</strong> This is a system in decline. Local extinctions occur, but due to severe habitat fragmentation and limited dispersal, the vacant patches are not recolonized. The failure to disperse effectively leads to a permanent loss of subpopulations. This process of local extinction without recolonization results in the gradual decline and eventual regional extinction of the species. This type of metapopulation is often a direct result of extensive habitat destruction.</li>
+                </ol>
+            </div>
+
+            <!-- Section 8: Corridors -->
+            <div class="section" data-section="8">
+                <h2>The Crucial Role of Corridors</h2>
+                <p>The ability of individuals to disperse between habitat patches is the single most important factor for the long-term survival of a metapopulation. The Joshua Tewksbury study provided compelling empirical evidence for this by demonstrating how habitat corridors can actively facilitate dispersal. The study created experimental landscapes with and without corridors connecting habitat patches. The results showed that:</p>
+                
+                <ul>
+                    <li><strong>Increased Movement:</strong> Corridors significantly increased the movement of organisms, such as the common buckeye and variegated fritillary butterflies.</li>
+                    <li><strong>Enhanced Pollen and Seed Dispersal:</strong> The corridors facilitated greater movement of pollen and seeds, leading to higher fruit set and successful colonization of new areas.</li>
+                    <li><strong>Improved Connectivity:</strong> The study conclusively proved that corridors are an effective tool for maintaining connectivity in fragmented landscapes, thereby increasing the health and viability of the metapopulations they support.</li>
+                </ul>
+            </div>
+
+            <!-- Section 9: Conservation -->
+            <div class="section" data-section="9">
+                <h2>Ecological Significance and Conservation</h2>
+                <p>The metapopulation concept is a cornerstone of modern conservation biology. It fundamentally changed the way ecologists and conservationists view species survival in the face of human-induced habitat loss.</p>
+                
+                <ul>
+                    <li><strong>Predicting Extinction Risk:</strong> Understanding the dynamics of a metapopulation (e.g., its type, extinction rate, and movement rate) allows ecologists to predict the likelihood of regional extinction. If a system is trending toward a nonequilibrium state, it signals an urgent need for intervention.</li>
+                    <li><strong>Guiding Conservation Strategy:</strong> The theory provides a roadmap for conservation efforts. Instead of simply protecting isolated patches, it emphasizes the importance of protecting key "source" populations (in a core-satellite system) and, most importantly, maintaining or creating connectivity between patches.</li>
+                    <li><strong>Broad Applicability:</strong> The metapopulation concept has been applied to a wide range of species across different ecosystems
+                        <ul>
+                            <li>Moths on islands off the Finnish coast</li>
+                            <li>Butterflies in the Canadian Rockies</li>
+                            <li>Marsh rabbits in the Florida Keys</li>
+                            <li>Pikas in California</li>
+                            <li>Spotted owls in southern California</li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <p>By recognizing that species survival is a regional phenomenon involving a network of populations, conservationists can design more effective strategies, such as establishing wildlife corridors and preserving large, core habitat areas, to ensure the long-term persistence of species in our increasingly fragmented world.</p>
+            </div>
+
+            <!-- Section 10: Quiz -->
+            <div class="section" data-section="10">
+                <h2>Test Your Knowledge</h2>
+                <div id="quiz-container"></div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSection(-1)">
+                ← Previous
+            </button>
+            <div class="section-counter" onclick="toggleSectionList()" style="cursor: pointer;">
+                <span id="currentSection">1</span> / <span id="totalSections">10</span>
+                <div class="section-list" id="sectionList">
+                    <div class="section-item current" onclick="goToSection(1)">Introduction</div>
+                    <div class="section-item" onclick="goToSection(2)">Key Characteristics</div>
+                    <div class="section-item" onclick="goToSection(3)">Core Dynamics</div>
+                    <div class="section-item" onclick="goToSection(4)">Example: Marsh Rabbits</div>
+                    <div class="section-item" onclick="goToSection(5)">Interpretation</div>
+                    <div class="section-item" onclick="goToSection(6)">Significance</div>
+                    <div class="section-item" onclick="goToSection(7)">Classifications</div>
+                    <div class="section-item" onclick="goToSection(8)">Role of Corridors</div>
+                    <div class="section-item" onclick="goToSection(9)">Conservation</div>
+                    <div class="section-item" onclick="goToSection(10)">Test Knowledge</div>
+                </div>
+            </div>
+            <button class="nav-btn" id="nextBtn" onclick="changeSection(1)">
+                Next →
+            </button>
+        </div>
+        
+        <footer class="footer">
+            <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+            <p>© 2025 BETA Biosciences. All rights reserved.<br>Email: betabiosciences@gmail.com</p>
+        </footer>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 10;
+
+        const quizData = [
+            {
+                question: "What is the term for a group of spatially separated populations of the same species that interact through dispersal?",
+                options: ["A metapopulation", "A biome", "An ecosystem", "A community"],
+                correct: 0
+            },
+            {
+                question: "A key characteristic of a metapopulation is that its long-term survival depends on a balance between which two processes?",
+                options: ["Local extinctions and recolonizations", "Immigration and emigration", "Predation and competition", "Births and deaths"],
+                correct: 0
+            },
+            {
+                question: "According to the Levins model, which of the following conditions must be met for a metapopulation to persist over time?",
+                options: ["The extinction rate must equal the colonization rate.", "The colonization rate must be greater than the extinction rate.", "The extinction rate must be greater than the colonization rate.", "The population size of each patch must be constant."],
+                correct: 1
+            },
+            {
+                question: "A metapopulation model predicts that the proportion of occupied patches will be stable at 75% if the extinction rate is 0.10. What is the corresponding colonization rate?",
+                options: ["0.40", "0.10", "0.13", "0.75"],
+                correct: 0
+            },
+            {
+                question: "In a metapopulation, what is the term for the movement of individuals from a source patch to a vacant or declining patch?",
+                options: ["Competition", "Colonization", "Symbiosis", "Predation"],
+                correct: 1
+            },
+            {
+                question: "Why are small subpopulations within a metapopulation considered inherently vulnerable to extinction?",
+                options: ["They have low genetic diversity.", "They attract more predators.", "They have high rates of emigration.", "They are more susceptible to random environmental fluctuations or catastrophes."],
+                correct: 3
+            },
+            {
+                question: "What does a negative value for the predicted proportion of occupied patches in the Levins model indicate?",
+                options: ["The proportion of occupied patches is declining but will eventually recover.", "The metapopulation is stable and thriving.", "The model's assumptions are incorrect.", "The metapopulation cannot persist under the given conditions."],
+                correct: 3
+            },
+            {
+                question: "What does the Levins model's formula, $P=1-(e/m)$, primarily highlight as a critical factor for a metapopulation's survival?",
+                options: ["The total number of patches.", "The importance of connectivity for dispersal.", "The size of individual patches.", "The species' reproductive rate."],
+                correct: 1
+            },
+            {
+                question: "In a study of a species with a metapopulation structure, researchers found that the average local extinction rate was 0.25 and the average colonization rate was 0.50. What is the predicted stable proportion of occupied patches?",
+                options: ["1.00", "0.50", "0.75", "0.25"],
+                correct: 1
+            },
+            {
+                question: "If a metapopulation's extinction rate is 0.60 and its colonization rate is 0.50, what does this indicate about the species' long-term viability?",
+                options: ["The proportion of occupied patches will increase.", "The species is likely heading toward regional extinction.", "The metapopulation is stable and healthy.", "The metapopulation will stabilize at 50% occupied patches."],
+                correct: 1
+            },
+            {
+                question: "A system where dispersal between patches is so frequent that local extinctions are rare and populations are 'rescued' from decline is known as a:",
+                options: ["Nonequilibrium metapopulation", "Classic metapopulation", "Core-satellite metapopulation", "Patchy population"],
+                correct: 3
+            },
+            {
+                question: "Which type of metapopulation is characterized by one or more large, stable populations that act as the primary source of colonists for smaller, less stable ones?",
+                options: ["Patchy population", "Nonequilibrium metapopulation", "Core-satellite metapopulation", "Classic metapopulation"],
+                correct: 2
+            },
+            {
+                question: "What is the defining feature of a nonequilibrium metapopulation? (e.g., local extinction without recolonization)",
+                options: ["The population functions as a single, large, contiguous unit.", "Colonization and extinction rates are in perfect balance.", "All patches are equally likely to go extinct or be colonized.", "Local extinctions occur, but the vacant patches are not recolonized."],
+                correct: 3
+            },
+            {
+                question: "What did the study by Joshua Tewksbury on experimental landscapes with and without corridors demonstrate?",
+                options: ["Corridors significantly enhance the movement and dispersal of organisms.", "Corridors are only effective for large mammals.", "Corridors have no effect on metapopulation dynamics.", "Corridors increase the risk of local extinction."],
+                correct: 0
+            },
+            {
+                question: "The concept of metapopulations has shifted the focus of conservation biology from which of the following?",
+                options: ["From protecting individual populations to considering a network of populations.", "From analyzing genetic diversity to analyzing species richness.", "From focusing on habitat quality to focusing on habitat quantity.", "From studying single species to studying entire communities."],
+                correct: 0
+            }
+        ];
+
+        function updateProgress() {
+            const progress = (currentSection / totalSections) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateNavigation() {
+            document.getElementById('currentSection').textContent = currentSection;
+            document.getElementById('prevBtn').disabled = currentSection === 1;
+            document.getElementById('nextBtn').disabled = currentSection === totalSections;
+            
+            // Update section list
+            const sectionItems = document.querySelectorAll('.section-item');
+            sectionItems.forEach((item, index) => {
+                item.classList.toggle('current', index + 1 === currentSection);
+            });
+        }
+
+        function showSection(sectionNum) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.querySelector(`[data-section="${sectionNum}"]`);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+            
+            // Load quiz if on quiz section
+            if (sectionNum === 10) {
+                loadQuiz();
+            }
+            
+            updateProgress();
+            updateNavigation();
+            
+            // Hide section list
+            document.getElementById('sectionList').classList.remove('show');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function changeSection(direction) {
+            const newSection = currentSection + direction;
+            if (newSection >= 1 && newSection <= totalSections) {
+                currentSection = newSection;
+                showSection(currentSection);
+            }
+        }
+
+        function goToSection(sectionNum) {
+            if (sectionNum >= 1 && sectionNum <= totalSections) {
+                currentSection = sectionNum;
+                showSection(currentSection);
+            }
+        }
+
+        function toggleSectionList() {
+            const sectionList = document.getElementById('sectionList');
+            sectionList.classList.toggle('show');
+        }
+
+        function loadQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            quizContainer.innerHTML = '';
+            
+            quizData.forEach((quiz, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'quiz-question';
+                
+                const questionText = document.createElement('p');
+                questionText.innerHTML = `<strong>${index + 1}. ${quiz.question}</strong>`;
+                questionDiv.appendChild(questionText);
+                
+                const optionsList = document.createElement('ul');
+                optionsList.className = 'quiz-options';
+                
+                quiz.options.forEach((option, optionIndex) => {
+                    const optionItem = document.createElement('li');
+                    optionItem.textContent = `${String.fromCharCode(97 + optionIndex)}. ${option}`;
+                    optionItem.dataset.questionIndex = index;
+                    optionItem.dataset.optionIndex = optionIndex;
+                    
+                    optionItem.addEventListener('click', function() {
+                        // Remove any previous selections for this question
+                        const siblings = this.parentNode.querySelectorAll('li');
+                        siblings.forEach(sibling => {
+                            sibling.style.background = 'rgba(255, 255, 255, 0.05)';
+                            sibling.style.border = 'none';
+                        });
+                        
+                        // Highlight selected option
+                        if (optionIndex === quiz.correct) {
+                            this.style.background = 'rgba(0, 255, 127, 0.3)';
+                            this.style.border = '1px solid rgba(0, 255, 127, 0.7)';
+                        } else {
+                            this.style.background = 'rgba(255, 99, 71, 0.3)';
+                            this.style.border = '1px solid rgba(255, 99, 71, 0.7)';
+                            
+                            // Show correct answer after a delay
+                            setTimeout(() => {
+                                siblings.forEach((sibling, siblingIndex) => {
+                                    if (siblingIndex === quiz.correct) {
+                                        sibling.style.background = 'rgba(0, 255, 127, 0.3)';
+                                        sibling.style.border = '1px solid rgba(0, 255, 127, 0.7)';
+                                    }
+                                });
+                            }, 1000);
+                        }
+                    });
+                    
+                    optionsList.appendChild(optionItem);
+                });
+                
+                questionDiv.appendChild(optionsList);
+                quizContainer.appendChild(questionDiv);
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSection > 1) {
+                changeSection(-1);
+            } else if (e.key === 'ArrowRight' && currentSection < totalSections) {
+                changeSection(1);
+            } else if (e.key === 'Escape') {
+                document.getElementById('sectionList').classList.remove('show');
+            }
+        });
+
+        // Close section list when clicking outside
+        document.addEventListener('click', function(e) {
+            const sectionList = document.getElementById('sectionList');
+            const sectionCounter = document.querySelector('.section-counter');
+            
+            if (!sectionCounter.contains(e.target)) {
+                sectionList.classList.remove('show');
+            }
+        });
+
+        // Touch/swipe support for mobile
+        let startX = 0;
+        let startY = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            if (!startX || !startY) return;
+            
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            
+            const diffX = startX - endX;
+            const diffY = startY - endY;
+            
+            // Only trigger if horizontal swipe is more significant than vertical
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0 && currentSection < totalSections) {
+                    // Swipe left - next section
+                    changeSection(1);
+                } else if (diffX < 0 && currentSection > 1) {
+                    // Swipe right - previous section
+                    changeSection(-1);
+                }
+            }
+            
+            startX = 0;
+            startY = 0;
+        });
+
+        // Initialize
+        updateProgress();
+        updateNavigation();
+        showSection(currentSection);
+    </script>
+</body>
+</html>
