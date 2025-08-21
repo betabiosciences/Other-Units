@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Survival and Mortality in Populations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            background: linear-gradient(45deg, #ffd89b, #19547b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            margin-top: 15px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd89b, #19547b);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .section {
+            display: none;
+            padding: 30px 20px;
+            animation: fadeInUp 0.6s ease;
+            min-height: calc(100vh - 200px);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #ffd89b;
+            border-bottom: 2px solid rgba(255, 216, 155, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .section h3 {
+            font-size: 1.4rem;
+            margin: 25px 0 15px 0;
+            color: #b8c6ff;
+        }
+
+        .section p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .section ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .section li strong {
+            color: #ffd89b;
+        }
+
+        .diagram-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .diagram-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quiz-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .quiz-question {
+            margin-bottom: 30px;
+        }
+
+        .quiz-question h4 {
+            color: #ffd89b;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 216, 155, 0.5);
+        }
+
+        .quiz-option.correct {
+            background: rgba(46, 125, 50, 0.3);
+            border-color: #4caf50;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(183, 28, 28, 0.3);
+            border-color: #f44336;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .section-indicator {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #ffd89b;
+            transform: scale(1.3);
+        }
+
+        .footer {
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer img {
+            width: 100px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 20px 15px;
+            }
+            
+            .section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .section h3 {
+                font-size: 1.2rem;
+            }
+            
+            .nav-btn {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+                min-width: 70px;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Understanding Survival and Mortality in Populations</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <div class="section active" data-section="1">
+            <h2>Understanding Survival and Mortality in Populations</h2>
+            <p>Studying survival and mortality in a population involves tracking groups of individuals to see how they fare over time. A common method is to follow a <strong>cohort</strong>, which is a group of same-aged organisms, from birth until their death. This allows researchers to understand how factors like age influence survival rates. Since a population often includes organisms of many different ages, it's also useful to look at <strong>age classes</strong>, which are groups of individuals all of the same age.</p>
+            
+            <p>Information gathered from these studies is used to create a <strong>life table</strong>, which is a data-driven summary showing how many individuals are alive in each age class and the specific survival or death rates at those ages. This data can also be visualized as a <strong>survivorship curve</strong>, a graph that plots the number of surviving individuals over time.</p>
+            
+            <p>There are two main types of life tables:</p>
+            <ul>
+                <li>A <strong>cohort life table</strong> follows a specific group of individuals from birth to death. This is ideal for determining age-specific survival probabilities.</li>
+                <li>A <strong>static life table</strong> is different because it captures a "snapshot" of a population's age structure at a single point in time. This method is especially useful for organisms that live for a very long time, like elephants or trees, where it would be impractical to follow a single cohort throughout its entire lifespan. For example, a researcher named Adolf Murie used this approach when studying Dall Mountain sheep.</li>
+            </ul>
+        </div>
+
+        <!-- Section 2: Age Distribution -->
+        <div class="section" data-section="2">
+            <h2>The Importance of Age Distribution</h2>
+            <p>The composition of a population's age classes can tell us a lot about its health and future. While age data is often calculated annually, these studies frequently focus on females, as their reproductive capacity is typically the limiting factor for population growth. A few males can fertilize many females, but a lack of females directly limits the number of offspring produced.</p>
+            
+            <p>The distribution of ages within a population is a strong indicator of its trajectory:</p>
+            <ul>
+                <li>A population that is <strong>increasing</strong> usually has a large number of young individuals, which shows a high rate of reproduction.</li>
+                <li>A population that is <strong>decreasing</strong> tends to have very few young, indicating limited reproduction.</li>
+            </ul>
+            
+            <p>An imbalance in a population's age classes can have serious consequences. For instance, in an overfished population, the largest, oldest, and most fertile fish are often the first to be removed. If this is followed by a few years of poor reproduction, there will be no younger fish to mature and replace the ones that were caught, which can lead to a complete population collapse.</p>
+        </div>
+
+        <!-- Section 3: Forest Age Distribution -->
+        <div class="section" data-section="3">
+            <h2>Analysis of the Forest Age Distribution Diagram</h2>
+            <p>An abundance of white-tailed deer can drastically alter a forest's age distribution. When deer populations are high, they consume young trees, leaving only older ones whose leaves are out of reach. As these mature trees eventually die, there are no younger trees to replace them, which can have a disastrous effect on the future of the forest. The removal of deer predators like panthers and wolves often exacerbates this problem by allowing deer numbers to grow unchecked.</p>
+            
+            <div class="diagram-container">
+                <img src="https://betabiosciences.github.io/Other-Units/Lifetable%20fig1.jpg" alt="Forest Age Distribution Diagram">
+                <p>The diagram presents a visual comparison of the age structure of two different forest environments: an <strong>Undisturbed Forest</strong> and an <strong>Overgrazed Forest</strong>. The graphs are bar charts showing the percentage of trees in different age classes (in years).</p>
+            </div>
+
+            <h3>1. Undisturbed Forest (Panel A)</h3>
+            <ul>
+                <li><strong>Age Distribution:</strong> This forest has a high percentage of young trees (10-20 years old). The number of trees decreases significantly as age increases, with very few trees in the 50–60-year age classes.</li>
+                <li><strong>Interpretation:</strong> This is a classic "pyramid-shaped" age structure, characteristic of a healthy, growing population. The high number of young trees indicates successful reproduction and recruitment. The sharp decline in numbers with age is expected, as many young trees die due to competition for resources or other natural factors. This structure suggests a self-sustaining forest where new trees are consistently replacing older ones as they die. The presence of both young and old trees indicates a balanced ecosystem.</li>
+            </ul>
+
+            <h3>2. Overgrazed Forest (Panel B)</h3>
+            <ul>
+                <li><strong>Age Distribution:</strong> This forest has a very low percentage of young trees (10-30 years old). The highest percentages of trees are in the older age classes, specifically the 40-70 year range.</li>
+                <li><strong>Interpretation:</strong> The graph for the overgrazed forest is essentially the reverse of the undisturbed forest. The low number of young trees is a clear sign of poor or absent reproduction and recruitment, likely due to a factor that prevents saplings from surviving. The text below the diagram explains this is due to "overgrazing," likely by a herbivore population (like the deer shown in the image). The animals eat the young trees, leaving only the older, taller ones that are out of reach. This age structure is a warning sign. While the forest may appear healthy with many large, mature trees, it is not regenerating. As the current mature trees die off, there will be no younger trees to replace them, leading to a future forest collapse.</li>
+            </ul>
+        </div>
+
+        <!-- Section 4: Static Life Table -->
+        <div class="section" data-section="4">
+            <h2>The Static Life Table: A Snapshot of Population Dynamics</h2>
+            <p>A static life table offers a glimpse into a population's age structure at a specific point in time, using a single sample. We can explore this concept using the example of the North American beaver (<em>Castor canadensis</em>).</p>
+            
+            <p>Historically, beavers were hunted to near extinction by the mid-19th century. However, 20th-century protection laws helped their populations rebound, so much so that they were sometimes considered a nuisance. In Newfoundland, Canada, trapping was used as a management tool. From 1964 to 1971, researchers collected beaver mandibles from trappers to determine the age of the animals. By analyzing the teeth, they could classify beavers into different age classes. For instance, a high number of teeth from 1-year-old beavers would suggest a large population in that age class, while a low number of teeth from 2-year-old beavers would indicate high mortality for the 1-year-old age class.</p>
+            
+            <div class="diagram-container">
+                <img src="https://betabiosciences.github.io/Other-Units/Lifetable%20fig2.jpg" alt="Beaver Life Table Data">
+                <p>This data was used to construct a life table. The number of individuals alive at the start of an age class (e.g., a year) is denoted as n<sub>x</sub>. The number of individuals dying in a given age class, d<sub>x</sub>, can be calculated by subtracting the number alive at the start of the next age class from the number alive at the start of the current age class: d<sub>x</sub>=n<sub>x</sub>−n<sub>x+1</sub>. For example, in Table given above, if there were 273 beavers alive at the start of their sixth year (n<sub>6</sub>) and 205 alive at the start of their seventh year (n<sub>7</sub>), then 68 died during the sixth year (d<sub>6</sub>=273−205=68).</p>
+            </div>
+        </div>
+
+        <!-- Section 5: Dall Mountain Sheep -->
+        <div class="section" data-section="5">
+            <h2>The Dall Mountain Sheep Life Table</h2>
+            <p>Another classic example comes from a study on the Dall mountain sheep by Adolf Murie. In 1947, Edward Deevey organized Murie's data on 608 skulls into a life table (standardizing the numbers to represent a cohort of 1,000 individuals for easier comparison with other populations.</p>
+            
+            <div class="diagram-container">
+                <img src="https://betabiosciences.github.io/Other-Units/Lifetable%20fig3.jpg" alt="Dall Mountain Sheep Life Table">
+            </div>
+            
+            <p>From this data, Deevey calculated several key population statistics:</p>
+
+            <h3>1. Survivorship (l<sub>x</sub>):</h3>
+            <div class="diagram-container">
+                <img src="https://betabiosciences.github.io/Other-Units/Lifetable%20fig4.jpg" alt="Survivorship Formula Diagram">
+                <p>Survivorship is the proportion of the original cohort that survives to a given age class. It is calculated as the number of individuals alive at the start of an age class (n<sub>x</sub>) divided by the total number of individuals in the original cohort (n<sub>0</sub>): l<sub>x</sub>=n<sub>x</sub>/n<sub>0</sub> For instance, the survivorship to the sixth age class (5-6 years) is 734/1,000, or 0.734, meaning over three-quarters of the individuals survived to at least 5 years old.</p>
+            </div>
+
+            <h3>2. Mortality Rate (q<sub>x</sub>):</h3>
+            <div class="diagram-container">
+                <img src="https://betabiosciences.github.io/Other-Units/Lifetable%20fig5.jpg" alt="Mortality Rate Formula Diagram">
+                <p>The mortality rate within an age class is the proportion of individuals dying during that age class. It is calculated by dividing the number of deaths during an age class (d<sub>x</sub>) by the number of individuals alive at the beginning of that age class (n<sub>x</sub>): q<sub>x</sub>=d<sub>x</sub>/n<sub>x</sub> This measure helps determine how mortality changes with age. For the Dall mountain sheep, q<sub>x</sub> is high in the first age class, drops to a low level until about age 8, and then increases rapidly. Murie suggested that wolves might be responsible for the high mortality in both young and old sheep. However, a comparison with domestic sheep in New Zealand (where wolves are absent) showed similar mortality rates for all ages except lambs. This suggests that while Murie was correct about wolf predation impacting young sheep, old sheep would likely have died from other causes even without wolf predation. The data also revealed that female Dall sheep had a higher mortality rate than males.</p>
+            </div>
+        </div>
+
+        <!-- Section 6: Life Expectancy -->
+        <div class="section" data-section="6">
+            <h2>Life Expectancy Calculations</h2>
+            <div class="diagram-container">
+                <img src="https://betabiosciences.github.io/Other-Units/Lifetable%20fig6.jpg" alt="Life Table Data Chart">
+            </div>
+            
+            <h3>3. Life Expectancy (e<sub>x</sub>):</h3>
+            <p>Life expectancy is the average number of additional years an individual can expect to live at a certain age. Its calculation involves two intermediate steps:</p>
+            
+            <ul>
+                <li><strong>Average Number of Individuals Alive (L<sub>x</sub>):</strong> This is the average number of individuals alive during an age class, calculated as: L<sub>x</sub>=(n<sub>x</sub>+n<sub>x+1</sub>)/2 For example, in the sixth age class, L<sub>6</sub>= (734+688)/2=711. This means that on average, 711 individuals are alive at any point during that age class.</li>
+                
+                <li><strong>Total Years Lived (T<sub>x</sub>):</strong> This is the sum of the average number of individuals alive in an age class and all subsequent (older) age classes: T<sub>x</sub>=∑<sub>x</sub><sup>∞</sup>L<sub>x</sub> For a 5-year-old sheep (age class 6), T<sub>6</sub>=L<sub>6</sub>+L<sub>7</sub>+L<sub>8</sub>+...=711+664+605.5+505+345.5+174+51+4.5+1.5=3,062.</li>
+                
+                <li><strong>Life Expectancy (e<sub>x</sub>):</strong> Finally, life expectancy is calculated by dividing the total years lived from a certain age (T<sub>x</sub>) by the number of individuals alive at the start of that age class (n<sub>x</sub>): e<sub>x</sub>=T<sub>x</sub>/n<sub>x</sub> For a 5-year-old sheep, e<sub>6</sub>=3,062/734=4.2. This indicates that on average, a 5-year-old sheep can expect to live for another 4.2 years.</li>
+            </ul>
+            
+            <p>Life tables allow ecologists to quantify key population features, such as life expectancy, survivorship patterns, and periods of high mortality. For the Dall sheep, the data showed that life expectancy actually increases after the first age class, highlighting the struggle for survival faced by newborns.</p>
+        </div>
+
+        <!-- Section 7: Limitations -->
+        <div class="section" data-section="7">
+            <h2>Limitations of Static Life Tables</h2>
+            <p>Despite their value, static life tables have limitations. A primary assumption is that the birth rate is constant across all years. If, for example, more 2-year-old sheep were born in a particular year due to a favorable climate, a static life table might misinterpret their high number in a later sample as a higher mortality rate in the 2-year-old age class, even if the actual mortality rate was the same as other age classes. It is often difficult to get an independent estimate of birth rates for different age classes. Additionally, accurately assessing the age structure of a population can be challenging, even with methods like counting growth rings on horns, scales, or bones. Due to these difficulties, a cohort life table, which tracks a group of individuals from birth to death, is often considered a more accurate alternative.</p>
+        </div>
+
+        <!-- Section 8: Cohort Life Tables -->
+        <div class="section" data-section="8">
+            <h2>Cohort Life Tables: Tracking a Generation from Cradle to Grave</h2>
+            <p>Cohort life tables, unlike static ones, track the survival of an entire group of individuals (a cohort) from the time they are born until the last one dies.</p>
+            
+            <p>To create a cohort life table, researchers must conduct population surveys frequently, especially for organisms with short lifespans, such as insects or annual plants. For these species, "age classes" might be measured in weeks or months, not years, and the study may last less than a year.</p>
+            
+            <div class="diagram-container">
+                <img src="https://betabiosciences.github.io/Other-Units/Lifetable%20fig7.jpg" alt="American Robin Cohort Life Table">
+                <p>For longer-lived animals, like many birds or small mammals, a census conducted once or twice a year for up to a decade is sufficient. An example is the cohort life table for the American robin ( <em>Turdus migratorius</em> ), which was constructed by tracking banded nestlings throughout their lives</p>
+            </div>
+        </div>
+
+        <!-- Section 9: Quiz -->
+        <div class="section" data-section="9">
+            <h2>Test Your Knowledge</h2>
+            <div class="quiz-container">
+                <div class="quiz-question">
+                    <h4>1. Which of the following best describes the difference between a static life table and a cohort life table?</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. A static life table is more accurate than a cohort life table because it is based on a larger sample size.</div>
+                        <div class="quiz-option" data-correct="true">b. A static life table captures a snapshot of a population's age structure, whereas a cohort life table follows a specific group of same-aged individuals over time.</div>
+                        <div class="quiz-option" data-correct="false">c. A static life table is primarily used for animals with short lifespans, while a cohort life table is used for long-lived species.</div>
+                        <div class="quiz-option" data-correct="false">d. A static life table tracks a group of individuals from birth to death, while a cohort life table captures a snapshot of a population at one time.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>2. A researcher is studying a population of frogs and finds that a large percentage of 1-year-old individuals die, but the mortality rate for frogs from age 2 to age 5 is very low. This pattern of survivorship is best described as:</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. High mortality in both young and old age classes.</div>
+                        <div class="quiz-option" data-correct="false">b. Constant mortality rate throughout the lifespan.</div>
+                        <div class="quiz-option" data-correct="false">c. Increasing mortality with age.</div>
+                        <div class="quiz-option" data-correct="true">d. High mortality in the young, low mortality in the middle age classes.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>3. A population of Dall mountain sheep is found to have a high mortality rate (q<sub>x</sub>) in its first year and a high mortality rate after age 8. The text suggests that the high mortality of both young and old sheep may be due to:</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. Competition for resources.</div>
+                        <div class="quiz-option" data-correct="false">b. Disease outbreaks.</div>
+                        <div class="quiz-option" data-correct="true">c. Predation by wolves.</div>
+                        <div class="quiz-option" data-correct="false">d. Accidents and falls.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>4. A static life table is being constructed for a population of beavers. The number of beavers alive at the start of their fourth year (n<sub>4</sub>) is 450, and 390 are alive at the start of their fifth year (n<sub>5</sub>). How many beavers died during their fourth year (d<sub>4</sub>)?</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. 840</div>
+                        <div class="quiz-option" data-correct="true">b. 60</div>
+                        <div class="quiz-option" data-correct="false">c. 450</div>
+                        <div class="quiz-option" data-correct="false">d. 390</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>5. A life table for a population has an n<sub>0</sub> (original cohort size) of 1,000 individuals. If 500 individuals survive to the start of age class 3 (n<sub>3</sub>), what is the survivorship (l<sub>3</sub>) to that age class?</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. 0.25</div>
+                        <div class="quiz-option" data-correct="true">b. 0.5</div>
+                        <div class="quiz-option" data-correct="false">c. 0.75</div>
+                        <div class="quiz-option" data-correct="false">d. 1.0</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h4>6. In a life table for a population, 20 individuals die during a specific age class (d<sub>x</sub>) out of 100 individuals that were alive at the beginning of that class (n<sub>x</sub>). What is the mortality rate (q<sub>x</sub>) for that age class?</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. 0.8</div>
+                        <div class="quiz-option" data-correct="true">b. 0.2</div>
+                        <div class="quiz-option" data-correct="false">c. 20</div>
+                        <div class="quiz-option" data-correct="false">d. 5.0</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>7. A static life table study of a plant population shows that there are a very low number of young seedlings but a high number of mature, seed-producing plants. Based on the provided text, this population is most likely:</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. Increasing rapidly.</div>
+                        <div class="quiz-option" data-correct="false">b. Maintaining a stable population size.</div>
+                        <div class="quiz-option" data-correct="true">c. Declining and facing a future collapse.</div>
+                        <div class="quiz-option" data-correct="false">d. Thriving and expanding its range.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>8. The average number of additional years an individual can expect to live at a certain age is called:</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. Mortality rate (q<sub>x</sub>)</div>
+                        <div class="quiz-option" data-correct="false">b. Total years lived (T<sub>x</sub>)</div>
+                        <div class="quiz-option" data-correct="true">c. Life expectancy (e<sub>x</sub>)</div>
+                        <div class="quiz-option" data-correct="false">d. Survivorship (l<sub>x</sub>)</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>9. A life table for a population of mice shows that n<sub>x</sub>=50 and n<sub>x+1</sub>=30. The total years lived from this point forward (T<sub>x+1</sub>) is 100. What is the life expectancy (e<sub>x</sub>) for the individuals at the start of this age class?</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. 2.8</div>
+                        <div class="quiz-option" data-correct="true">b. 2.5</div>
+                        <div class="quiz-option" data-correct="false">c. 2.0</div>
+                        <div class="quiz-option" data-correct="false">d. 3.0</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <h4>10. Which of the following is an example of a consequence of an imbalance in a population's age classes?</h4>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. A population with many young individuals will inevitably decline in the future.</div>
+                        <div class="quiz-option" data-correct="false">b. In a healthy forest, an abundance of white-tailed deer ensures a self-sustaining ecosystem.</div>
+                        <div class="quiz-option" data-correct="false">c. The population of a species becomes stable because there are no predators.</div>
+                        <div class="quiz-option" data-correct="true">d. In an overfished population, the largest, most fertile fish are removed, which can lead to a population collapse if followed by poor reproduction.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSection(-1)">← Previous</button>
+            <div class="section-indicator" id="sectionDots"></div>
+            <button class="nav-btn" id="nextBtn" onclick="changeSection(1)">Next →</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo">
+        <p>© 2025 BETA Biosciences. All rights reserved.<br>Email: betabiosciences@gmail.com</p>
+    </footer>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 9;
+
+        function initializePage() {
+            createSectionDots();
+            updateNavigation();
+            updateProgress();
+            initializeQuiz();
+        }
+
+        function createSectionDots() {
+            const dotsContainer = document.getElementById('sectionDots');
+            for (let i = 1; i <= totalSections; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (i === 1) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSection(i));
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function changeSection(direction) {
+            const newSection = currentSection + direction;
+            if (newSection >= 1 && newSection <= totalSections) {
+                goToSection(newSection);
+            }
+        }
+
+        function goToSection(sectionNum) {
+            // Hide current section
+            document.querySelector('.section.active').classList.remove('active');
+            
+            // Show new section
+            currentSection = sectionNum;
+            document.querySelector(`[data-section="${currentSection}"]`).classList.add('active');
+            
+            // Update navigation
+            updateNavigation();
+            updateProgress();
+            updateSectionDots();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentSection === 1;
+            nextBtn.disabled = currentSection === totalSections;
+        }
+
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progress = (currentSection / totalSections) * 100;
+            progressFill.style.width = `${progress}%`;
+        }
+
+        function updateSectionDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index + 1 === currentSection);
+            });
+        }
+
+        function initializeQuiz() {
+            const quizOptions = document.querySelectorAll('.quiz-option');
+            quizOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove previous selections from this question
+                    const questionOptions = this.parentNode.querySelectorAll('.quiz-option');
+                    questionOptions.forEach(opt => {
+                        opt.classList.remove('correct', 'incorrect');
+                    });
+                    
+                    // Mark the selected option
+                    if (this.dataset.correct === 'true') {
+                        this.classList.add('correct');
+                    } else {
+                        this.classList.add('incorrect');
+                        // Also show the correct answer
+                        const correctOption = this.parentNode.querySelector('[data-correct="true"]');
+                        if (correctOption) {
+                            correctOption.classList.add('correct');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Handle keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSection > 1) {
+                changeSection(-1);
+            } else if (e.key === 'ArrowRight' && currentSection < totalSections) {
+                changeSection(1);
+            }
+        });
+
+        // Handle swipe gestures for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0 && currentSection > 1) {
+                    // Swipe right - go to previous section
+                    changeSection(-1);
+                } else if (swipeDistance < 0 && currentSection < totalSections) {
+                    // Swipe left - go to next section
+                    changeSection(1);
+                }
+            }
+        }
+
+        // Initialize the page when loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+</body>
+</html>
