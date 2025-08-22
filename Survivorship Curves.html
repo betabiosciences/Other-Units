@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Survivorship Curves</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3a 100%);
+            color: #e0e6ed;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100vw;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+        }
+        
+        .header h1 {
+            color: #ffffff;
+            font-size: 1.5em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .content-wrapper {
+            padding: 20px;
+            min-height: calc(100vh - 180px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .section {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section h2 {
+            color: #4ecdc4;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #4ecdc4;
+            padding-bottom: 8px;
+        }
+        
+        .section h3 {
+            color: #ff9f43;
+            font-size: 1.2em;
+            margin: 20px 0 10px 0;
+        }
+        
+        .section p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+            text-align: justify;
+            font-size: 1em;
+        }
+        
+        .question-container {
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ff6b6b;
+        }
+        
+        .question-container h4 {
+            color: #ff6b6b;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .answer-option {
+            background: rgba(78, 205, 196, 0.1);
+            margin: 8px 0;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-size: 0.95em;
+        }
+        
+        .answer-option:hover {
+            background: rgba(78, 205, 196, 0.2);
+            border-color: #4ecdc4;
+            transform: translateX(5px);
+        }
+        
+        .answer-option.selected {
+            background: rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+        }
+        
+        .answer-option.correct-revealed {
+            background: rgba(46, 213, 115, 0.3);
+            border-color: #2ed573;
+        }
+        
+        .answer-option.incorrect-revealed {
+            background: rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+        }
+        
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .section-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(78, 205, 196, 0.3);
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(90deg, #2c3e50, #34495e);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+        
+        .nav-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            color: #4ecdc4;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            width: 100px;
+            height: 6px;
+            background: rgba(78, 205, 196, 0.3);
+            border-radius: 3px;
+            margin: 0 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #44a08d);
+            transition: width 0.3s ease;
+        }
+        
+        .section-indicator {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ecdc4;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        strong {
+            color: #ff9f43;
+            font-weight: 700;
+        }
+        
+        em {
+            color: #4ecdc4;
+            font-style: italic;
+        }
+        
+        .footer {
+            background-color: #1a1a3a;
+            color: #ccc;
+            text-align: center;
+            padding: 20px 10px;
+            font-size: 0.8em;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer img {
+            max-width: 100px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .content-wrapper {
+                padding: 15px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.3em;
+            }
+            
+            .nav-btn {
+                padding: 10px 16px;
+                font-size: 0.85em;
+            }
+            
+            .progress-bar {
+                width: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Understanding Survivorship Curves</h1>
+        </header>
+        
+        <div class="content-wrapper">
+            <div class="section-indicator">
+                <span id="currentSection">1</span> / <span id="totalSections">9</span>
+            </div>
+            
+            <!-- Section 1: Introduction -->
+            <div class="section active">
+                <h2>Understanding Survivorship Curves</h2>
+                <p>Ecologists use <strong>survivorship curves</strong> to quickly compare the survival patterns of different organisms. These graphs plot the number of surviving individuals against their age. The data can come from either a <strong>static life table</strong> (a snapshot in time) or a <strong>cohort life table</strong> (following a group from birth).</p>
+                
+                <p>The number of surviving individuals, often represented as <em>n<sub>x</sub></em>, is typically shown on a <strong>logarithmic scale</strong>. This is because a log scale helps ecologists focus on the <strong>rate of change</strong> in a population, rather than just the absolute numbers.</p>
+                
+                <p>For example, a population that starts with 1,000 individuals and loses 500 in a year has a log decrease of log₁₀1,000−log₁₀500=3.0−2.7=0.3.</p>
+                
+                <p>Similarly, a population starting with 100 individuals that loses 50 has a log decrease of log₁₀100−log₁₀50=2.0−1.7=0.3.</p>
+                
+                <p>In both cases, the rate of change is the same (0.3 per year), even though the number of individuals lost is different. Plotting the data on a log scale ensures that the rate of change of one species' curve can be easily compared to another's, regardless of their initial population size.</p>
+                
+                <p>For instance, the survivorship curve for beavers on a log scale is nearly a diagonal line, indicating a uniform death rate throughout their lives.</p>
+            </div>
+            
+            <!-- Section 2: North American Beaver -->
+            <div class="section">
+                <h2>Population Structure and Survivorship of the North American Beaver</h2>
+                <p>The population of North American beavers, like many species, is age-structured, meaning it is composed of individuals of varying ages. Ecologists study these populations using tools like life tables, which track a cohort—a group of same-aged individuals—from birth to death to understand survival and mortality patterns.</p>
+                
+                <div class="image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Survivorship%20curve%20fig1.jpg" alt="North American Beaver Survivorship Curve" class="section-image">
+                </div>
+                
+                <p>The provided graph illustrates a survivorship curve for the North American beaver, which plots the number of surviving individuals (n_x) on a logarithmic scale against their age in years. The curve's shape reveals key insights into the beaver's life history:</p>
+                
+                <h3>Initial High Mortality:</h3>
+                <p>The curve shows a relatively steep decline during the first couple of years of life (ages 0-2). This indicates a high mortality rate for young beavers, likely due to factors such as predation or lack of resources. This initial pattern is characteristic of a Type III survivorship curve, where many offspring are produced to compensate for high early-life losses.</p>
+                
+                <h3>Stable Adult Survivorship:</h3>
+                <p>After the initial vulnerable period, the curve flattens out significantly for the majority of the beaver's adult life (approximately ages 2 to 9). This indicates a consistent, low mortality rate. This stage of the curve is a defining feature of a Type II survivorship curve, where the probability of death is relatively constant throughout the lifespan.</p>
+                
+                <h3>Increased Mortality in Old Age:</h3>
+                <p>The curve begins to drop more sharply again after age 9, indicating an increase in the death rate as beavers reach the end of their lifespan. This is a common pattern for many species, reflecting the effects of aging, disease, and reduced physical capability.</p>
+                
+                <p>In conclusion, while the beaver's survivorship curve shows an initial period of high mortality, its overall pattern—especially during the long adult phase—is best characterized as a <strong>Type II survivorship curve.</strong> This suggests that once a beaver survives its vulnerable youth, it has a consistent chance of survival throughout its prime years, which is a common survival strategy for species that provide significant parental care and have fewer offspring than those with a true Type III curve.</p>
+            </div>
+            
+            <!-- Section 3: Types of Survivorship Curves -->
+            <div class="section">
+                <h2>Types of Survivorship Curves</h2>
+                
+                <div class="image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Survivorship%20curve%20fig2.jpg" alt="Types of Survivorship Curves" class="section-image">
+                </div>
+                
+                <p>Ecologists use three main types of <strong>survivorship curves</strong> to represent the patterns of survival within a population.</p>
+                
+                <h3>Type I Survivorship</h3>
+                <p>In a <strong>Type I curve</strong>, the death rate is low for young individuals and increases significantly as organisms get older, making them more susceptible to sickness and predators. Species with this pattern, such as many large mammals including humans, generally produce few offspring but invest heavily in their care. The data for Dall mountain sheep in Denali National Park is a classic example of a Type I curve. There's a slight decline in survival for young lambs, but then the curve flattens out, showing high survival through about age 7 or 8 before the death rate rises sharply in older sheep. This data supports the observation that mortality is highest among the very young and the very old.</p>
+                
+                <div class="image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Survivorship%20curve%20fig3.jpg" alt="Type I Survivorship Curve - Dall Mountain Sheep" class="section-image">
+                </div>
+            </div>
+            
+            <!-- Section 4: Type III and Type II -->
+            <div class="section">
+                <h3>Type III Survivorship</h3>
+                <p>At the opposite end is a <strong>Type III curve</strong>, where there is a very high death rate for juveniles, and the curve flattens out for the few individuals who survive early life. This pattern is common in many fish, marine invertebrates, insects, and plants. These species often produce a large number of offspring, but most die before reaching maturity. For example, barnacles release many juveniles that are lost at sea, but those that find a suitable rock face to attach to are likely to survive and thrive. The survivorship curve for the barnacle <em>Balanus glandula</em> shows massive mortality in the first year of life. Similarly, many insects and plants lay a large number of eggs or release hundreds of seeds, most of which do not survive.</p>
+                
+                <div class="image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Survivorship%20curve%20fig4.jpg" alt="Type III Survivorship Curve - Barnacles" class="section-image">
+                </div>
+                
+                <h3>Type II Survivorship</h3>
+                <p>A <strong>Type II curve</strong> represents a middle ground, characterized by a fairly consistent death rate throughout an organism's life. This pattern is seen in many birds, small mammals, reptiles, and some annual plants. A beaver population, for instance, would be a good example of a Type II survivorship curve.</p>
+                
+                <p>It is important to remember that these are general models, and few populations fit them perfectly. Human activities, such as harvesting specific age groups, can also impact a species' survivorship curve.</p>
+            </div>
+            
+            <!-- Section 5: Static vs Cohort Life Tables -->
+            <div class="section">
+                <h2>Static vs. Cohort Life Tables</h2>
+                <p>When studying populations, ecologists use different methods to collect data. A <strong>cohort life table</strong> tracks a group of individuals born around the same time throughout their entire lives. In contrast, a <strong>static life table</strong> takes a snapshot of a population at a single point in time, recording the number of individuals in each age class.</p>
+                
+                <p>Comparing the accuracy of these two methods is difficult for most species, but it is possible for humans using historical birth and death records.</p>
+                
+                <div class="image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Survivorship%20curve%20fig5.jpg" alt="Static vs Cohort Life Tables Comparison" class="section-image">
+                </div>
+                
+                <p>For example, a cohort survivorship curve for the British peerage born in 1800 can be compared to a static curve of a hypothetical English population in 1812. The static curve in this case would be less accurate because it ignores environmental changes over time. The 72-year-olds in the 1812 static curve would have been born in 1750, a time when medical care and diet were less advanced than they were for the people who reached age 70 in 1882. Therefore, the static table's prediction for how many 70-year-olds would be alive in 1882 would be based on outdated data.</p>
+                
+                <p>In the natural world, environmental factors like climate and food supply vary from year to year, which is why a <strong>cohort life table is always more accurate</strong> than a static one. However, because it is often impractical and resource-intensive to track long-lived populations from birth to death, static life tables are a quicker and more affordable way to get a general idea of a population's age structure.</p>
+            </div>
+            
+            <!-- Section 6: Conclusion -->
+            <div class="section">
+                <h2>Conclusion</h2>
+                <p>In conclusion, survivorship curves are essential tools for ecologists to visualize and compare the survival strategies of different species. These curves, whether derived from static or more accurate cohort life tables, reveal fundamental patterns in how mortality rates change with age. The three primary models—<strong>Type I (low juvenile mortality, high old-age mortality), Type III (high juvenile mortality, low adult mortality), and Type II (constant mortality rate)</strong>—each correspond to a distinct life history strategy. While few species fit these idealized curves perfectly, they provide a valuable framework for understanding population dynamics. The North American beaver serves as a compelling example of a species that primarily exhibits a Type II pattern, characterized by a consistent survival rate during its prime adult years after an initially high-risk juvenile phase. This highlights that many species' curves are a blend of these ideal types, reflecting complex interactions between an organism's life history, its environment, and factors like parental care and resource availability.</p>
+            </div>
+            
+            <!-- Section 7: Test Your Knowledge Part 1 -->
+            <div class="section">
+                <h2>Test Your Knowledge - Part 1</h2>
+                
+                <div class="question-container">
+                    <h4>1. Which of the following describes a Type I survivorship curve?</h4>
+                    <div class="answer-option" data-correct="false">a. High mortality rate in the early stages of life, with a flattened curve for those who survive.</div>
+                    <div class="answer-option" data-correct="false">b. A constant death rate throughout an organism's life.</div>
+                    <div class="answer-option" data-correct="true">c. Low death rate for juveniles, with most individuals dying later in life.</div>
+                    <div class="answer-option" data-correct="false">d. A curve that is not impacted by human activities or environmental variations.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>2. The survivorship curve for the Dall mountain sheep is a classic example of which type, and why?</h4>
+                    <div class="answer-option" data-correct="true">a. Type I, because most sheep survive well through their prime years before the number declines rapidly as they age.</div>
+                    <div class="answer-option" data-correct="false">b. Type III, because there is a slight initial decline in survivorship for young lambs.</div>
+                    <div class="answer-option" data-correct="false">c. Type I, because they have a low death rate as young lambs and then die off quickly.</div>
+                    <div class="answer-option" data-correct="false">d. Type II, because they have a fairly uniform death rate throughout their lives.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>3. Which survivorship curve is characteristic of organisms that produce a large number of offspring and provide little parental care?</h4>
+                    <div class="answer-option" data-correct="true">a. Type III, because the majority of their offspring die early in life.</div>
+                    <div class="answer-option" data-correct="false">b. Type I, because most of their offspring are likely to survive into adulthood.</div>
+                    <div class="answer-option" data-correct="false">c. Type II, because they are more prone to sickness and predators at all ages.</div>
+                    <div class="answer-option" data-correct="false">d. None of the above</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>4. The survivorship curve for a beaver population is described as most closely resembling a Type II curve. What does this imply about the beaver's death rate?</h4>
+                    <div class="answer-option" data-correct="false">a. Most beavers die in the first year of life.</div>
+                    <div class="answer-option" data-correct="true">b. The death rate is fairly uniform throughout the beaver's life.</div>
+                    <div class="answer-option" data-correct="false">c. The death rate is low in youth and high in old age.</div>
+                    <div class="answer-option" data-correct="false">d. The death rate is unpredictable and varies greatly from year to year.</div>
+                </div>
+            </div>
+            
+            <!-- Section 8: Test Your Knowledge Part 2 -->
+            <div class="section">
+                <h2>Test Your Knowledge - Part 2</h2>
+                
+                <div class="question-container">
+                    <h4>5. What is the primary advantage of a cohort life table over a static life table?</h4>
+                    <div class="answer-option" data-correct="false">a. It is a quicker and cheaper method to get a rough idea of population distribution</div>
+                    <div class="answer-option" data-correct="true">b. It provides a more accurate picture of how death rates change over time because it accounts for environmental variations.</div>
+                    <div class="answer-option" data-correct="false">c. It is based on a hypothetical population rather than a real one.</div>
+                    <div class="answer-option" data-correct="false">d. It can be created using birth and death records for all ages at a certain time.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>6. Why is it difficult to compare the accuracy of static and cohort life tables for most animal populations?</h4>
+                    <div class="answer-option" data-correct="true">a. Because it is often impractical to follow a single cohort of organisms from birth to death, especially if they are long-lived.</div>
+                    <div class="answer-option" data-correct="false">b. Because most animals have a Type II survivorship curve, making both tables equally accurate.</div>
+                    <div class="answer-option" data-correct="false">c. Because cohort life tables are always less accurate than static life tables.</div>
+                    <div class="answer-option" data-correct="false">d. Because static life tables are based on environmental data that is impossible to collect.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>7. Which of the following would be an example of a species that likely exhibits a Type III survivorship curve?</h4>
+                    <div class="answer-option" data-correct="false">a. A shark that gives birth to a few live pups and protects them for several months.</div>
+                    <div class="answer-option" data-correct="false">b. A common bird species that has a clutch of several eggs each year, with a consistent mortality risk from predators throughout their life.</div>
+                    <div class="answer-option" data-correct="true">c. A sea turtle that lays hundreds of eggs on a beach and leaves them to hatch on their own.</div>
+                    <div class="answer-option" data-correct="false">d. An elephant that has a single calf every few years and invests a great deal of energy in raising it.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>8. Why is the cohort life table always more accurate than the static life table in the natural world?</h4>
+                    <div class="answer-option" data-correct="false">a. Because it is based on a larger number of individuals, leading to more reliable data.</div>
+                    <div class="answer-option" data-correct="true">b. Because it accounts for environmental variations like climate and food supply that occur over an organism's lifetime.</div>
+                    <div class="answer-option" data-correct="false">c. Because it ignores unpredictable environmental variations that occur over time.</div>
+                    <div class="answer-option" data-correct="false">d. Because it can be created more quickly and cheaply.</div>
+                </div>
+            </div>
+            
+            <!-- Section 9: Test Your Knowledge Part 3 -->
+            <div class="section">
+                <h2>Test Your Knowledge - Part 3</h2>
+                
+                <div class="question-container">
+                    <h4>9. What is the main benefit of plotting the number of surviving individuals (n_x) on a logarithmic scale in a survivorship curve?</h4>
+                    <div class="answer-option" data-correct="false">a. It makes the graph look more aesthetically pleasing to ecologists.</div>
+                    <div class="answer-option" data-correct="false">b. It provides a more accurate representation of the population's true death rate.</div>
+                    <div class="answer-option" data-correct="false">c. It helps to show the exact number of individuals that have survived at each age.</div>
+                    <div class="answer-option" data-correct="true">d. It allows for a direct comparison of the rate of change between species regardless of their initial population size.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>10. What is the main reason why static life tables might provide misleading predictions about a population's future?</h4>
+                    <div class="answer-option" data-correct="false">a. They are a more expensive and time-consuming method than cohort life tables.</div>
+                    <div class="answer-option" data-correct="true">b. They assume that environmental conditions remain constant over time, which is not true in the natural world.</div>
+                    <div class="answer-option" data-correct="false">c. They are based on a smaller sample size than cohort life tables.</div>
+                    <div class="answer-option" data-correct="false">d. They are only used for human populations and not for other species.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>11. Which of the following populations would best be studied using a static life table due to the impracticality of a cohort study?</h4>
+                    <div class="answer-option" data-correct="true">a. A long-lived whale population that lives for over a hundred years.</div>
+                    <div class="answer-option" data-correct="false">b. A population of mice that reproduce quickly and live for 2-3 years.</div>
+                    <div class="answer-option" data-correct="false">c. A population of short-lived insects with a lifespan of a few weeks.</div>
+                    <div class="answer-option" data-correct="false">d. A population of annual plants that live for only one season.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>12. What is the primary difference in the shape of a survivorship curve plotted on a linear scale versus a logarithmic scale?</h4>
+                    <div class="answer-option" data-correct="false">a. A Type III curve would appear as a straight line on a logarithmic scale and a curve on a linear scale.</div>
+                    <div class="answer-option" data-correct="false">b. A Type II curve would appear as a curve on a linear scale and a straight line on a logarithmic scale.</div>
+                    <div class="answer-option" data-correct="false">c. A Type I curve would appear as a curve on both scales, but the death rate in old age would appear steeper on the logarithmic scale.</div>
+                    <div class="answer-option" data-correct="true">d. A constant rate of change in survivorship appears as a straight line on a logarithmic scale, whereas it would appear as a curve on a linear scale.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>13. An ecologist observes a population of beetles where a large number of eggs are laid, but only a few larvae survive to adulthood. Which survivorship curve would this population most likely fit?</h4>
+                    <div class="answer-option" data-correct="false">a. Type I</div>
+                    <div class="answer-option" data-correct="false">b. Type II</div>
+                    <div class="answer-option" data-correct="true">c. Type III</div>
+                    <div class="answer-option" data-correct="false">d. It cannot be determined from the information given.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>14. What is the key difference in the data collection method for a static life table compared to a cohort life table?</h4>
+                    <div class="answer-option" data-correct="false">a. A static table tracks individuals born at the same time, while a cohort table examines different age classes at one time point.</div>
+                    <div class="answer-option" data-correct="true">b. A static table takes a snapshot of individuals of all ages at one point in time, while a cohort table follows a group of individuals from birth to death.</div>
+                    <div class="answer-option" data-correct="false">c. A static table uses data from birth and death records, while a cohort table uses direct observation.</div>
+                    <div class="answer-option" data-correct="false">d. A static table collects data on a population's mortality over several generations, while a cohort table does so for a single generation.</div>
+                </div>
+                
+                <div class="question-container">
+                    <h4>15. A population of a specific plant species releases hundreds of seeds, but a high number of them die off due to lack of suitable soil and predators. This plant would most likely have a survivorship curve similar to which organism?</h4>
+                    <div class="answer-option" data-correct="false">a. Humans</div>
+                    <div class="answer-option" data-correct="false">b. Beavers</div>
+                    <div class="answer-option" data-correct="false">c. Dall mountain sheep</div>
+                    <div class="answer-option" data-correct="true">d. Barnacles</div>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSection(-1)">← Previous</button>
+            <div class="progress-indicator">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span id="progressText">1/9</span>
+            </div>
+            <button class="nav-btn" id="nextBtn" onclick="changeSection(1)">Next →</button>
+        </nav>
+
+        <footer class="footer">
+            <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo">
+            <p>
+                © 2025 BETA Biosciences. All rights reserved.<br>
+                Email: betabiosciences@gmail.com
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        let currentSectionIndex = 0;
+        const sections = document.querySelectorAll('.section');
+        const totalSections = sections.length;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const currentSectionSpan = document.getElementById('currentSection');
+        const totalSectionsSpan = document.getElementById('totalSections');
+
+        // Initialize
+        totalSectionsSpan.textContent = totalSections;
+        updateNavigation();
+
+        function changeSection(direction) {
+            // Hide current section
+            sections[currentSectionIndex].classList.remove('active');
+            
+            // Update index
+            currentSectionIndex += direction;
+            
+            // Show new section
+            sections[currentSectionIndex].classList.add('active');
+            
+            // Update navigation
+            updateNavigation();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function updateNavigation() {
+            // Update buttons
+            prevBtn.disabled = currentSectionIndex === 0;
+            nextBtn.disabled = currentSectionIndex === totalSections - 1;
+            
+            // Update progress
+            const progress = ((currentSectionIndex + 1) / totalSections) * 100;
+            progressFill.style.width = progress + '%';
+            progressText.textContent = `${currentSectionIndex + 1}/${totalSections}`;
+            currentSectionSpan.textContent = currentSectionIndex + 1;
+        }
+
+        // Touch gesture support for mobile
+        let startX = 0;
+        let startY = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            if (!startX || !startY) return;
+
+            let endX = e.changedTouches[0].clientX;
+            let endY = e.changedTouches[0].clientY;
+
+            let diffX = startX - endX;
+            let diffY = startY - endY;
+
+            // Only process horizontal swipes (not vertical scrolling)
+            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+                if (diffX > 0 && currentSectionIndex < totalSections - 1) {
+                    // Swipe left - next section
+                    changeSection(1);
+                } else if (diffX < 0 && currentSectionIndex > 0) {
+                    // Swipe right - previous section
+                    changeSection(-1);
+                }
+            }
+
+            startX = 0;
+            startY = 0;
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSectionIndex > 0) {
+                changeSection(-1);
+            } else if (e.key === 'ArrowRight' && currentSectionIndex < totalSections - 1) {
+                changeSection(1);
+            }
+        });
+
+        // Interactive answer options
+        document.querySelectorAll('.answer-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const questionContainer = this.parentElement;
+                const allOptions = questionContainer.querySelectorAll('.answer-option');
+                const isCorrect = this.getAttribute('data-correct') === 'true';
+                
+                // Check if this question has already been answered
+                if (questionContainer.classList.contains('answered')) {
+                    return;
+                }
+                
+                // Mark question as answered
+                questionContainer.classList.add('answered');
+                
+                // Mark the selected option
+                this.classList.add('selected');
+                
+                // Show all correct and incorrect answers
+                allOptions.forEach(opt => {
+                    const optIsCorrect = opt.getAttribute('data-correct') === 'true';
+                    if (optIsCorrect) {
+                        opt.classList.add('correct-revealed');
+                    } else if (opt.classList.contains('selected') && !optIsCorrect) {
+                        opt.classList.add('incorrect-revealed');
+                    }
+                    
+                    // Disable clicking on other options
+                    opt.style.pointerEvents = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
