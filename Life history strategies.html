@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life History Strategies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100vw;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .section {
+            display: none;
+            flex: 1;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            color: #ffd700;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 10px;
+        }
+
+        .section h3 {
+            color: #87ceeb;
+            font-size: 1.2rem;
+            margin: 20px 0 15px 0;
+        }
+
+        .section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin: 15px 0 15px 20px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th {
+            background: rgba(255, 215, 0, 0.8);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .quiz-question {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffd700;
+        }
+
+        .quiz-question h4 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+
+        .quiz-options {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .quiz-options li {
+            padding: 8px 15px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-options li:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateX(5px);
+        }
+
+        .quiz-options li.correct {
+            background: rgba(46, 204, 113, 0.6);
+            font-weight: bold;
+        }
+
+        .quiz-options li.incorrect {
+            background: rgba(231, 76, 60, 0.6);
+            font-weight: bold;
+        }
+
+        .quiz-options li.answered {
+            pointer-events: none;
+        }
+
+        .quiz-question.answered .quiz-options li:not(.correct):not(.incorrect) {
+            opacity: 0.5;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 15px;
+            margin-top: auto;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .section-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .indicator-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .indicator-dot.active {
+            background: #ffd700;
+            transform: scale(1.3);
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+        }
+        
+        .footer img {
+            width: 100px;
+            margin-bottom: 10px;
+        }
+        
+        .footer p {
+            font-size: 0.8rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .section {
+                padding: 20px;
+                max-height: calc(100vh - 180px);
+            }
+
+            .section h2 {
+                font-size: 1.3rem;
+            }
+
+            .comparison-table {
+                font-size: 0.8rem;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px 6px;
+            }
+
+            .nav-btn {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+
+            .section-title {
+                display: none;
+            }
+        }
+
+        strong {
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        em {
+            color: #87ceeb;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LIFE HISTORY STRATEGIES</h1>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <div class="section active" id="section-1">
+            <h2>Introduction to Life History Strategies</h2>
+            <p>Life history strategies are a set of evolved traits that influence an organism's survival, reproduction, and overall fitness. These strategies are not conscious choices but rather adaptive features shaped by natural selection in response to environmental pressures. They encompass a wide range of characteristics, including <strong>reproductive patterns</strong>, <strong>lifespan</strong>, <strong>competitive ability</strong>, and <strong>habitat preference</strong>. Understanding these strategies is crucial for predicting how populations grow and respond to changes in their environment.</p>
+        </div>
+
+        <!-- Section 2: Reproductive Timing -->
+        <div class="section" id="section-2">
+            <h2>Reproductive Timing: Semelparity vs. Iteroparity</h2>
+            <p>One of the most fundamental aspects of a life history strategy is the timing of reproduction. Organisms can either reproduce once and die, a strategy known as <strong>semelparity</strong>, or reproduce multiple times throughout their lives, a strategy called <strong>iteroparity</strong>.</p>
+            
+            <img src="https://betabiosciences.github.io/Other-Units/Life%20history%20strategies%20fig1.jpg" alt="Semelparity vs Iteroparity">
+
+            <ul>
+                <li><strong>Semelparity</strong>: The term comes from Latin words meaning "once to bear." This strategy involves a single, often massive, reproductive event before death. It's common in many insects, annual plants, and even some larger organisms like Pacific salmon and agave plants. The trade-off here is clear: the organism dedicates all its energy to a single burst of reproduction, maximizing the number of offspring but at the cost of its own survival. This strategy is often favoured in environments where the survival of offspring is highly unpredictable, as it's a form of "bet-hedging"---a large number of seeds or eggs increases the chance that at least some will survive.</li>
+                
+                <li><strong>Iteroparity</strong>: This strategy, from the Latin "to repeat," involves repeated reproductive cycles over a lifetime. It is the norm for most vertebrates and perennial plants, such as trees. Iteroparity can be further divided:
+                    <ul>
+                        <li><strong>Seasonal Iteroparity</strong>: Reproduction occurs during specific, favourable seasons. This is typical for animals in temperate climates, such as deer and many bird species, as well as plants like temperate forest trees.</li>
+                        <li><strong>Continuous Iteroparity</strong>: Reproduction can happen year-round. This is more common in stable, tropical environments and among some primates and parasites.</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Section 3: Comparison Table 1 -->
+        <div class="section" id="section-3">
+            <h2>Semelparity vs. Iteroparity Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Semelparity</th>
+                        <th>Iteroparity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Reproductive Frequency</td>
+                        <td>Single, once-in-a-lifetime event</td>
+                        <td>Multiple reproductive events over a lifetime</td>
+                    </tr>
+                    <tr>
+                        <td>Lifespan after Reproduction</td>
+                        <td>The organism dies shortly after reproduction</td>
+                        <td>The organism survives and can reproduce again</td>
+                    </tr>
+                    <tr>
+                        <td>Investment per Offspring</td>
+                        <td>Lower investment per offspring (often many small ones)</td>
+                        <td>Higher investment per offspring (often fewer, larger ones)</td>
+                    </tr>
+                    <tr>
+                        <td>Number of Offspring</td>
+                        <td>Often a very large number in a single event</td>
+                        <td>Varies, but total number over lifetime can be high</td>
+                    </tr>
+                    <tr>
+                        <td>Environmental Context</td>
+                        <td>Favored in unpredictable environments (bet-hedging)</td>
+                        <td>Favored in stable, predictable environments</td>
+                    </tr>
+                    <tr>
+                        <td>Examples</td>
+                        <td>Agave plants, Pacific salmon, annual insects and plants</td>
+                        <td>Most vertebrates (mammals, birds, reptiles), perennial trees</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Iteroparity is a safer bet in stable environments, allowing organisms to allocate energy to both reproduction and self-maintenance. By living longer and breeding multiple times, they increase the probability of leaving behind successful offspring, especially if conditions are not ideal in a particular year.</p>
+        </div>
+
+        <!-- Section 4: r/K Selection Theory -->
+        <div class="section" id="section-4">
+            <h2>The r/K Selection Theory</h2>
+            <p>Developed by Robert MacArthur and Edward Wilson, the <strong>r/K selection theory</strong> provides a framework for understanding how life history strategies are linked to population growth and competition. The theory views strategies as a continuum between two extremes:</p>
+            
+            <img src="https://betabiosciences.github.io/Other-Units/Life%20history%20strategies%20fig3.jpg" alt="r/K Selection Theory">
+
+            <ul>
+                <li><strong>r-Selected Species</strong>: These species are characterized by a high intrinsic rate of population increase (<em>r</em>). They prioritize rapid growth and large numbers of offspring over competitive ability. They are often small, mature quickly, have short lifespans, and produce many tiny offspring. Examples include weeds, bacteria, and insects. These organisms thrive in disturbed or unpredictable environments, quickly colonizing new habitats before they are outcompeted by other species.</li>
+                
+                <li><strong>K-Selected Species</strong>: These species are adapted to stable environments where populations are at or near the carrying capacity (<em>K</em>) of their habitat. They are strong competitors and prioritize quality over quantity. They tend to be large, mature slowly, live for a long time, and produce few, large offspring. Examples include oak trees, elephants, and large carnivores. Their traits, such as longevity and large size, give them a competitive edge in mature, stable ecosystems. However, these very traits make them particularly vulnerable to human-induced disturbances like habitat loss and overhunting, as their populations cannot recover quickly from a decline.</li>
+            </ul>
+        </div>
+
+        <!-- Section 5: r/K Selection Comparison -->
+        <div class="section" id="section-5">
+            <h2>r-Selection vs. K-Selection Comparison</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>r-Selected Species</th>
+                        <th>K-Selected Species</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Population Growth Rate (r)</td>
+                        <td>High</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Population Size</td>
+                        <td>Often well below carrying capacity (K)</td>
+                        <td>Close to carrying capacity (K)</td>
+                    </tr>
+                    <tr>
+                        <td>Development</td>
+                        <td>Rapid</td>
+                        <td>Slow</td>
+                    </tr>
+                    <tr>
+                        <td>Reproductive Rate</td>
+                        <td>High</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Competitive Ability</td>
+                        <td>Poor</td>
+                        <td>Strong</td>
+                    </tr>
+                    <tr>
+                        <td>Dispersal Ability</td>
+                        <td>Good</td>
+                        <td>Poor</td>
+                    </tr>
+                    <tr>
+                        <td>Body Size</td>
+                        <td>Small</td>
+                        <td>Large</td>
+                    </tr>
+                    <tr>
+                        <td>Lifespan</td>
+                        <td>Short</td>
+                        <td>Long</td>
+                    </tr>
+                    <tr>
+                        <td>Maturity</td>
+                        <td>Early</td>
+                        <td>Late</td>
+                    </tr>
+                    <tr>
+                        <td>Number of Offspring</td>
+                        <td>Many</td>
+                        <td>Few</td>
+                    </tr>
+                    <tr>
+                        <td>Parental Care</td>
+                        <td>Little to none</td>
+                        <td>Extensive</td>
+                    </tr>
+                    <tr>
+                        <td>Habitat Type</td>
+                        <td>Unpredictable, disturbed, or temporary</td>
+                        <td>Predictable, stable, and mature</td>
+                    </tr>
+                    <tr>
+                        <td>Survivorship</td>
+                        <td>High mortality of young (Type Ⅲ)</td>
+                        <td>Low mortality of young (Type Ⅰ)</td>
+                    </tr>
+                    <tr>
+                        <td>Examples</td>
+                        <td>Weeds, bacteria, insects</td>
+                        <td>Oak trees, elephants, whales, large carnivores</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 6: Grime's Triangle -->
+        <div class="section" id="section-6">
+            <h2>Grime's Triangle: An Alternative Perspective</h2>
+            <p>Ecologist Phillip Grime proposed a different model, the <strong>Grime's triangle</strong>, to classify plant life history strategies based on three factors: <strong>stress</strong>, <strong>disturbance</strong>, and <strong>competition</strong>. The three corners of the triangle represent three primary strategies:</p>
+            
+            <img src="https://betabiosciences.github.io/Other-Units/Life%20history%20strategies%20fig5.jpg" alt="Grime's Triangle">
+
+            <ol>
+                <li><strong>Ruderals</strong>: These are disturbance-tolerant species, similar to r-selected species. They thrive in areas with frequent disturbance and are quick to colonize new ground.</li>
+                <li><strong>Competitors</strong>: These species are dominant in productive, low-stress environments where competition for resources is intense. They are excellent at outcompeting other plants.</li>
+                <li><strong>Stress Tolerators</strong>: These species are adapted to environments with high levels of stress (e.g., extreme temperatures, poor soil) where resources are scarce. They grow slowly and are efficient at surviving under difficult conditions.</li>
+            </ol>
+            
+            <p>Grime's model suggests a trade-off: a plant cannot be a superior competitor and a stress tolerator at the same time. Many species, however, fall somewhere in the middle, displaying a mix of these traits. This framework can also be applied to animals, with desert animals acting as stress tolerators and large carnivores as competitors.</p>
+            
+            <p>A demographic interpretation of this model by Jonathan Silvertown and colleagues further clarifies the trade-offs in terms of <strong>fecundity</strong> (reproductive output), <strong>growth</strong>, and <strong>survival</strong>. This model shows that species can be successful by excelling in one or two of these areas, but not all three. For instance, a semelparous plant might have high fecundity but low survival, while an iteroparous tree has high survival but lower annual fecundity.</p>
+
+            <img src="https://betabiosciences.github.io/Other-Units/Life%20history%20strategies%20fig6.jpg" alt="Grime's Triangle Demographic Interpretation">
+        </div>
+
+        <!-- Section 7: Grime's Triangle Comparison -->
+        <div class="section" id="section-7">
+            <h2>Grime's Triangle: A Three-Way Trade-off</h2>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Ruderals (Disturbance-Tolerant)</th>
+                        <th>Competitors (Competitive)</th>
+                        <th>Stress Tolerators (Stress-Tolerant)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dominant Strategy</td>
+                        <td>Colonization and rapid growth in disturbed areas</td>
+                        <td>Outcompeting other plants for resources</td>
+                        <td>Survival under harsh environmental conditions</td>
+                    </tr>
+                    <tr>
+                        <td>Key Environmental Factor</td>
+                        <td>High Disturbance</td>
+                        <td>High Competition</td>
+                        <td>High Stress</td>
+                    </tr>
+                    <tr>
+                        <td>Growth Rate</td>
+                        <td>Fast</td>
+                        <td>Fast</td>
+                        <td>Slow</td>
+                    </tr>
+                    <tr>
+                        <td>Reproductive Effort</td>
+                        <td>High</td>
+                        <td>Moderate to low</td>
+                        <td>Low</td>
+                    </tr>
+                    <tr>
+                        <td>Lifespan</td>
+                        <td>Short</td>
+                        <td>Long</td>
+                        <td>Long</td>
+                    </tr>
+                    <tr>
+                        <td>Examples</td>
+                        <td>Annual weeds, species in disturbed habitats</td>
+                        <td>Trees in a mature forest, grasses in a grassland</td>
+                        <td>Succulents, cacti, mangroves, alpine plants</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section 8: Population Viability Analysis -->
+        <div class="section" id="section-8">
+            <h2>Population Viability Analysis (PVA)</h2>
+            <p>Life history data is critical for conservation efforts, particularly through a technique called <strong>Population Viability Analysis (PVA)</strong>. This method uses computer models to assess the probability that a population will go extinct over a given time period. It integrates various factors, including population size, age structure, and the effects of chance events like droughts or diseases.</p>
+            
+            <p>A key output of a PVA is the <strong>Minimum Viable Population (MVP)</strong>, which is the smallest population size needed to ensure a species' long-term survival. For example, a study using PVA on 102 vertebrate species concluded that an average of 7,316 sexually mature adults is needed to maintain a population for at least 40 generations. This powerful tool helps conservation biologists determine the necessary size of protected areas and develop effective management strategies to prevent extinction.</p>
+        </div>
+
+        <!-- Section 9: Test Your Knowledge -->
+        <div class="section" id="section-9">
+            <h2>Test Your Knowledge</h2>
+            
+            <div class="quiz-question">
+                <h4>1. An annual plant, which grows for one season, produces a large number of seeds, and then dies, would be an example of which life history strategy?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. Iteroparity</li>
+                    <li data-correct="false">b. K-selection</li>
+                    <li data-correct="true">c. Semelparity</li>
+                    <li data-correct="false">d. Stress tolerator</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>2. What is a key trade-off associated with the semelparity strategy?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="true">a. Maximizing offspring number at the cost of the parent's survival.</li>
+                    <li data-correct="false">b. Maximizing individual lifespan at the expense of offspring number.</li>
+                    <li data-correct="false">c. High survival but low reproductive output.</li>
+                    <li data-correct="false">d. Reproducing continuously in a stable environment.</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>3. A species that is a strong competitor, lives for a long time, and produces few, large offspring is best described by which theory and category?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. Grime's Triangle: Stress Tolerators</li>
+                    <li data-correct="false">b. r/K Selection Theory: r-selected species</li>
+                    <li data-correct="false">c. Grime's Triangle: Ruderals</li>
+                    <li data-correct="true">d. r/K Selection Theory: K-selected species</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>4. What is the primary purpose of a Population Viability Analysis (PVA)?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. To identify new habitats for species relocation.</li>
+                    <li data-correct="false">b. To determine the maximum carrying capacity of an ecosystem.</li>
+                    <li data-correct="false">c. To model the effects of competition between different species.</li>
+                    <li data-correct="true">d. To assess the probability that a population will go extinct over time.</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>5. Based on the Grime's triangle model, a plant that thrives in an environment with poor soil and extreme temperatures would be classified as a:</h4>
+                <ul class="quiz-options">
+                    <li data-correct="true">a. Stress tolerator</li>
+                    <li data-correct="false">b. Competitor</li>
+                    <li data-correct="false">c. Semelparous species</li>
+                    <li data-correct="false">d. Ruderal</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section 10: More Quiz Questions -->
+        <div class="section" id="section-10">
+            <h2>Test Your Knowledge (Continued)</h2>
+            
+            <div class="quiz-question">
+                <h4>6. How does the r/K selection theory differ from Grime's triangle?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="true">a. The r/K theory views strategies as a continuum between two extremes, while Grime's model is based on three primary factors.</li>
+                    <li data-correct="false">b. The r/K theory applies only to plants, while Grime's model applies only to animals.</li>
+                    <li data-correct="false">c. The r/K theory focuses on disturbance and competition, while Grime's model focuses on reproduction.</li>
+                    <li data-correct="false">d. The r/K theory is based on a three-way trade-off, while Grime's model is based on a two-way trade-off.</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>7. A female elephant, which gives birth to a single calf after a long gestation period and cares for it for several years, is an example of which type of species?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. Ruderal species</li>
+                    <li data-correct="false">b. r-selected species</li>
+                    <li data-correct="false">c. Semelparous species</li>
+                    <li data-correct="true">d. Iteroparous species</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>8. Which of the following describes a key characteristic of r-selected species?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="true">a. They have a high intrinsic rate of population increase.</li>
+                    <li data-correct="false">b. They have long lifespans and produce few offspring.</li>
+                    <li data-correct="false">c. They have extensive parental care for their young.</li>
+                    <li data-correct="false">d. They are strong competitors in stable environments.</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>9. What is the key difference between semelparity and iteroparity regarding the organism's lifespan after reproduction?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="true">a. Semelparous organisms die after one reproductive event, while iteroparous organisms can reproduce again.</li>
+                    <li data-correct="false">b. Semelparous organisms live longer, while iteroparous organisms die after reproduction.</li>
+                    <li data-correct="false">c. There is no difference in lifespan after reproduction between the two strategies.</li>
+                    <li data-correct="false">d. Semelparous organisms reproduce multiple times, while iteroparous organisms reproduce once.</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>10. According to the r/K selection theory, species that thrive in stable, mature ecosystems are characterized by a population size that is:</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. Rapidly increasing at all times.</li>
+                    <li data-correct="true">b. Close to the carrying capacity (K).</li>
+                    <li data-correct="false">c. Constantly fluctuating and unpredictable.</li>
+                    <li data-correct="false">d. Often well below the carrying capacity (K).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section 11: Final Quiz Questions -->
+        <div class="section" id="section-11">
+            <h2>Test Your Knowledge (Final Questions)</h2>
+            
+            <div class="quiz-question">
+                <h4>11. A conservation biologist using a PVA to determine the Minimum Viable Population (MVP) for a species is trying to find the smallest population size needed to:</h4>
+                <ul class="quiz-options">
+                    <li data-correct="true">a. Ensure the species' long-term survival.</li>
+                    <li data-correct="false">b. Maximize the population's intrinsic growth rate (r).</li>
+                    <li data-correct="false">c. Prevent the population from overhunting.</li>
+                    <li data-correct="false">d. Ensure the species reaches its carrying capacity.</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>12. The Grime's model suggests a fundamental trade-off, where a plant cannot be a superior competitor and a stress tolerator at the same time. This trade-off is due to:</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. The different reproductive strategies of semelparity vs. iteroparity</li>
+                    <li data-correct="true">b. The opposing demands of thriving in high competition vs. high-stress environments.</li>
+                    <li data-correct="false">c. The limitation of producing a large number of offspring in any environment.</li>
+                    <li data-correct="false">d. The need to be a ruderal species in both disturbed and stable environments.</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>13. Which of the following organisms would be most vulnerable to habitat loss and overhunting?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="true">a. Elephants</li>
+                    <li data-correct="false">b. Annual plants</li>
+                    <li data-correct="false">c. Bacteria</li>
+                    <li data-correct="false">d. Weeds</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>14. An organism that reproduces during specific, favorable seasons is an example of what type of strategy?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. Semelparity</li>
+                    <li data-correct="false">b. Continuous iteroparity</li>
+                    <li data-correct="true">c. Seasonal iteroparity</li>
+                    <li data-correct="false">d. r-selection</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>15. Which of the following is a characteristic of K-selected species?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. Rapid development and early maturity.</li>
+                    <li data-correct="true">b. Strong competitive ability.</li>
+                    <li data-correct="false">c. High mortality of young.</li>
+                    <li data-correct="false">d. Good dispersal ability.</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>16. A species that is able to quickly colonize a disturbed or temporary habitat, such as a field after a fire, would most likely be classified as a:</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. Stress tolerator</li>
+                    <li data-correct="false">b. K-selected species</li>
+                    <li data-correct="false">c. Competitor</li>
+                    <li data-correct="true">d. Ruderal</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>17. Why are iteroparous organisms a 'safer bet' in stable environments?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="true">a. They can reproduce multiple times, increasing the chance of successful offspring.</li>
+                    <li data-correct="false">b. They produce a massive number of offspring in a single event.</li>
+                    <li data-correct="false">c. They are able to rapidly colonize new habitats.</li>
+                    <li data-correct="false">d. They dedicate all energy to a single burst of reproduction.</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>18. A species of plant that lives for many years and is dominant in a mature forest where competition for light and nutrients is high would be classified as a:</h4>
+                <ul class="quiz-options">
+                    <li data-correct="true">a. Competitor</li>
+                    <li data-correct="false">b. Ruderal</li>
+                    <li data-correct="false">c. Stress tolerator</li>
+                    <li data-correct="false">d. Semelparous species</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>19. Which of the following describes a species with a Type III survivorship curve, where there is high mortality of young but a high survival rate for the few that live to old age?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. K-selected species</li>
+                    <li data-correct="false">b. Semelparous species</li>
+                    <li data-correct="false">c. Continuous iteroparous species</li>
+                    <li data-correct="true">d. r-selected species</li>
+                </ul>
+            </div>
+
+            <div class="quiz-question">
+                <h4>20. A species of plant that is well-adapted to surviving in a habitat with scarce water and nutrients, growing slowly but living for a long time, would be best described by which of Grime's three primary strategies?</h4>
+                <ul class="quiz-options">
+                    <li data-correct="false">a. Ruderal</li>
+                    <li data-correct="false">b. Competitor</li>
+                    <li data-correct="true">c. Stress Tolerator</li>
+                    <li data-correct="false">d. Seasonal Iteroparous</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSection(-1)">Previous</button>
+            
+            <div class="section-indicator">
+                <div class="indicator-dot active" data-section="1"></div>
+                <div class="indicator-dot" data-section="2"></div>
+                <div class="indicator-dot" data-section="3"></div>
+                <div class="indicator-dot" data-section="4"></div>
+                <div class="indicator-dot" data-section="5"></div>
+                <div class="indicator-dot" data-section="6"></div>
+                <div class="indicator-dot" data-section="7"></div>
+                <div class="indicator-dot" data-section="8"></div>
+                <div class="indicator-dot" data-section="9"></div>
+                <div class="indicator-dot" data-section="10"></div>
+                <div class="indicator-dot" data-section="11"></div>
+                <span class="section-title" id="sectionTitle">Introduction</span>
+            </div>
+            
+            <button class="nav-btn" id="nextBtn" onclick="changeSection(1)">Next</button>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo">
+        <p>© 2025 BETA Biosciences. All rights reserved.<br>
+        Email: betabiosciences@gmail.com</p>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 11;
+        
+        const sectionTitles = {
+            1: "Introduction",
+            2: "Reproductive Timing",
+            3: "Comparison Table 1",
+            4: "r/K Selection Theory",
+            5: "Comparison Table 2",
+            6: "Grime's Triangle",
+            7: "Comparison Table 3",
+            8: "Population Analysis",
+            9: "Quiz Part 1",
+            10: "Quiz Part 2",
+            11: "Quiz Part 3"
+        };
+
+        function showSection(sectionNum) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show current section
+            document.getElementById(`section-${sectionNum}`).classList.add('active');
+            
+            // Update indicators
+            document.querySelectorAll('.indicator-dot').forEach(dot => {
+                dot.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${sectionNum}"]`).classList.add('active');
+            
+            // Update section title
+            document.getElementById('sectionTitle').textContent = sectionTitles[sectionNum];
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = (sectionNum === 1);
+            document.getElementById('nextBtn').disabled = (sectionNum === totalSections);
+        }
+
+        function changeSection(direction) {
+            const newSection = currentSection + direction;
+            if (newSection >= 1 && newSection <= totalSections) {
+                currentSection = newSection;
+                showSection(currentSection);
+            }
+        }
+
+        // Add click handlers to indicator dots
+        document.querySelectorAll('.indicator-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                const sectionNum = parseInt(dot.getAttribute('data-section'));
+                currentSection = sectionNum;
+                showSection(currentSection);
+            });
+        });
+
+        // Add quiz functionality
+        document.querySelectorAll('.quiz-options li').forEach(option => {
+            option.addEventListener('click', () => {
+                const question = option.parentElement.parentElement;
+                const options = question.querySelectorAll('.quiz-options li');
+                const isCorrect = option.getAttribute('data-correct') === 'true';
+                
+                // Mark question as answered
+                question.classList.add('answered');
+                
+                // Mark all options as answered to prevent further clicks
+                options.forEach(opt => opt.classList.add('answered'));
+                
+                // Show correct answer
+                options.forEach(opt => {
+                    if (opt.getAttribute('data-correct') === 'true') {
+                        opt.classList.add('correct');
+                    }
+                });
+                
+                // If user clicked wrong answer, mark it as incorrect
+                if (!isCorrect) {
+                    option.classList.add('incorrect');
+                }
+            });
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                changeSection(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSection(1);
+            }
+        });
+
+        // Add swipe functionality for mobile
+        let startX = 0;
+        let endX = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            endX = e.changedTouches[0].clientX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = startX - endX;
+            
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0) {
+                    // Swipe left - next section
+                    changeSection(1);
+                } else {
+                    // Swipe right - previous section
+                    changeSection(-1);
+                }
+            }
+        }
+
+        // Initialize
+        showSection(1);
+    </script>
+</body>
+</html>
