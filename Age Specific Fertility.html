@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Specific Fertility - Interactive Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 100vw;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(45deg, #ffd700, #ff6b35);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            display: none;
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateX(0);
+            display: block;
+        }
+
+        .section h2 {
+            color: #ffd700;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .section h3 {
+            color: #ff6b35;
+            font-size: 1.2rem;
+            margin: 20px 0 15px 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .section p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .section ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .data-table {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 20px 0;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .formula {
+            background: linear-gradient(135deg, #ff6b35, #ffd700);
+            color: #000;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 107, 53, 0.2));
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid #ffd700;
+            margin: 15px 0;
+        }
+
+        .quiz-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .quiz-question {
+            margin-bottom: 20px;
+        }
+
+        .quiz-question h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .quiz-options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .quiz-options li {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-options li:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #ffd700;
+        }
+
+        .quiz-options li.correct {
+            background: rgba(46, 204, 113, 0.3);
+            border-color: #2ecc71;
+            color: #fff;
+        }
+        
+        .quiz-options li.incorrect {
+            background: rgba(231, 76, 60, 0.3);
+            border-color: #e74c3c;
+            color: #fff;
+        }
+
+        .navigation {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #ff6b35, #ffd700);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+        }
+
+        .nav-button:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            width: 100px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff6b35);
+            transition: width 0.4s ease;
+            border-radius: 3px;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .image-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-logo {
+            width: 75px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .footer-text {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+
+            .section h2 {
+                font-size: 1.2rem;
+            }
+
+            .section h3 {
+                font-size: 1.1rem;
+            }
+
+            .navigation {
+                padding: 10px 15px;
+            }
+
+            .nav-button {
+                padding: 10px 18px;
+                font-size: 12px;
+            }
+
+            .footer {
+                padding: 15px;
+            }
+
+            .footer-logo {
+                width: 60px;
+            }
+
+            .footer-text {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AGE SPECIFIC FERTILITY</h1>
+        </div>
+
+        <div class="content-area">
+            <!-- Section 1: Introduction -->
+            <div class="section active" data-section="1">
+                <h2>Population Ecology Overview</h2>
+                <p>Population ecology is the study of how and why the size and structure of populations change over time. While a simple census provides a static snapshot, a deeper understanding requires a dynamic approach. Here we outlines a powerful method for this, which moves beyond simple counts to incorporate two critical pieces of demographic data: age-specific fertility and survivorship. By combining these, ecologists can not only assess the current state of a population but also predict its future.</p>
+            </div>
+
+            <!-- Section 2: Building Blocks -->
+            <div class="section" data-section="2">
+                <h2>The Building Blocks: Fertility and Survivorship</h2>
+                <h3>1. Age-specific fertility rate ($m_x$):</h3>
+                <p>This metric quantifies the reproductive output of a population at different ages. It is defined as the average number of female offspring produced by a female of a specific age, x. For example, if a group of 100 three-year-old female beavers gives birth to 75 female babies, their $m_x$ value is 0.75. This indicates that, on average, each three-year-old female contributes 0.75 new female offspring to the next generation. This value highlights that fertility is not constant throughout an organism's life but varies with age.</p>
+
+                <h3>2. Survivorship rate ($l_x$):</h3>
+                <p>This metric describes the proportion of individuals from an initial cohort that survive to a specific age, x. It is a measure of mortality. For instance, if a study begins with a cohort of beavers and only 7.4% are still alive at age six, the $l_6$ value is 0.074. This shows the cumulative effect of mortality over time.</p>
+
+                <p>To understand the actual contribution of each age group to population growth, these two metrics are combined. The product, $l_x m_x$, represents the average number of offspring a female will produce at a specific age, after accounting for her probability of surviving to that age. This is a crucial concept because a highly fertile organism will not contribute to population growth if it dies before reaching reproductive age. The example of beavers shows that the most significant contributions come from intermediate ages (3-4 years old), where there is an optimal balance between high survival and peak fertility.</p>
+            </div>
+
+            <!-- Section 3: Beaver Data -->
+            <div class="section" data-section="3">
+                <h2>Beaver Population Analysis</h2>
+                <div class="data-table">
+                    <h3>Life table and age-specific fertility rates for the beaver, Castor canadensis, in Newfoundland, Canada.</h3>
+                    <div class="image-container">
+                        <img src="https://betabiosciences.github.io/Other-Units/Age%20specific%20fertility%20fig1.jpg" alt="Life table for Castor canadensis">
+                    </div>
+                </div>
+
+                <p>The provided life table and age-specific fertility rates for the beaver, Castor canadensis, in Newfoundland, Canada, track a cohort from birth to age 14 and older to determine the net reproductive rate, $R_0$. The table includes several key demographic columns: 'Age class, x' (age intervals in years), 'Number alive at start of year, $n_x$' (number of survivors at the beginning of each age interval, starting with an initial cohort of 3,695), 'Number dying during year, $d_x$' (number of deaths within each age interval), 'Proportion alive at start of age interval, $l_x$' (the survivorship curve, calculated as $n_x$/$n_0$), 'Age-specific fertility, $m_x$' (average female offspring per female per age interval), 'Average number of offspring per age class, $l_x m_x$' (net maternity, the expected number of female offspring produced by an individual from the original cohort during each age interval), and '$x l_x m_x$' (used to calculate the mean generation time).</p>
+
+                <p>Analysis of the data reveals a gradual decline in beaver survival, unlike the high early mortality seen in species like Balanus glandula. While the highest number of deaths ($d_x$) occurs in the first year (1,995 individuals), a significant number (1,700) survive to age 1. The survivorship ($l_x$) decreases steadily, dropping from 1.000 to 0.006 by age 14+. Reproduction does not begin in the first year; it starts in the 1-2 age class. The age-specific fertility ($m_x$) generally increases with age, peaking at ages 8-9 with a value of 1.387, indicating that older beavers are more reproductively successful.</p>
+
+                <p>The sum of the $l_x m_x$ column, which is the net reproductive rate ($R_0$), is 0.938. A value less than 1 ($R_0$ < 1) indicates that the population is not replacing itself and is therefore shrinking. This crucial finding suggests that the beaver population in this specific study area in Newfoundland is in decline. Additionally, the sum of the $x l_x m_x$ column is 4.368. By dividing this value by the net reproductive rate ($R_0$), the generation time is calculated to be approximately 4.65 years (4.368 / 0.938), representing the average age at which a female beaver gives birth to her offspring.</p>
+            </div>
+
+            <!-- Section 4: Net Reproductive Rate -->
+            <div class="section" data-section="4">
+                <h2>Calculating the Net Reproductive Rate ($R_0$)</h2>
+                <p>The net reproductive rate, $R_0$, is the cornerstone of this analysis. It is calculated by summing the $l_x m_x$ values for all age classes.</p>
+
+                <div class="formula">
+                    $R_0 = \Sigma l_x m_x$
+                </div>
+
+                <div class="image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Age%20specific%20fertility%20fig2.jpg" alt="Net reproductive rate formula and example">
+                </div>
+
+                <p>This number represents the total number of female offspring an average female is expected to produce over her entire lifetime, from birth to death. It is a single, powerful indicator of a population's health and future trajectory.</p>
+
+                <div class="highlight">
+                    <p>The value of $R_0$ serves as a clear diagnostic tool for population health:</p>
+                    <ul>
+                        <li><strong>$R_0$ > 1:</strong> The population is growing. Each female is, on average, more than replacing herself with new female offspring.</li>
+                        <li><strong>$R_0$ < 1:</strong> The population is shrinking. Females are not producing enough offspring to replace themselves, and the population is in decline.</li>
+                        <li><strong>$R_0$ = 1:</strong> The population is stable. Females are perfectly replacing themselves, and the population is in equilibrium.</li>
+                    </ul>
+                </div>
+
+                <p>The text provides two clear examples: a Newfoundland beaver population with an $R_0$ of 0.938 (less than 1), indicating a decline, and a barnacle population in Washington with an $R_0$ of 1.282 (greater than 1), indicating growth.</p>
+            </div>
+
+            <!-- Section 5: Predicting Population -->
+            <div class="section" data-section="5">
+                <h2>Predicting Future Population Size</h2>
+                <p>Once $R_0$ is known, it can be used to predict the population size in the next generation. The relationship is simple and direct: the new population size ($N_{t+1}$) is the current population size ($N_t$) multiplied by $R_0$.</p>
+
+                <div class="formula">
+                    $N_{t+1} = N_t \times R_0$
+                </div>
+
+                <div class="image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Age%20specific%20fertility%20fig3.jpg" alt="Population prediction formula and example">
+                </div>
+
+                <p>For example, a population of 1,000 beavers with an $R_0$ of 1.1 would be expected to grow to 1,100 in the next generation. This predictive power is invaluable for conservation efforts and resource management.</p>
+            </div>
+
+            <!-- Section 6: Generation Time -->
+            <div class="section" data-section="6">
+                <h2>Understanding Generation Time (T)</h2>
+                <p>Generation time, denoted by T, is the final piece of this demographic puzzle. It is the average time that passes between a female's birth and the birth of her offspring. Essentially, it is the average age at which a female reproduces.</p>
+
+                <div class="formula">
+                    $T = \frac{\Sigma x l_x m_x}{R_0}$
+                </div>
+
+                <div class="image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Age%20specific%20fertility%20fig4.jpg" alt="Generation time formula and example">
+                </div>
+
+                <p>Where:</p>
+                <ul>
+                    <li>x is the age class.</li>
+                    <li>$l_x m_x$ is the contribution of that age class to the net reproductive rate.</li>
+                    <li>The numerator, $\Sigma x l_x m_x$, is the sum of the products of age and the number of offspring produced at that age. This gives a weighted average of the age of reproduction.</li>
+                    <li>The denominator, $R_0$, normalizes this sum to give the average time.</li>
+                </ul>
+
+                <p>Generation time is crucial because it dictates the speed of population change. A population with a short generation time, like the barnacles (3.1 years), can grow or shrink much more rapidly than a population with a longer generation time, like the beavers (4.6 years).</p>
+            </div>
+
+            <!-- Section 7: Barnacle Data -->
+            <div class="section" data-section="7">
+                <h2>Barnacle Population Study</h2>
+                <div class="data-table">
+                    <h3>A life table and age-specific fertility for the barnacle, Balanus glandula.</h3>
+                </div>
+
+                <div class="image-container">
+                    <img src="https://betabiosciences.github.io/Other-Units/Age%20specific%20fertility%20fig5.jpg" alt="Barnacle life table with age-specific fertility">
+                </div>
+
+                <p>In 1970, Joe Connell's research on barnacles in Washington State revealed that, despite high mortality rates among young barnacles, the population was growing. His study focused on how different factors influenced barnacle population sizes, and he collected data on life expectancy and fertility.</p>
+
+                <p>Connell found that barnacles aged one year or older were highly fertile, with each female capable of producing up to 12,700 eggs. This high level of egg production resulted in a net reproductive rate ($R_0$) of 1.282, indicating a growing population. Most of the new barnacles were produced by adults between one and four years old, as older barnacles had poor survival rates. The average generation time (T) was approximately 3.1 years. Connell concluded that predation by snails of the genus Thais was the most significant factor affecting the barnacle population size.</p>
+            </div>
+
+            <!-- Section 8: Conclusion -->
+            <div class="section" data-section="8">
+                <h2>Conclusion</h2>
+                <p>By integrating data on age-specific fertility and survivorship, ecologists can calculate two fundamental metrics: the net reproductive rate ($R_0$) and generation time (T).</p>
+
+                <div class="highlight">
+                    <ul>
+                        <li><strong>$R_0$</strong> provides a clear and definitive diagnosis of a population's health (growing, shrinking, or stable).</li>
+                        <li><strong>T</strong> provides the timescale over which these changes occur.</li>
+                    </ul>
+                </div>
+
+                <p>Together, these metrics offer a complete and predictive picture of a population's dynamics. This approach is not merely academic; it is a vital tool for conservationists and resource managers who need to make informed decisions to protect and manage populations in a changing world.</p>
+            </div>
+
+            <!-- Section 9: Quiz -->
+            <div class="section" data-section="9">
+                <h2>Test Your Knowledge</h2>
+                
+                <div class="quiz-section">
+                    <div class="quiz-question">
+                        <h4>1. What is the definition of the age-specific fertility rate ($m_x$)?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. The number of individuals alive at the start of a year, $n_x$.</li>
+                            <li data-correct="true">b. The average number of female offspring produced by a female of a specific age, x.</li>
+                            <li data-correct="false">c. The total number of offspring produced by a female over her lifetime</li>
+                            <li data-correct="false">d. The proportion of individuals from a cohort that survive to a specific age, x.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>2. What does the survivorship rate ($l_x$) represent?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. The number of deaths within a specific age interval.</li>
+                            <li data-correct="false">b. The total number of individuals in a population at a given time.</li>
+                            <li data-correct="false">c. The average number of offspring produced by a female.</li>
+                            <li data-correct="true">d. The proportion of an initial cohort that survives to a specific age, x.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>3. The product of the survivorship rate and the age-specific fertility rate, $l_x m_x$, represents what?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="true">a. The average number of offspring a female will produce at a specific age, after accounting for her probability of surviving to that age.</li>
+                            <li data-correct="false">b. The population's overall mortality rate.</li>
+                            <li data-correct="false">c. The total number of offspring a female produces in her lifetime.</li>
+                            <li data-correct="false">d. The age at which a female is most fertile.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>4. What does a net reproductive rate ($R_0$) of 0.938 for the Newfoundland beaver population indicate?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. The population is growing.</li>
+                            <li data-correct="false">b. The population is replacing itself.</li>
+                            <li data-correct="false">c. The population is stable.</li>
+                            <li data-correct="true">d. The population is shrinking.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 10: More Quiz -->
+            <div class="section" data-section="10">
+                <h2>Test Your Knowledge (Continued)</h2>
+                
+                <div class="quiz-section">
+                    <div class="quiz-question">
+                        <h4>5. How is the net reproductive rate ($R_0$) calculated?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. By dividing the sum of the $x l_x m_x$ column by the sum of the $l_x m_x$ column.</li>
+                            <li data-correct="false">b. By multiplying the current population size by the generation time.</li>
+                            <li data-correct="false">c. By summing the $l_x$ values for all age classes.</li>
+                            <li data-correct="true">d. By summing the $l_x m_x$ values for all age classes.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>6. If a population has a current size ($N_t$) of 1,000 and a net reproductive rate ($R_0$) of 1.1, what would be the expected population size in the next generation ($N_{t+1}$)?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. 1,000</li>
+                            <li data-correct="true">b. 1,100</li>
+                            <li data-correct="false">c. 1,200</li>
+                            <li data-correct="false">d. 909</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>7. What is the generation time (T)?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. The time it takes for a population to double in size</li>
+                            <li data-correct="false">b. The total lifespan of an average individual in the population.</li>
+                            <li data-correct="true">c. The average age at which a female gives birth to her offspring.</li>
+                            <li data-correct="false">d. The time it takes for a population to reach its carrying capacity.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>8. For the Newfoundland beaver population, the sum of the $x l_x m_x$ is 4.368 and the net reproductive rate ($R_0$) is 0.938. What is the calculated generation time (T)?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. 5.306</li>
+                            <li data-correct="false">b. 3.430</li>
+                            <li data-correct="false">c. 0.438</li>
+                            <li data-correct="true">d. 4.65</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 11: Final Quiz -->
+            <div class="section" data-section="11">
+                <h2>Test Your Knowledge (Final)</h2>
+                
+                <div class="quiz-section">
+                    <div class="quiz-question">
+                        <h4>9. What does a net reproductive rate ($R_0$) equal to 1 indicate about a population?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. The population is in decline.</li>
+                            <li data-correct="false">b. The population's size is not predictable.</li>
+                            <li data-correct="true">c. The population is stable.</li>
+                            <li data-correct="false">d. The population is growing exponentially.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>10. A highly fertile organism will not contribute to population growth if it dies before reaching reproductive age. What concept does this statement highlight the importance of?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. Net reproductive rate ($R_0$).</li>
+                            <li data-correct="true">b. Survivorship rate ($l_x$).</li>
+                            <li data-correct="false">c. Generation time (T).</li>
+                            <li data-correct="false">d. Age-specific fertility rate ($m_x$).</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>11. Why is generation time (T) crucial for understanding population dynamics?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. It indicates whether the population is growing or shrinking.</li>
+                            <li data-correct="false">b. It determines the total lifespan of an individual.</li>
+                            <li data-correct="false">c. It predicts the exact future population size.</li>
+                            <li data-correct="true">d. It dictates the speed of population change.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>12. What is the primary purpose of combining age-specific fertility ($m_x$) and survivorship ($l_x$)?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="true">a. To understand the actual contribution of each age group to population growth.</li>
+                            <li data-correct="false">b. To determine the maximum lifespan of a species.</li>
+                            <li data-correct="false">c. To calculate the total number of deaths in a population.</li>
+                            <li data-correct="false">d. To find the average age of individuals in the population.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>13. Which of the following would lead to a shrinking population?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. An $R_0$ value of 1.282.</li>
+                            <li data-correct="false">b. A long generation time.</li>
+                            <li data-correct="true">c. An $R_0$ value of 0.938.</li>
+                            <li data-correct="false">d. An $R_0$ value of 1.0.</li>
+                        </ul>
+                    </div>
+
+                    <div class="quiz-question">
+                        <h4>14. What is the key implication of the beaver population having a longer generation time (T=4.65 years) compared to the barnacle population (T=3.1 years)?</h4>
+                        <ul class="quiz-options">
+                            <li data-correct="false">a. The beavers have a higher net reproductive rate ($R_0$) than the barnacles.</li>
+                            <li data-correct="true">b. The beavers must reach an older age to reproduce effectively, slowing the rate of population change.</li>
+                            <li data-correct="false">c. The beaver population will grow more rapidly than the barnacle population.</li>
+                            <li data-correct="false">d. The beaver population can grow or shrink much more rapidly than the barnacle population.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn">← Previous</button>
+            <div class="progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-text" id="progressText">1 / 11</span>
+            </div>
+            <button class="nav-button" id="nextBtn">Next →</button>
+        </div>
+
+        <footer class="footer">
+            <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+            <p class="footer-text">
+                © 2025 BETA Biosciences. All rights reserved.<br>
+                Email: betabiosciences@gmail.com
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 11;
+
+        function updateProgress() {
+            const progress = (currentSection / totalSections) * 100;
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (progressFill) progressFill.style.width = progress + '%';
+            if (progressText) progressText.textContent = currentSection + ' / ' + totalSections;
+            
+            // Update navigation buttons
+            if (prevBtn) prevBtn.disabled = currentSection === 1;
+            if (nextBtn) nextBtn.disabled = currentSection === totalSections;
+        }
+
+        function showSection(sectionNumber) {
+            // Validate section number
+            if (sectionNumber < 1 || sectionNumber > totalSections) {
+                return;
+            }
+            
+            // Hide all sections
+            const allSections = document.querySelectorAll('.section');
+            allSections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show the target section
+            const targetSection = document.querySelector(`[data-section="${sectionNumber}"]`);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.scrollTop = 0; // Scroll to top of new section
+            }
+
+            currentSection = sectionNumber;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const quizOptions = document.querySelectorAll('.quiz-options li');
+
+            // Initial setup
+            showSection(currentSection);
+            updateProgress();
+
+            // Navigation event listeners
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    if (currentSection > 1) {
+                        showSection(currentSection - 1);
+                        updateProgress();
+                    }
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    if (currentSection < totalSections) {
+                        showSection(currentSection + 1);
+                        updateProgress();
+                    }
+                });
+            }
+
+            // Quiz functionality
+            quizOptions.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    // Prevent answering the same question multiple times
+                    const parentOptions = e.target.parentElement;
+                    if (parentOptions.classList.contains('answered')) return;
+                    parentOptions.classList.add('answered');
+
+                    const isCorrect = option.getAttribute('data-correct') === 'true';
+                    
+                    if (isCorrect) {
+                        option.classList.add('correct');
+                    } else {
+                        option.classList.add('incorrect');
+                        // Find and highlight the correct answer in the same question
+                        const correctOption = parentOptions.querySelector('[data-correct="true"]');
+                        if (correctOption) {
+                            correctOption.classList.add('correct');
+                        }
+                    }
+                });
+            });
+
+            // This renders the KaTeX formulas on the page
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "\\[", right: "\\]", display: true},
+                    {left: "\\(", right: "\\)", display: false},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</body>
+</html>
