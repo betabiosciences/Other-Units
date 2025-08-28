@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetaBiosciences Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom styles for the quiz app */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Full viewport height */
+            margin: 0;
+            padding: 20px; /* Add some padding for smaller screens */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+            color: #333;
+        }
+
+        .quiz-container {
+            background-color: #ffffff; /* White background for the quiz card */
+            border-radius: 16px; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 32px; /* Increased padding */
+            max-width: 800px; /* Increased max width for more content */
+            width: 100%; /* Full width on smaller screens */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 24px; /* Space between sections */
+            position: relative; /* For absolute positioning of footer */
+        }
+
+        .hidden {
+            display: none !important; /* Use !important to override other display properties */
+        }
+
+        /* Login and Notice Page Styles */
+        .page-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px; /* Ensure pages have some height */
+        }
+
+        .input-field {
+            padding: 12px 16px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            width: 80%;
+            max-width: 300px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .action-button {
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #ffffff;
+            background-color: #4f46e5; /* Indigo */
+        }
+
+        .action-button:hover:not(:disabled) {
+            background-color: #4338ca; /* Darker indigo */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-button:disabled {
+            background-color: #9ca3af; /* Gray for disabled */
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Notice Page Specifics */
+        .notice-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ef4444; /* Red for important */
+            margin-bottom: 20px;
+        }
+
+        .notice-list {
+            list-style: none; /* Removed default numbering/bullets */
+            padding: 0;
+            margin: 0 0 30px 0;
+            text-align: left;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .notice-list li {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            position: relative; /* For custom bullets */
+            padding-left: 20px; /* Space for custom bullet */
+        }
+
+        .notice-list li::before {
+            content: "\2022"; /* Unicode for a bullet point */
+            color: #ef4444; /* Red bullet */
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+
+        .notice-list strong {
+            color: #ef4444; /* Red for bold parts */
+        }
+
+        /* Quiz Page Layout */
+        #quiz-page {
+            display: grid;
+            grid-template-columns: 1fr 200px; /* Main content and sidebar */
+            gap: 30px;
+            text-align: left;
+            min-height: 400px; /* Ensure sufficient height for the grid layout */
+        }
+
+        #quiz-main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #quiz-sidebar {
+            background-color: #f8fafc; /* Lightest gray for sidebar */
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Timer Styles */
+        #timer-display {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #22c55e; /* Green */
+            text-align: center;
+            width: 100%;
+            grid-column: 1 / -1; /* Span across both columns */
+        }
+
+        #timer-display.orange {
+            color: #f97316; /* Orange */
+        }
+
+        #timer-display.red {
+            color: #ef4444; /* Red */
+        }
+
+        .question-text {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: left; /* Align question text left */
+        }
+
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            display: block;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-button {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            padding: 14px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border: 2px solid transparent;
+            text-align: left; /* Align options left */
+        }
+
+        .option-button:hover {
+            background-color: #cbd5e0;
+        }
+
+        .option-button.selected {
+            background-color: #6366f1;
+            color: #ffffff;
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        /* New styles for answer key options */
+        .option-button.correct-answer {
+            background-color: #22c55e; /* Green */
+            color: #ffffff;
+            border-color: #16a34a;
+            pointer-events: none; /* Disable clicks */
+        }
+
+        .option-button.incorrect-answer {
+            background-color: #ef4444; /* Red */
+            color: #ffffff;
+            border-color: #dc2626;
+            pointer-events: none; /* Disable clicks */
+        }
+
+        .option-button.disabled-for-answer-key {
+            pointer-events: none; /* Disable clicks */
+            opacity: 0.7; /* Slightly dim non-highlighted options */
+        }
+
+
+        .quiz-nav-buttons {
+            display: flex;
+            justify-content: flex-start; /* Align buttons to the left */
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .quiz-nav-button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        .quiz-nav-button.save-next {
+            background-color: #10b981; /* Green */
+            color: #ffffff;
+        }
+        .quiz-nav-button.save-next:hover { background-color: #059669; }
+
+        .quiz-nav-button.clear {
+            background-color: #f59e0b; /* Amber */
+            color: #ffffff;
+        }
+        .quiz-nav-button.clear:hover { background-color: #d97706; }
+
+        .quiz-nav-button.next {
+            background-color: #3b82f6; /* Blue */
+            color: #ffffff;
+        }
+        .quiz-nav-button.next:hover { background-color: #2563eb; }
+
+        .quiz-nav-button.submit-quiz {
+            background-color: #ef4444; /* Red */
+            color: #ffffff;
+        }
+        .quiz-nav-button.submit-quiz:hover { background-color: #dc2626; }
+
+        /* Answer Key Navigation Buttons */
+        .answer-key-nav-buttons {
+            display: flex;
+            justify-content: space-between; /* Space out prev/next */
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .answer-key-nav-button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            background-color: #6366f1; /* Indigo */
+            color: #ffffff;
+        }
+        .answer-key-nav-button:hover:not(:disabled) {
+            background-color: #4f46e5;
+        }
+        .answer-key-nav-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Specific style for the "Close Answer Key" button */
+        .answer-key-nav-button.close-answer-key {
+            background-color: #ef4444; /* Red */
+        }
+        .answer-key-nav-button.close-answer-key:hover:not(:disabled) {
+            background-color: #dc2626; /* Darker red */
+        }
+
+
+        /* Legend and Palette Styles */
+        .legend-box {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .legend-color-box.red-ball {
+            background-color: transparent; /* No background for 3D ball */
+            color: #ef4444; /* Red for the icon */
+            font-size: 1.2rem;
+            width: 20px; /* Fixed width */
+            height: 20px; /* Fixed height */
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .legend-color-box.grey {
+            background-color: #d1d5db; /* Grey */
+            width: 20px; /* Fixed width */
+            height: 20px; /* Fixed height */
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .legend-color-box.green {
+            background-color: #22c55e; /* Green */
+            width: 20px; /* Fixed width */
+            height: 20px; /* Fixed height */
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+
+        #question-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .palette-box {
+            background-color: #d1d5db; /* Grey (not visited) */
+            color: #333;
+            padding: 10px 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1 / 1; /* Make boxes square */
+        }
+
+        .palette-box:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .palette-box.unanswered {
+            background-color: #ef4444; /* Red */
+            color: #ffffff;
+        }
+
+        .palette-box.answered {
+            background-color: #22c55e; /* Green */
+            color: #ffffff;
+        }
+
+        /* Results Page Styles */
+        .results-container { /* This class is not used, but styles below target elements within #final-results-page */
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .results-detail {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .results-detail strong {
+            color: #4f46e5;
+        }
+
+        .telegram-link {
+            color: #4f46e5;
+            text-decoration: underline;
+            font-weight: 600;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        /* Admin Section Styles (Updated for internal positioning) */
+        .admin-section {
+            text-align: center;
+            width: 100%; /* Take full width of parent */
+            padding-top: 20px; /* Space from elements above it */
+            margin-top: 20px; /* Space from elements above it */
+            border-top: 1px solid #e2e8f0; /* Separator */
+            background-color: #f8fafc; /* Light background */
+            border-radius: 0 0 16px 16px; /* Match container bottom radius */
+            padding-bottom: 10px; /* Padding at the bottom */
+        }
+
+        .admin-section h3 {
+            font-size: 0.8rem; /* Smaller heading */
+            font-weight: 700;
+            margin-bottom: 10px; /* Smaller margin */
+            color: #4f46e5;
+        }
+
+        .admin-login-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px; /* Smaller gap */
+        }
+
+        /* Specific styles for admin input and button */
+        .admin-login-area input.input-field {
+            width: 80%; /* Take full width of its container */
+            max-width: 200px; /* Smaller max-width */
+            font-size: 0.85rem; /* Smaller font */
+            padding: 8px 10px; /* Smaller padding */
+            margin-bottom: 0; /* Remove bottom margin as gap handles spacing */
+        }
+
+        .admin-login-area button.action-button {
+            padding: 8px 16px; /* Smaller padding */
+            font-size: 0.85rem; /* Smaller font size */
+        }
+
+        .admin-login-message {
+            color: #ef4444;
+            font-weight: 500;
+            margin-top: 5px;
+            margin-bottom: 0;
+            font-size: 0.75rem;
+        }
+
+        /* Admin Results Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top */
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            width: 800px; /* Slightly narrower than full admin page */
+            max-height: 90vh; /* Limit height for scrollability */
+            overflow-y: auto; /* Enable scrolling for content */
+            position: relative;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 25px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2.5rem;
+            color: #666;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        /* Styles for the table inside the modal */
+        .admin-results-table-wrapper {
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            overflow-x: auto; /* Ensure horizontal scroll on small screens */
+        }
+
+        .admin-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .admin-results-table th,
+        .admin-results-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .admin-results-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .admin-results-table tbody tr:hover {
+            background-color: #f0f2f5;
+        }
+
+        .admin-results-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .loading-message, .error-message, .no-results-message {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .app-footer {
+            position: absolute;
+            bottom: 10px; /* Keep it slightly above the very bottom */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #9ca3af; /* Grey color */
+            user-select: none; /* Prevent selection for integrity check */
+            white-space: nowrap; /* Keep on one line */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #quiz-page {
+                grid-template-columns: 1fr; /* Stack main content and sidebar */
+            }
+            #quiz-sidebar {
+                order: -1; /* Move sidebar to top on small screens */
+                margin-bottom: 20px;
+            }
+            .quiz-container {
+                padding: 24px;
+                margin: 10px;
+            }
+            .question-text {
+                font-size: 1.5rem;
+            }
+            .option-button, .quiz-nav-button, .action-button {
+                font-size: 1rem;
+                padding: 12px 16px;
+            }
+            .quiz-nav-buttons {
+                flex-wrap: wrap; /* Allow buttons to wrap */
+                justify-content: center;
+            }
+            .quiz-nav-button {
+                flex-basis: 48%; /* Make buttons take roughly half width when wrapped */
+            }
+            .notice-title {
+                font-size: 1.75rem;
+            }
+            .notice-list li {
+                font-size: 1rem;
+            }
+            .admin-section {
+                position: static; /* Remove absolute positioning on small screens */
+                width: auto; /* Allow it to take full width */
+                margin-top: 30px; /* Add some top margin */
+                padding: 20px;
+                box-shadow: none; /* Remove shadow to blend better */
+                border-top: 1px solid #e2e8f0; /* Add border back */
+                border-radius: 0; /* Remove border radius */
+            }
+            .admin-login-area input.input-field {
+                max-width: 100%; /* Allow full width */
+            }
+            /* Responsive adjustments for modal */
+            .modal-content {
+                padding: 20px;
+                width: 95%; /* Adjust width for smaller screens */
+            }
+            .modal-title {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+            .admin-results-table th,
+            .admin-results-table td {
+                padding: 8px 10px;
+                font-size: 0.75rem; /* Smaller font in table for mobile */
+            }
+            .close-button {
+                font-size: 2rem;
+                top: 10px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-app" class="quiz-container">
+        <div id="login-page" class="page-content">
+            <h2 class="question-text">Welcome to the Quiz!</h2>
+            <p class="mb-4">Please enter your name to begin.</p>
+            <input type="text" id="student-name-input" class="input-field" placeholder="Your Name">
+            <button id="start-quiz-button" class="action-button" disabled>START</button>
+
+            <div class="admin-section">
+                <h3>Admin Login</h3>
+                <div class="admin-login-area">
+                    <input type="password" id="admin-passcode-input" class="input-field" placeholder="Enter Admin Passcode">
+                    <button id="admin-login-button" class="action-button">Login as Admin</button>
+                    <p id="admin-login-message" class="admin-login-message hidden"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="notice-page" class="page-content hidden">
+            <h2 class="notice-title">IMPORTANT NOTICE</h2>
+            <ul class="notice-list">
+                <li>Each question carries <strong>2 marks</strong>.</li>
+                <li>There will be <strong><span style="font-size: 1.2em;">NEGATIVE MARKING</span></strong> for incorrect answers.</li>
+                <li>Penalty for incorrect answer is <strong>0.5 marks (25%)</strong>.</li>
+                <li>Remember to click <span class="text-red-500 font-bold">Save & Next</span> to confirm your answer.</li>
+            </ul>
+            <button id="continue-quiz-button" class="action-button">Continue</button>
+        </div>
+
+        <div id="quiz-page" class="hidden">
+            <div id="timer-display">05:00</div>
+            <div id="quiz-main-content">
+                <img id="question-image" class="question-image hidden" alt="Question Image">
+                <h2 id="question-text" class="question-text"></h2>
+                <div id="options-container" class="options-container">
+                    </div>
+                <div class="quiz-nav-buttons">
+                    <button id="save-next-button" class="quiz-nav-button save-next">Save & Next</button>
+                    <button id="clear-button" class="quiz-nav-button clear">Clear</button>
+                    <button id="next-button" class="quiz-nav-button next">Next</button>
+                </div>
+                <div class="answer-key-nav-buttons hidden">
+                    <button id="prev-answer-key-button" class="answer-key-nav-button">Previous</button>
+                    <button id="next-answer-key-button" class="answer-key-nav-button">Next</button>
+                </div>
+            </div>
+            <div id="quiz-sidebar">
+                <div class="legend-box">
+                    <h3 class="font-bold text-lg mb-3">Legend</h3>
+                    <div class="legend-item">
+                        <div class="legend-color-box red-ball"><i class="fas fa-circle"></i></div>
+                        <span>Unanswered Questions</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color-box grey"></div>
+                        <span>Not Visited Questions</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color-box green"></div>
+                        <span>Answered Questions</span>
+                    </div>
+                </div>
+                <div id="question-palette">
+                    </div>
+            </div>
+        </div>
+
+        <div id="final-results-page" class="page-content hidden">
+            <h2 class="question-text">Quiz Results for <span id="student-name-display"></span></h2>
+            <p class="results-detail">Questions Attempted: <strong id="attempted-display">0</strong></p>
+            <p class="results-detail">Correct Answers: <strong id="correct-display">0</strong></p>
+            <p class="results-detail">Incorrect Answers: <strong id="incorrect-display">0</strong></p>
+            <p class="results-detail text-2xl mt-4">Total Score: <strong id="final-score-display">0</strong></p>
+            <p class="results-detail">Maximum Marks: <strong id="max-marks-display">0</strong></p>
+            <button id="show-answer-key-button" class="action-button mt-4">Answer Key</button>
+        </div>
+
+        <div id="admin-results-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <button id="close-admin-modal" class="close-button">&times;</button>
+                <h2 class="modal-title">All Quiz Results</h2>
+                <div id="admin-results-display-area" class="admin-results-table-wrapper">
+                    <p class="loading-message">Loading results...</p>
+                    </div>
+            </div>
+        </div>
+
+        <div id="app-footer" class="app-footer">betabiosciences@gmail.com</div>
+    </div>
+
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, query, getDocs, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Initialization ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQMXeU6OJw2e5A-tPQFeoi8MO8ZZfY0WQ",
+            authDomain: "beta-quizapp.firebaseapp.com",
+            projectId: "beta-quizapp",
+            storageBucket: "beta-quizapp.appspot.com",
+            messagingSenderId: "709439478022",
+            appId: "1:709439478022:web:595f257edbade7d458a687",
+            measurementId: "G-5WF35EM4YB"
+        };
+
+        const projectIdForFirestorePath = firebaseConfig.projectId;
+
+        let app, db, auth, userId;
+        let isAuthReady = false;
+
+        async function initFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Firebase Auth Ready. User ID:", userId);
+                        isAuthReady = true;
+                    } else {
+                        try {
+                            await signInAnonymously(auth);
+                        } catch (error) {
+                            console.error("Firebase Anonymous Auth failed:", error);
+                            adminLoginMessage.textContent = "Firebase authentication failed. Cannot load results.";
+                            adminLoginMessage.classList.remove('hidden');
+                            adminLoginMessage.style.color = '#ef4444';
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                adminLoginMessage.textContent = "Firebase initialization failed. Cannot load results.";
+                adminLoginMessage.classList.remove('hidden');
+                adminLoginMessage.style.color = '#ef4444';
+            }
+        }
+        initFirebase();
+
+        // --- Quiz Data ---
+        const quizData = [
+            {
+            question: "The following table shows the mean and variance of population densities of species A, B and C. Based on the above, which of the following statements is correct?",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig1.png", // Placeholder - you may want to add the actual table image
+            options: [
+                "A. Species A and B show uniform distribution, whereas species C shows clumped distribution.",
+                "B. Species A shows random distribution, species B shows uniform distribution, and species C shows clumped distribution.",
+                "C. Species A and B show clumped distribution, whereas species C shows uniform distribution.",
+                "D. Species A shows clumped distribution, species B shows random distribution, and species C shows uniform distribution."
+            ],
+            correctAnswer: "B. Species A shows random distribution, species B shows uniform distribution, and species C shows clumped distribution."
+        },
+        {
+            question: "Two species of plants were sampled in 32 quadrats in a forest. The mean and variance for the occurrence of species 1 were 16.4 and 48 and species 2 were 3.6 and 3.2 respectively. Which of the following statements about the distribution of the two species in these quadrats is supported by these findings?",
+            options: [
+                "A. Both species are distributed randomly.",
+                "B. Species 1 is distributed randomly and species 2 is clustered.",
+                "C. Species 1 is clustered and species 2 is distributed randomly.",
+                "D. Both species are clustered."
+            ],
+            correctAnswer: "C. Species 1 is clustered and species 2 is distributed randomly."
+        },
+        {
+            question: "Area of patch 1 is 2000 m² with a resource density of 5 units/m². Area of patch 2 is 3000 m² with a resource density of 10 units/m². As per the theory of ideal-free distribution, organisms distribute themselves such that the expected ratio of abundance of organisms in the two patches (patch 1: patch 2) is",
+            options: [
+                "A. 1:2",
+                "B. 2:3",
+                "C. 1:3",
+                "D. 3:2"
+            ],
+            correctAnswer: "C. 1:3"
+        },
+        {
+            question: "In natural system, a species producing large number of offsprings with little or no parental care generally exhibits which one of the following kinds of survivorship curve",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig2.jpg", // Placeholder - you may want to add the actual image
+            options: [
+                "A. 1",
+                "B. 2",
+                "C. 3",
+                "D. 4"
+            ],
+            correctAnswer: "B. 2"
+        },
+        {
+            question: "Following is the diagram of three idealized survivorship curves of animals. Find the correct match between the group of animals and the respective survivorship curves.",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig3.jpg", // Placeholder - you may want to add the actual image
+            options: [
+                "A. Marine pelagic fish and large mammals -III and I, respectively.",
+                "B. Marine pelagic fish and large mammals- I and II, respectively.",
+                "C. Some birds and large mammals- I and III, respectively.",
+                "D. Marine pelagic fish and some birds -I and III, respectively."
+            ],
+            correctAnswer: "A. Marine pelagic fish and large mammals -III and I, respectively."
+        },
+        {
+            question: "Given below are the survivorship curves showing the proportion of individuals surviving over time or age. Three generalized types of curves (a, b and c) are depicted below. Which of the following represent the correct survivorship curve for the given organisms?",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig4.jpg", // Placeholder - you may want to add the actual image
+            options: [
+                "A. a = Elephants; b = Lizards; c = Oysters",
+                "B. a = Oysters; b = Elephants; c = Lizards",
+                "C. a = Lizards; b = Oysters; c = Elephants",
+                "D. a = Oysters; b = Lizards; c = Elephants"
+            ],
+            correctAnswer: "A. a = Elephants; b = Lizards; c = Oysters"
+        },
+        {
+            question: "Given below are growth and survivorship curves. Select the correct combination of growth curves from figure A and survivorship curves from figure B given above, that would best represent r and K strategies, respectively.",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig5.jpg", // Placeholder - you may want to add the actual image
+            options: [
+                "A. r = a and I; K = b and n",
+                "B. r=b and n; K=a and l",
+                "C. r = a and m; K = b and n",
+                "D. r=b and m; K=a and m"
+            ],
+            correctAnswer: "B. r=b and n; K=a and l"
+        },
+        {
+            question: "The following table shows survival and fertility data for a seasonally breeding species. Based on above data net reproductive rate (Ro) of the species will be",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig6.png", // Placeholder - you may want to add the actual table
+            options: [
+                "A. 1",
+                "B. 5",
+                "C. 10",
+                "D. 20"
+            ],
+            correctAnswer: "C. 10"
+        },
+        {
+            question: "Following is the hypothetical life table for species. Which one of the following is the correct net reproductive rate (R₀)?",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig7.png", // Placeholder - you may want to add the actual table
+            options: [
+                "A. 0.0",
+                "B. 0.3",
+                "C. 0.7",
+                "D. 1.5"
+            ],
+            correctAnswer: "C. 0.7"
+        },
+        {
+            question: "Complete the following hypothetical life table of a species to calculate the net reproductive rate R₀. The calculated R₀ will be",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig8.png", // Placeholder - you may want to add the actual table
+            options: [
+                "A. 0.75",
+                "B. 1.00",
+                "C. 0.65",
+                "D. 1.15"
+            ],
+            correctAnswer: "A. 0.75"
+        },
+        {
+            question: "The following is the life table of a natural population of a small annual succulent where 'x' is its life phase, 'Iₓ' is its survivorship till that stage and 'dₓ' is its age specific mortality. Which of the following options from the above life phases show the lowest age specific mortality rate?",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig9.png", // Placeholder - you may want to add the actual table
+            options: [
+                "A. Seeds produced",
+                "B. Germinated",
+                "C. Established",
+                "D. Rosettes"
+            ],
+            correctAnswer: "A. Seeds produced"
+        },
+        {
+            question: "Suppose a population has three age classes. Females in the second and third age classes produce four and three offsprings, respectively. While 50% female in the first age class survive into the second age class, only 30% females survive into the third age class. The Leslie matrix for this population is given. If there are 10 individuals in each of the three age classes, the number of individuals in the next iteration would be:",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig10.jpg", // Placeholder - you may want to add the actual matrix
+            options: [
+                "A. 50",
+                "B. 78",
+                "C. 100",
+                "D. 65"
+            ],
+            correctAnswer: "B. 78"
+        },
+        {
+            question: "At a given time, the age class distribution of a population was as shown in figure. Which of the following can be inferred from the figure?",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig11.jpg", // Placeholder - you may want to add the actual figure
+            options: [
+                "A. Age class 2 has maximum fecundity",
+                "B. Age class 2 has maximum survival",
+                "C. Age class distribution is at equilibrium",
+                "D. Age class distribution is not at equilibrium"
+            ],
+            correctAnswer: "D. Age class distribution is not at equilibrium"
+        },
+        {
+            question: "In a population showing exponential growth, per capita growth rate will-",
+            options: [
+                "A. decrease as population size increases",
+                "B. increase as population size increases",
+                "C. remain constant as population size increases",
+                "D. increase initially and then saturate at large population sizes"
+            ],
+            correctAnswer: "A. decrease as population size increases"
+        },
+        {
+            question: "The net reproductive rate (R₀) is 1.5 for a given population. If Nₜ the population of females at generation t, is 500, then what will be the population of females after four generations (Nₜ₊₄)?",
+            options: [
+                "A. 1125.000",
+                "B. 2531.250",
+                "C. 1265.625",
+                "D. 3796.875"
+            ],
+            correctAnswer: "B. 2531.250"
+        },
+        {
+            question: "In the following equations: (a) dN/dt = rN, (b) Nₜ = Nₒ eʳᵗ, (c) dN/dt = rN (K-N/K), (d) dN/dt = rN ˟N/K. Exponential population growth is described by",
+            options: [
+                "A. a and b.",
+                "B. a only.",
+                "C. c only.",
+                "D. b and d"
+            ],
+            correctAnswer: "A. a and b."
+        },
+        {
+            question: "Given below are growth equations where dN/dt is defined as: A. rN/K, B. rN, C. rN[(K-N)/N], D. rN[(K-N)/K]. With reference to the above equations, which one of the following statements is correct?",
+            options: [
+                "A. B represents exponential growth and A represents logistic growth",
+                "B. B represents exponential growth and D represents logistic growth",
+                "C. B represents zero growth and C represents logistic growth",
+                "D. A represents exponential growth and D represents logistic growth"
+            ],
+            correctAnswer: "B. B represents exponential growth and D represents logistic growth"
+        },
+        {
+            question: "For a population growing exponentially with a growth rate r, its population doubling time is",
+            options: [
+                "A. (N₀ x 2)",
+                "B. In 2/r",
+                "C. λ ln 2",
+                "D. In r X 2"
+            ],
+            correctAnswer: "B. In 2/r"
+        },
+        {
+            question: "The general relation between generation time (T) and population growth rate (r) is described by the equation",
+            options: [
+                "A. In r = In a - b In T",
+                "B. r = a - bT",
+                "C. In r = Ina + bInT",
+                "D. r = a + bT"
+            ],
+            correctAnswer: "A. In r = In a - b In T"
+        },
+        {
+            question: "The graph below shows the change in the size of four populations (A-D) over time. Which among the four populations (A, B, C, and D) would have the lowest intrinsic rate of population growth (r)?",
+            image: "https://betabiosciences.github.io/Other-Units/Population%20ecology%20fig12.jpg", // Placeholder - you may want to add the actual graph
+            options: [
+                "A. A",
+                "B. B",
+                "C. C",
+                "D. D"
+            ],
+            correctAnswer: "D. D"
+            }
+        ];
+
+        // --- Quiz Configuration ---
+        const questionMarks = 2;
+        const negativeMarkingValue = 0.5;
+        const quizDuration = 20 * 60;
+        const currentQuizVersion = "Population_Ecology_v1.0"; // Updated quiz version
+
+        // --- HTML Element References ---
+        const loginPage = document.getElementById('login-page');
+        const studentNameInput = document.getElementById('student-name-input');
+        const startQuizButton = document.getElementById('start-quiz-button');
+
+        const noticePage = document.getElementById('notice-page');
+        const continueQuizButton = document.getElementById('continue-quiz-button');
+
+        const quizPage = document.getElementById('quiz-page');
+        const timerDisplay = document.getElementById('timer-display');
+        const questionImage = document.getElementById('question-image');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const saveNextButton = document.getElementById('save-next-button');
+        const clearButton = document.getElementById('clear-button');
+        const nextButton = document.getElementById('next-button');
+        const quizNavButtons = document.querySelector('.quiz-nav-buttons');
+        const questionPalette = document.getElementById('question-palette');
+        const quizSidebar = document.getElementById('quiz-sidebar');
+
+        const finalResultsPage = document.getElementById('final-results-page');
+        const studentNameDisplay = document.getElementById('student-name-display');
+        const attemptedDisplay = document.getElementById('attempted-display');
+        const correctDisplay = document.getElementById('correct-display');
+        const incorrectDisplay = document.getElementById('incorrect-display');
+        const finalScoreDisplay = document.getElementById('final-score-display');
+        const maxMarksDisplay = document.getElementById('max-marks-display');
+        const showAnswerKeyButton = document.getElementById('show-answer-key-button');
+
+        const adminPasscodeInput = document.getElementById('admin-passcode-input');
+        const adminLoginButton = document.getElementById('admin-login-button');
+        const adminLoginMessage = document.getElementById('admin-login-message');
+
+        const adminResultsModal = document.getElementById('admin-results-modal');
+        const adminResultsDisplayArea = document.getElementById('admin-results-display-area');
+        const closeAdminModalButton = document.getElementById('close-admin-modal');
+
+        const appFooter = document.getElementById('app-footer');
+
+        // New Answer Key Navigation Buttons
+        const answerKeyNavButtons = document.querySelector('.answer-key-nav-buttons');
+        const prevAnswerKeyButton = document.getElementById('prev-answer-key-button');
+        const nextAnswerKeyButton = document.getElementById('next-answer-key-button');
+
+        // --- Quiz State Variables ---
+        let studentName = '';
+        let currentQuestionIndex = 0;
+        // 0: Not visited, 1: Visited but not answered (red), 2: Answered (green)
+        let questionStatus = Array(quizData.length).fill(0);
+        let savedAnswers = Array(quizData.length).fill(null);
+        let timeLeft = quizDuration;
+        let timerInterval;
+        let quizSubmitted = false;
+        let isAnswerKeyMode = false;
+
+        window.selectedAnswer = null;
+
+        // --- Integrity Check ---
+        const expectedFooterText = "betabiosciences@gmail.com";
+        function checkFooterIntegrity() {
+            if (appFooter && appFooter.textContent !== expectedFooterText) {
+                console.error("Integrity check failed: Footer text modified!");
+                clearInterval(timerInterval);
+                [startQuizButton, continueQuizButton, saveNextButton, clearButton, nextButton, adminLoginButton, showAnswerKeyButton, prevAnswerKeyButton, nextAnswerKeyButton].forEach(btn => {
+                    if (btn) btn.disabled = true;
+                });
+                const body = document.querySelector('body');
+                const alertDiv = document.createElement('div');
+                alertDiv.style.position = 'fixed';
+                alertDiv.style.top = '20px';
+                alertDiv.style.left = '50%';
+                alertDiv.style.transform = 'translateX(-50%)';
+                alertDiv.style.backgroundColor = 'red';
+                alertDiv.style.color = 'white';
+                alertDiv.style.padding = '15px';
+                alertDiv.style.borderRadius = '8px';
+                alertDiv.style.zIndex = '2000';
+                alertDiv.textContent = "Quiz functionality has been disabled due to an integrity check failure. Please do not modify the footer text.";
+                body.appendChild(alertDiv);
+                setTimeout(() => alertDiv.remove(), 5000);
+                return false;
+            }
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkFooterIntegrity, 100);
+        });
+
+
+        // --- Page Navigation Functions ---
+        function showPage(pageElement) {
+            [loginPage, noticePage, quizPage, finalResultsPage].forEach(page => {
+                if (page) page.classList.add('hidden');
+            });
+            if (pageElement) pageElement.classList.remove('hidden');
+        }
+
+        function showModal(modalElement) {
+            if (modalElement) modalElement.classList.remove('hidden');
+        }
+
+        function hideModal(modalElement) {
+            if (modalElement) modalElement.classList.add('hidden');
+        }
+
+
+        // --- Login Page Logic ---
+        studentNameInput.addEventListener('input', () => {
+            startQuizButton.disabled = studentNameInput.value.trim() === '';
+        });
+
+        startQuizButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            studentName = studentNameInput.value.trim();
+            if (studentName) {
+                showPage(noticePage);
+            }
+        });
+
+        // --- Notice Page Logic ---
+        continueQuizButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            showPage(quizPage);
+            startTimer();
+            loadQuestion(currentQuestionIndex);
+            renderQuestionPalette();
+            quizNavButtons.classList.remove('hidden');
+            answerKeyNavButtons.classList.add('hidden');
+            timerDisplay.classList.remove('hidden');
+            quizSidebar.classList.remove('hidden');
+        });
+
+        // --- Timer Logic ---
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (!checkFooterIntegrity()) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuizAutomatically();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            timerDisplay.classList.remove('orange', 'red', 'green');
+            if (timeLeft <= 60) {
+                timerDisplay.classList.add('red');
+            } else if (timeLeft <= 180) {
+                timerDisplay.classList.add('orange');
+            } else {
+                timerDisplay.classList.add('green');
+            }
+        }
+
+        function submitQuizAutomatically() {
+            if (!quizSubmitted) {
+                const body = document.querySelector('body');
+                const alertDiv = document.createElement('div');
+                alertDiv.style.position = 'fixed';
+                alertDiv.style.top = '20px';
+                alertDiv.style.left = '50%';
+                alertDiv.style.transform = 'translateX(-50%)';
+                alertDiv.style.backgroundColor = '#f59e0b';
+                alertDiv.style.color = 'white';
+                alertDiv.style.padding = '15px';
+                alertDiv.style.borderRadius = '8px';
+                alertDiv.style.zIndex = '2000';
+                alertDiv.textContent = "Time's up! Your quiz has been automatically submitted.";
+                body.appendChild(alertDiv);
+                setTimeout(() => alertDiv.remove(), 3000);
+                submitQuiz();
+            }
+        }
+
+        // --- Quiz Page Logic ---
+        function loadQuestion(index) {
+            if (!checkFooterIntegrity()) return;
+            currentQuestionIndex = index;
+            optionsContainer.innerHTML = '';
+            window.selectedAnswer = savedAnswers[currentQuestionIndex]; // Load previously selected answer
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionText.textContent = `Q${index + 1}: ${currentQuestion.question}`;
+
+            // Handle question image
+            if (currentQuestion.image) {
+                questionImage.src = currentQuestion.image;
+                questionImage.alt = `Image for question ${index + 1}`;
+                questionImage.classList.remove('hidden');
+                
+                // Add error handling for images
+                questionImage.onerror = function() {
+                    this.classList.add('hidden');
+                    console.error("Failed to load question image");
+                };
+            } else {
+                questionImage.classList.add('hidden');
+            }
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+
+                if (isAnswerKeyMode) {
+                    const cleanedOption = option.replace(/^[A-D]\)\s*/, '');
+                    const cleanedCorrectAnswer = currentQuestion.correctAnswer.replace(/^[A-D]\)\s*/, '');
+                    const cleanedStudentAnswer = savedAnswers[currentQuestionIndex] ? savedAnswers[currentQuestionIndex].replace(/^[A-D]\)\s*/, '') : null;
+
+                    if (cleanedOption === cleanedCorrectAnswer) {
+                        button.classList.add('correct-answer');
+                    }
+                    if (cleanedStudentAnswer === cleanedOption && cleanedOption !== cleanedCorrectAnswer) {
+                        button.classList.add('incorrect-answer');
+                    }
+                    button.classList.add('disabled-for-answer-key');
+                } else {
+                    if (savedAnswers[currentQuestionIndex] === option) {
+                        button.classList.add('selected');
+                    }
+                    button.addEventListener('click', () => selectAnswer(button, option));
+                }
+                optionsContainer.appendChild(button);
+            });
+
+            if (!isAnswerKeyMode) {
+                // IMPORTANT FIX: Mark as visited (red) if not already answered
+                if (questionStatus[currentQuestionIndex] === 0) {
+                    questionStatus[currentQuestionIndex] = 1; // Mark as visited but unanswered (red)
+                }
+                updateQuestionPalette();
+
+                if (currentQuestionIndex === quizData.length - 1) {
+                    nextButton.textContent = 'Submit Quiz';
+                    nextButton.classList.add('submit-quiz');
+                    nextButton.classList.remove('next');
+                } else {
+                    nextButton.textContent = 'Next';
+                    nextButton.classList.remove('submit-quiz');
+                    nextButton.classList.add('next');
+                }
+            } else {
+                prevAnswerKeyButton.disabled = (currentQuestionIndex === 0);
+                nextAnswerKeyButton.classList.add('answer-key-nav-button');
+                if (currentQuestionIndex === quizData.length - 1) {
+                    nextAnswerKeyButton.textContent = 'Close Answer Key';
+                    nextAnswerKeyButton.classList.add('close-answer-key');
+                } else {
+                    nextAnswerKeyButton.textContent = 'Next';
+                    nextAnswerKeyButton.classList.remove('close-answer-key');
+                }
+            }
+        }
+
+        function selectAnswer(button, optionText) {
+            if (!checkFooterIntegrity()) return;
+            document.querySelectorAll('.option-button.selected').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            button.classList.add('selected');
+            window.selectedAnswer = optionText;
+        }
+
+        saveNextButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            if (window.selectedAnswer !== null) {
+                savedAnswers[currentQuestionIndex] = window.selectedAnswer;
+                questionStatus[currentQuestionIndex] = 2; // Mark as answered (green)
+            } else {
+                // If Save & Next is clicked without selecting an answer, it remains 'visited but unanswered' or 'not visited'
+                // For 'Save & Next', we assume intent to save (even if null) and move on.
+                // If it was already green (answered), it stays green. If red, it stays red. If grey, it becomes red.
+                 if (questionStatus[currentQuestionIndex] === 0) { // If not visited
+                     questionStatus[currentQuestionIndex] = 1; // Mark as visited but unanswered (red)
+                 }
+            }
+            moveToNextQuestion();
+        });
+
+        clearButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            window.selectedAnswer = null;
+            savedAnswers[currentQuestionIndex] = null;
+            document.querySelectorAll('.option-button.selected').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            questionStatus[currentQuestionIndex] = 1; // Mark as visited but unanswered (red)
+            updateQuestionPalette();
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+
+            // If "Next" is clicked:
+            // 1. If an answer is selected, mark as answered (green).
+            // 2. If no answer is selected but the question was previously green (answered), it remains green.
+            // 3. If no answer is selected and it was grey (not visited) or red (visited but not answered), it becomes red.
+            if (window.selectedAnswer !== null) {
+                 savedAnswers[currentQuestionIndex] = window.selectedAnswer;
+                 questionStatus[currentQuestionIndex] = 2; // Mark as answered (green)
+            } else {
+                 if (questionStatus[currentQuestionIndex] === 0 || questionStatus[currentQuestionIndex] === 1) {
+                     questionStatus[currentQuestionIndex] = 1; // Mark as visited but unanswered (red)
+                 }
+            }
+
+            if (currentQuestionIndex === quizData.length - 1) {
+                submitQuiz();
+            } else {
+                moveToNextQuestion();
+            }
+        });
+
+        function moveToNextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                loadQuestion(currentQuestionIndex + 1);
+            } else {
+                console.log("Already on the last question. Consider submitting.");
+            }
+        }
+
+        function renderQuestionPalette() {
+            questionPalette.innerHTML = '';
+            quizData.forEach((_, index) => {
+                const box = document.createElement('div');
+                box.classList.add('palette-box');
+                box.textContent = index + 1;
+                box.addEventListener('click', () => loadQuestion(index));
+                questionPalette.appendChild(box);
+            });
+            updateQuestionPalette();
+        }
+
+        function updateQuestionPalette() {
+            const paletteBoxes = questionPalette.children;
+            if (paletteBoxes.length !== quizData.length) {
+                console.warn("Palette boxes count mismatch with quiz data. Re-rendering palette.");
+                renderQuestionPalette();
+                return;
+            }
+            questionStatus.forEach((status, index) => {
+                const box = paletteBoxes[index];
+                if (box) {
+                    box.classList.remove('unanswered', 'answered', 'grey'); // Remove all states first
+                    if (status === 1) { // Visited but not answered (red)
+                        box.classList.add('unanswered');
+                    } else if (status === 2) { // Answered (green)
+                        box.classList.add('answered');
+                    } else { // Not visited (grey)
+                        box.classList.add('grey');
+                    }
+                }
+            });
+        }
+
+        // --- Final Submission and Results Logic ---
+        async function submitQuiz() {
+            if (!checkFooterIntegrity()) return;
+            if (quizSubmitted) return;
+            quizSubmitted = true;
+            clearInterval(timerInterval);
+
+            let correctAnswersCount = 0;
+            let incorrectAnswersCount = 0;
+            let attemptedQuestionsCount = 0;
+            let finalScore = 0;
+
+            quizData.forEach((question, index) => {
+                const studentAnswer = savedAnswers[index];
+                if (studentAnswer !== null) {
+                    attemptedQuestionsCount++;
+                    const cleanedStudentAnswer = studentAnswer.replace(/^[A-D]\)\s*/, '');
+                    const cleanedCorrectAnswer = question.correctAnswer.replace(/^[A-D]\)\s*/, '');
+
+                    if (cleanedStudentAnswer === cleanedCorrectAnswer) {
+                        correctAnswersCount++;
+                        finalScore += questionMarks;
+                    } else {
+                        incorrectAnswersCount++;
+                        finalScore -= negativeMarkingValue;
+                    }
+                }
+            });
+
+            studentNameDisplay.textContent = studentName;
+            attemptedDisplay.textContent = attemptedQuestionsCount;
+            correctDisplay.textContent = correctAnswersCount;
+            incorrectDisplay.textContent = incorrectAnswersCount;
+            finalScoreDisplay.textContent = finalScore.toFixed(1);
+
+            const maxPossibleMarks = quizData.length * questionMarks;
+            maxMarksDisplay.textContent = maxPossibleMarks;
+
+            showPage(finalResultsPage);
+
+            if (isAuthReady && db && userId) {
+                try {
+                    const resultsCollectionRef = collection(db, `quizzes/${projectIdForFirestorePath}/results`);
+                    const submissionId = `${userId}_${Date.now()}`;
+                    await setDoc(doc(resultsCollectionRef, submissionId), {
+                        studentName: studentName,
+                        score: parseFloat(finalScore.toFixed(1)),
+                        attemptedQuestions: attemptedQuestionsCount,
+                        correctAnswers: correctAnswersCount,
+                        incorrectAnswers: incorrectAnswersCount,
+                        maxMarks: maxPossibleMarks,
+                        timestamp: serverTimestamp(),
+                        userId: userId,
+                        quizVersion: currentQuizVersion
+                    });
+                    console.log("Quiz results saved to Firestore!");
+                } catch (e) {
+                    console.error("Error adding document to Firestore: ", e);
+                    const resultsPage = document.getElementById('final-results-page');
+                    let saveErrorMsg = document.getElementById('saveErrorMsg');
+                    if (!saveErrorMsg) {
+                        saveErrorMsg = document.createElement('p');
+                        saveErrorMsg.id = 'saveErrorMsg';
+                        saveErrorMsg.style.color = 'red';
+                        saveErrorMsg.style.marginTop = '10px';
+                        resultsPage.insertBefore(saveErrorMsg, document.querySelector('.telegram-link'));
+                    }
+                    saveErrorMsg.textContent = "Note: Could not save results to the server. Please ensure you are connected to the internet.";
+                }
+            } else {
+                console.warn("Firestore not ready or user not authenticated. Results not saved.");
+                const resultsPage = document.getElementById('final-results-page');
+                let saveErrorMsg = document.getElementById('saveErrorMsg');
+                if (!saveErrorMsg) {
+                    saveErrorMsg = document.createElement('p');
+                    saveErrorMsg.id = 'saveErrorMsg';
+                    saveErrorMsg.style.color = 'red';
+                    saveErrorMsg.style.marginTop = '10px';
+                    resultsPage.insertBefore(saveErrorMsg, document.querySelector('.telegram-link'));
+                }
+                saveErrorMsg.textContent = "Note: Could not save results to the server. Please ensure you are connected to the internet.";
+            }
+        }
+
+        // --- Answer Key Logic ---
+        showAnswerKeyButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            isAnswerKeyMode = true;
+            currentQuestionIndex = 0;
+            showPage(quizPage);
+            loadQuestion(currentQuestionIndex);
+
+            timerDisplay.classList.add('hidden');
+            quizNavButtons.classList.add('hidden');
+            quizSidebar.classList.add('hidden');
+
+            answerKeyNavButtons.classList.remove('hidden');
+        });
+
+        prevAnswerKeyButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            if (currentQuestionIndex > 0) {
+                loadQuestion(currentQuestionIndex - 1);
+            }
+        });
+
+        nextAnswerKeyButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            if (currentQuestionIndex < quizData.length - 1) {
+                loadQuestion(currentQuestionIndex + 1);
+            } else {
+                closeAnswerKey();
+            }
+        });
+
+        function closeAnswerKey() {
+            isAnswerKeyMode = false;
+            showPage(finalResultsPage);
+            answerKeyNavButtons.classList.add('hidden');
+            timerDisplay.classList.add('hidden');
+            quizNavButtons.classList.add('hidden');
+            quizSidebar.classList.add('hidden');
+        }
+
+
+        // --- Admin Login Logic (Scrambled Passcode) ---
+        const obfuscatedPasscodeBytes = [106, 123, 114, 124, 75, 64, 63, 64, 65];
+        const baseOffset = 7;
+
+        function getAdminPasscode() {
+            let decryptedPasscode = '';
+            for (let i = 0; i < obfuscatedPasscodeBytes.length; i++) {
+                decryptedPasscode += String.fromCharCode(obfuscatedPasscodeBytes[i] - baseOffset - i);
+            }
+            return decryptedPasscode;
+        }
+
+        adminLoginButton.addEventListener('click', async () => {
+            if (!checkFooterIntegrity()) return;
+            const enteredPasscode = adminPasscodeInput.value;
+            adminLoginMessage.classList.add('hidden');
+
+            if (enteredPasscode === getAdminPasscode()) {
+                adminLoginMessage.textContent = "Loading admin results...";
+                adminLoginMessage.classList.remove('hidden');
+                adminLoginMessage.style.color = '#22c55e';
+
+                await fetchAllQuizResults();
+                adminResultsModal.classList.remove('hidden');
+                adminLoginMessage.classList.add('hidden');
+            } else {
+                adminLoginMessage.textContent = "Incorrect passcode.";
+                adminLoginMessage.classList.remove('hidden');
+                adminLoginMessage.style.color = '#ef4444';
+            }
+        });
+
+        closeAdminModalButton.addEventListener('click', () => {
+            adminResultsModal.classList.add('hidden');
+        });
+
+        // --- Fetch and Display All Results for Admin Modal ---
+        async function fetchAllQuizResults() {
+            adminResultsDisplayArea.innerHTML = '<p class="loading-message">Loading results...</p>';
+            if (!isAuthReady || !db) {
+                adminResultsDisplayArea.innerHTML = '<p class="error-message">Firebase not ready. Please check configuration and authentication.</p>';
+                console.warn("Firestore not ready for admin results fetch.");
+                return;
+            }
+
+            try {
+                const resultsCollectionRef = collection(db, `quizzes/${projectIdForFirestorePath}/results`);
+                const q = query(resultsCollectionRef, where("quizVersion", "==", currentQuizVersion));
+                const querySnapshot = await getDocs(q);
+                const allResults = [];
+                querySnapshot.forEach((doc) => {
+                    allResults.push({ id: doc.id, ...doc.data() });
+                });
+
+                allResults.sort((a, b) => {
+                    const timeA = a.timestamp ? a.timestamp.toMillis() : 0;
+                    const timeB = b.timestamp ? b.timestamp.toMillis() : 0;
+                    return timeB - timeA;
+                });
+
+                displayAdminResults(allResults);
+            } catch (e) {
+                console.error("Error fetching all quiz results: ", e);
+                adminResultsDisplayArea.innerHTML = `<p class="error-message">Error fetching results: ${e.message}. Check console for details.</p>`;
+            }
+        }
+
+        function displayAdminResults(results) {
+            if (results.length === 0) {
+                adminResultsDisplayArea.innerHTML = '<p class="no-results-message">No quiz results found yet.</p>';
+                return;
+            }
+
+            let tableHtml = `
+                <div class="admin-results-table-wrapper">
+                    <table class="admin-results-table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Score</th>
+                                <th>Max Marks</th>
+                                <th>Attempted</th>
+                                <th>Correct</th>
+                                <th>Incorrect</th>
+                                <th>Date</th>
+                                <th>User ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            results.forEach(result => {
+                const date = result.timestamp ? new Date(result.timestamp.toDate()).toLocaleString() : 'N/A';
+                tableHtml += `
+                    <tr>
+                        <td>${result.studentName || 'N/A'}</td>
+                        <td>${result.score !== undefined ? result.score.toFixed(1) : 'N/A'}</td>
+                        <td>${result.maxMarks !== undefined ? result.maxMarks : (quizData.length * questionMarks)}</td>
+                        <td>${result.attemptedQuestions !== undefined ? result.attemptedQuestions : 'N/A'}</td>
+                        <td>${result.correctAnswers !== undefined ? result.correctAnswers : 'N/A'}</td>
+                        <td>${result.incorrectAnswers !== undefined ? result.incorrectAnswers : 'N/A'}</td>
+                        <td>${date}</td>
+                        <td>${result.userId || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            adminResultsDisplayArea.innerHTML = tableHtml;
+        }
+
+        // Initial page load
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage(loginPage);
+        });
+    </script>
+</body>
+</html>
