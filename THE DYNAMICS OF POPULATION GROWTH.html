@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Dynamics of Population Growth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .content-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(5px);
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .section.active {
+            transform: translateX(0);
+        }
+
+        .section.prev {
+            transform: translateX(-100%);
+        }
+
+        .section h2 {
+            font-size: 1.4rem;
+            color: #ffd700;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 0.5rem;
+        }
+
+        .section h3 {
+            font-size: 1.2rem;
+            color: #87ceeb;
+            margin: 1rem 0 0.5rem 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .section p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section img {
+            width: 100%;
+            max-width: 600px;
+            margin: 1rem auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .section ul, .section ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .formula {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 1rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .example {
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 4px solid #ffd700;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .navigation {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border: none;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 0.9rem;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-button:disabled {
+            background: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .progress-indicator {
+            display: flex;
+            gap: 0.3rem;
+            align-items: center;
+        }
+
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background: #ffd700;
+            transform: scale(1.2);
+        }
+
+        .section-counter {
+            color: #87ceeb;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Quiz styles */
+        .quiz-question {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #ffd700;
+        }
+
+        .quiz-option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #4caf50;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #f44336;
+        }
+
+        .highlighted {
+            background: rgba(255, 215, 0, 0.3);
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-logo {
+            height: 40px;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 1rem;
+            }
+            
+            .section h2 {
+                font-size: 1.2rem;
+            }
+            
+            .nav-button {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>THE DYNAMICS OF POPULATION GROWTH</h1>
+        </div>
+        
+        <div class="content-area">
+            <!-- Introduction Section -->
+            <div class="section active">
+                <h2>Introduction to Population Growth</h2>
+                <p>Population growth is a fundamental concept in ecology, providing valuable insights into how species thrive, interact, and respond to their environment. At its most basic level, a population grows if the number of births exceeds the number of deaths within a given time interval. However, this simple relationship is influenced by a variety of factors, leading to different models that help us understand and predict population dynamics. We can analyze population growth through three primary models, each with distinct assumptions and outcomes:</p>
+                
+                <ol>
+                    <li><strong>Geometric and Exponential Growth:</strong> These models represent idealized scenarios where resources are unlimited. They both predict prodigious, unconstrained growth, though they are applied to different types of organisms. The <strong>geometric growth model</strong> is used for organisms that reproduce at discrete, periodic intervals (e.g., seasonal breeders), while the <strong>exponential growth model</strong> is used for organisms that breed continuously (e.g., many bacteria or humans). While these models may seem unrealistic, they provide a powerful baseline for understanding the maximum potential for growth in a population.</li>
+                    
+                    <li><strong>Logistic Growth:</strong> This is a more biologically realistic model that accounts for the limiting nature of resources. As a population grows, competition for food, space, and other resources increases, slowing down the growth rate. This model predicts that a population will eventually reach a stable size, known as the carrying capacity, where the birth rate equals the death rate. The logistic model provides a more accurate picture of how most populations behave in a natural, resource-limited environment.</li>
+                </ol>
+                
+                <p>Furthermore, these models can be adjusted to account for additional complexities. For example, incorporating a time lag in the logistic model can lead to population oscillations or even chaotic patterns, demonstrating how delays in a population's response to its own density can create instability. Beyond these models, other factors like natural enemies (predators and parasites) and a species' specific life history strategies (e.g., number of offspring, age of first reproduction) also play crucial roles in shaping population growth patterns. Finally, the principles of population growth can be applied to special cases, such as human population dynamics, to understand our own demographic trends and their ecological impacts.</p>
+            </div>
+
+            <!-- J-Shaped Growth Overview -->
+            <div class="section">
+                <h2>J-shaped Population Growth Curves</h2>
+                <p>Population growth can be likened to the accumulation of savings in a bank account. Just as a higher interest rate leads to faster growth of your money, a greater population growth rate results in a more rapid increase in the number of individuals. This growth can occur in two primary ways:</p>
+                
+                <ul>
+                    <li><strong>Geometric Growth:</strong> Similar to a bank that pays interest annually, some populations reproduce at distinct, periodic intervals, such as once a year. This pattern, known as geometric growth, leads to a stepwise increase in population size.</li>
+                    
+                    <li><strong>Exponential Growth:</strong> This is comparable to a bank that compounds interest quarterly or monthly, causing savings to accrue more quickly. Similarly, species that reproduce almost continuously, with overlapping generations and individuals of all ages present at the same time, experience exponential growth.</li>
+                </ul>
+                
+                <p>While geometric and exponential growth are described by slightly different mathematical equations, both models produce a characteristic J-shaped curve, signifying a rapid and accelerating increase in population size under ideal, unconstrained conditions.</p>
+            </div>
+
+            <!-- Geometric Growth -->
+            <div class="section">
+                <h2>Geometric Growth - Population Growth for Periodic Breeders</h2>
+                <p>To predict the future size of a population, particularly one that breeds annually with no limitations on resources, we can use the net reproductive rate (R₀). This rate, combined with the current population size (Nₜ), allows us to calculate how the population will change over time. For a species like a butterfly with a one-year lifespan, the population growth from one generation to the next is simply determined by the formula:</p>
+                
+                <div class="formula">
+                    N<sub>t+1</sub> = R₀ × N<sub>t</sub>
+                </div>
+                
+                <p>where Nₜ is the population size of females at generation t, N<sub>t+1</sub> is the population size of females at generation t + 1, and R₀ is the net reproductive rate or number of females produced per female per generation.</p>
+                
+                <div class="example">
+                    <p>If R₀ = 1.5 and Nₜ = 100, then N<sub>t+1</sub> = 1.5 × 100 = 150.</p>
+                    <p>At the second generation, N<sub>t+2</sub>, the population size would be 150 × 1.5 = 225. Similarly, population size at N<sub>t+3</sub> would be 337.5; at N<sub>t+4</sub>, 506.25; and after five generations, N<sub>t+5</sub> = 759.375.</p>
+                </div>
+                
+                <p>Of course, we can't have a fraction of a butterfly in nature so we would have to round these numbers up or down to the nearest whole number. We can write this relationship more generally as</p>
+                
+                <div class="formula">
+                    N<sub>t</sub> = N₀ × R₀<sup>t</sup>
+                </div>
+                
+                <p>where t is the number of generations and N₀ is the number of females currently in the population. In our example,</p>
+                <p>N₀ = 100,</p>
+                <p>R₀<sup>t</sup> = 1.5⁵ = 7.59375,</p>
+                <p>so Nₜ = 759.375.</p>
+            </div>
+
+            <!-- R₀ Values and Examples -->
+            <div class="section">
+                <h2>Net Reproductive Rate and Real-World Examples</h2>
+                <p>The trajectory of a population is highly dependent on its net reproductive rate, R₀</p>
+                
+                <p>In the simplest models, R₀ is assumed to be constant, and its value determines the fate of the population:</p>
+                
+                <ul>
+                    <li>R₀ < 1: The population will decline.</li>
+                    <li>R₀ = 1: The population is at equilibrium, with a stable size and no change in density.</li>
+                    <li>R₀ > 1: The population will increase.</li>
+                </ul>
+                
+                <p>Even a value only slightly above 1 can led to a rapid and dramatic increase, resulting in the characteristic <strong>J-shaped curve</strong> that defines geometric growth.</p>
+                <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig1.jpg" alt="J-shaped curve of geometric growth">
+                
+                <p>Real-world examples demonstrate that geometric growth is a common pattern in new or recovering populations where resources are not yet limiting. A classic case is the reintroduction of the tule elk, <em>Cervus elaphus nannodes</em>, a subspecies in California. After being hunted to near extinction, a small group of 10 elk was released at Point Reyes National Seashore in 1978. With ample habitat and protection, the herd grew geometrically, reaching 214 individuals by 1993 and 549 by 1998. This rapid growth, however, eventually led to the population exceeding the carrying capacity of its habitat, prompting management interventions to relocate some animals and stabilize the herd size. This example illustrates how the simple geometric model can accurately predict population trends during an initial expansion phase.</p>
+                
+                <p>Another example of geometric growth comes from elephant seals. Northern elephant seals, <em>Mirounga angustirostris</em>, were nearly hunted to extinction in the late 19th century, because their blubber was in demand. About 20 surviving animals were found off Mexico on Guadalupe Island in 1890, and the population was protected. Recolonization of old habitats followed, and the actual growth of the elephant seal population followed a geometric curve in many areas. Breeding began on Año Nuevo Island off the coast of Santa Cruz, California, in 1961 and the number of pups increased geometrically.</p>
+                <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig2.jpg" alt="Geometric growth of elephant seal pups">
+            </div>
+
+            <!-- More Examples -->
+            <div class="section">
+                <h2>Predator Reintroduction Examples</h2>
+                <p>Predator populations can also exhibit geometric growth when introduced into a suitable environment with abundant resources. A compelling example is the reintroduction of wolves in the continental United States. After being systematically exterminated in the early 20th century, a shift in public opinion and legal protection under the Endangered Species Act of 1973 paved the way for their return.</p>
+                
+                <p>In the mid-1990s, 66 wolves from Canada were released in Yellowstone National Park and central Idaho. This a deliberate reintroduction, combined with the natural migration of wolves into northern Montana, allowed the wolf population to grow geometrically. Another case is the black-footed ferret, a species that also showed remarkable geometric growth despite facing diseases like plague and distemper. Their large annual litter size, producing 3 to 5 young per year, was a key factor in fueling this rapid expansion. For the period between 2000 and 2006, the ferrets' population demonstrated an impressive average finite rate of increase of 59% per year, further highlighting the rapid growth potential in these situations.</p>
+                <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig3.jpg" alt="Geometric growth of wolf population">
+            </div>
+
+            <!-- Finite Rate of Increase -->
+            <div class="section">
+                <h2>Finite Rate of Increase (λ)</h2>
+                <p>Because of the effort involved in calculating R₀, the net reproductive rate, ecologists sometimes use a shortcut to predict population growth. Imagine a bird species that breeds annually. To measure population growth, ecologists count the number of birds in the population, N₀. Let's say N₀ = 100. The next year ecologists count 110 birds in the same population, so N₁ = 110.</p>
+                
+                <p>The finite rate of increase, λ, is the ratio of the population size from one year to the next, calculated as</p>
+                
+                <div class="formula">
+                    λ = N₁/N₀
+                </div>
+                
+                <p>In this case λ = 1.10. λ is often given as percent annual growth, and t is a number of years.</p>
+                
+                <p>In population ecology, two key metrics, R₀ and λ, are used to describe how a population changes over time.</p>
+                
+                <p>R₀ is the net reproductive rate, which measures the average number of offspring produced by an individual over its entire lifetime. It's focused on a single generation.</p>
+                
+                <p>λ is the finite rate of population change, which measures the population's growth or decline over a specific time interval, typically a year.</p>
+                
+                <p>The relationship between these two metrics depends on the species' breeding habits. For species that only live and reproduce for one year, like annual plants, the number of offspring produced in a generation (R₀) is the same as the population change over a year (λ), so R₀ = λ.</p>
+                
+                <p>However, for species that live and reproduce for multiple years, the two values are not equal (R₀ ≠ λ). This is because the overall population change in a single year (λ) is not solely determined by the total lifetime reproduction of an individual (R₀).</p>
+            </div>
+
+            <!-- Population Formulas -->
+            <div class="section">
+                <h2>Population Prediction Formulas</h2>
+                <p>Both metrics can be used to predict future population size:</p>
+                
+                <ul>
+                    <li>The formula N<sub>t</sub> = N₀R₀<sup>t</sup> is used to calculate the population size (N<sub>t</sub>) after a certain number of generations (t), based on the initial population size (N₀) and the net reproductive rate (R₀).</li>
+                    
+                    <li>The formula N<sub>t</sub> = N₀λ<sup>t</sup> is used to calculate the population size (N<sub>t</sub>) after a certain number of time intervals (t), based on the initial population size (N₀) and the finite rate of change (λ).</li>
+                </ul>
+                
+                <p>In both cases, a value greater than 1 indicates a growing population, a value less than 1 indicates a declining population, and a value of exactly 1 indicates a stable population (equilibrium).</p>
+            </div>
+
+            <!-- Exponential Growth -->
+            <div class="section">
+                <h2>Exponential Growth - Population Growth for Continuous Breeders</h2>
+                <p>For many species, like most large plants and animals, reproduction happens in distinct, periodic events. However, for organisms like bacteria, some insects, and humans, reproduction is a continuous process. This difference requires a new approach to modeling population growth.</p>
+                
+                <p>Let's compare the two types of growth by looking at a hypothetical population of 1,000 organisms growing at a fixed rate of 10% per year.</p>
+                
+                <ul>
+                    <li><strong>Periodic Breeders:</strong> If reproduction happens only once a year, the population grows in steps. At the end of the first year, the population would be 1,100 (1,000 + 10% of 1,000). The growth is calculated and added to the population at a single point in time.</li>
+                    
+                    <li><strong>Continuous Breeders:</strong> If reproduction happens constantly, the population is always growing, not just at the end of the year. This requires a different model to accurately represent the smoother, uninterrupted growth curve.</li>
+                </ul>
+                
+                <p>The rate at which a population grows depends heavily on how frequently its members reproduce. While many large plants and animals reproduce in discrete periods, such as once a year, others like bacteria or humans reproduce continuously. This distinction necessitates different mathematical models to accurately predict population growth.</p>
+                <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig4.jpg" alt="Exponential growth curve">
+            </div>
+
+            <!-- Compounding Effect -->
+            <div class="section">
+                <h2>The Compounding Effect in Continuous Growth</h2>
+                <p>For example, a population of 1,000 organisms with a 10% annual growth rate would increase to 1,100 after one year if breeding occurs just once. However, if that same population were to grow by 5% every six months, the compounding effect would result in a slightly larger population of 1,102.5 after one year. As the breeding intervals become shorter and shorter, the total population size grows even more. For continuously breeding organisms, where growth is constant, the population increases at an even faster rate. In our example, if we were to calculate the population growth over a thousand tiny intervals within a year, the population of 1,000 would increase to 1,105, five more individuals than the single annual increase. This demonstrates that continuous reproduction, even at an equivalent rate, leads to a higher population size over time due to the power of compounding.</p>
+                
+                <p>Population growth can be defined as the change in the number of individuals in a population over a given period. This change is simply the number of births minus the number of deaths. This can be expressed mathematically as:</p>
+                
+                <div class="formula">
+                    (ΔN/Δt) = b - d
+                </div>
+                
+                <p>where ΔN is the change in population number, Δt is the change in time, b is the number of births, and d is the number of deaths.</p>
+                
+                <p>When we consider the per capita growth rate, which is the birth or death rate per individual, the equation becomes:</p>
+                
+                <div class="formula">
+                    (ΔN/Δt) = bN - dN
+                </div>
+                
+                <p>Here, <strong>b</strong> and <strong>d</strong> are the per capita birth and death rates, and N is the current population size. This can be further simplified by combining the per capita birth and death rates into a single variable, <strong>r</strong>, which represents the <strong>per capita growth rate</strong>. This gives us the formula:</p>
+                
+                <div class="formula">
+                    (ΔN/Δt) = rN
+                </div>
+            </div>
+
+            <!-- Exponential Growth Formula -->
+            <div class="section">
+                <h2>Exponential Growth Model</h2>
+                <p>For organisms that breed continuously, such as bacteria, ecologists use a slightly different notation from differential calculus to represent very short, instantaneous time intervals:</p>
+                
+                <div class="formula">
+                    (dN/dt) = rN
+                </div>
+                
+                <p>This model, known as <strong>exponential growth</strong>, results in a characteristic <strong>J-shaped curve</strong> when plotted. A key characteristic of exponential growth is that the population size at a future time (N<sub>t</sub>) can be calculated from the initial population size (N₀) using the formula:</p>
+                
+                <div class="formula">
+                    N<sub>t</sub> = N₀e<sup>rt</sup>
+                </div>
+                
+                <p>where e is the base of the natural logarithm (approximately 2.7), r is the per capita growth rate, and t is the number of time intervals.</p>
+                
+                <ul>
+                    <li><strong>r vs. R₀:</strong> The per capita growth rate (r) is similar to the net reproductive rate (R₀) but with a crucial difference: R₀ reflects growth over a full generation, whereas r is an instantaneous rate. A rough approximation for the relationship between them is r ≈ (ln R₀)/T, where T is the generation time.</li>
+                    
+                    <li><strong>r vs. λ:</strong> The instantaneous growth rate (r) is also related to the finite rate of increase (λ) by the formula λ = e<sup>r</sup>. Since r represents growth that is constantly compounding, values of r are often smaller than the corresponding values of λ.</li>
+                </ul>
+                 <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig5.jpg" alt="Exponential growth model graph">
+            </div>
+
+            <!-- Population Doubling Time -->
+            <div class="section">
+                <h2>Population Doubling Time</h2>
+                <p>A common application of this model is calculating the time it takes for a population to double. This can be approximated using the "rule of 70":</p>
+                
+                <div class="formula">
+                    d = 0.7/r
+                </div>
+                
+                <p>or, more practically for laymen:</p>
+                
+                <div class="formula">
+                    d = 70/% annual growth rate
+                </div>
+                
+                <p>This simple formula, which also applies to compound interest, is a powerful tool for understanding the potential for rapid population growth.</p>
+                
+                <h3>The Dangers of Exponential Growth</h3>
+                <p>One of the most dramatic examples of exponential growth in nature is the spread of invasive species. When introduced into a new environment with abundant resources and few predators, an invasive species can grow at its <strong>intrinsic rate of increase</strong> (r<sub>max</sub>). A classic example is the European rabbit introduced to Australia. With continuous breeding and no natural predators, the rabbit population exploded, outcompeting native animals. This highlights a critical lesson: even slow-seeming initial growth can quickly become an unmanageable problem. As one example shows, an aggressive weed that doubles in a pond every day will reach the halfway point on day 29, leaving only one day to prevent it from completely covering the pond. This means that we must act as early as possible to control invasive species.</p>
+            </div>
+
+            <!-- Comparison -->
+            <div class="section">
+                <h2>Comparison of Exponential and Geometric Growth</h2>
+                <p>This graph compares exponential and geometric population growth, illustrating the difference between continuous and discrete breeders. The red dots represent the population size of a discrete breeder (geometric growth), where reproduction occurs at set time intervals, resulting in stepped increases on the graph. In contrast, the smooth red curve represents a continuous breeder (exponential growth), where the population grows without interruption. The key takeaway from the graph is that even with identical growth rates—r and R₀ both at 0.2—the population of the continuous breeder grows faster over time. This happens because the constant reproduction of continuous breeders allows for compounding, meaning the population is always increasing, not just at specific moments. As a result, the population curve for continuous breeders consistently remains higher than that of discrete breeders over the 50-year period.</p>
+                <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig6.jpg" alt="Comparison of exponential and geometric growth">
+            </div>
+
+            <!-- S-Shaped Growth -->
+            <div class="section">
+                <h2>S-Shaped Population Growth Curves</h2>
+                 <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig7.jpg" alt="S-shaped population growth curve">
+                <p>While the <strong>exponential growth model</strong> is useful for describing populations with unlimited resources, it doesn't always reflect reality. In the real world, resources are finite. As a population grows, resources like food, water, or nesting sites eventually become limited, which slows down the rate of growth. To model this more realistic scenario, we use a different framework called <strong>logistic growth</strong>.</p>
+                
+                <h3>Understanding Logistic Growth</h3>
+                <p>Unlike the exponential model, <strong>logistic growth</strong> accounts for <strong>limited resources</strong>, which means a population's size can't grow indefinitely. This upper limit is called the <strong>carrying capacity (K)</strong> of the environment. The logistic model for continuous breeders is represented by the following equation:</p>
+                
+                <div class="formula">
+                    dN/dt = rN((K-N)/K)
+                </div>
+                 <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig8.jpg" alt="Logistic growth equation visualization">
+                
+                <p>In this equation:</p>
+                <ul>
+                    <li>dN/dt is the rate of population change.</li>
+                    <li>r is the per capita growth rate.</li>
+                    <li>N is the current population size.</li>
+                    <li>K is the carrying capacity.</li>
+                    <li>The term (K-N)/K represents the fraction of remaining, unused resources.</li>
+                </ul>
+                
+                <p>Essentially, as the population (N) gets closer to the carrying capacity (K), this fraction approaches zero, and the population's growth slows down.</p>
+                
+                <p>where (K - N)/K represents the proportion of unused resources remaining. This equation, called the logistic equation, was discovered by the Belgian mathematician P. F. Verhulst in 1838.</p>
+            </div>
+
+            <!-- Logistic Growth Details -->
+            <div class="section">
+                <h2>How Logistic Growth Works</h2>
+                <p>Let's see how this works with an example where K=1,000 and r=0.1:</p>
+                <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig9.jpg" alt="Logistic growth example table">
+                
+                <ul>
+                    <li><strong>Low population (N=100):</strong> Growth is slow because there are few individuals to reproduce, even though resources are abundant.</li>
+                    
+                    <li><strong>Intermediate population (N=500):</strong> Growth is at its maximum because there's a large number of individuals reproducing and still plenty of resources available.</li>
+                    
+                    <li><strong>High population (N=900):</strong> Growth slows down again because resources are becoming scarce.</li>
+                </ul>
+                
+                <p>The logistic model shows that absolute population growth is highest when the population is at half the carrying capacity (N=K/2). When plotted over time, logistic growth produces a characteristic <strong>S-shaped curve</strong>, which flattens out as the population approaches K.</p>
+                 <img src="https://betabiosciences.github.io/Other-Units/Population%20growth%20curve%20fig10.jpg" alt="S-shaped curve plot">
+                
+                <h3>Does the Logistic Model Fit Reality?</h3>
+                <p>The logistic model works well for some populations under controlled, stable conditions, such as bacteria in a lab or sheep introduced to a new island. However, for many wild populations, the model falls short. In nature, environmental factors like temperature, rainfall, and resource availability are constantly changing. These fluctuations can cause the carrying capacity (K) to shift, leading to boom-and-bust cycles rather than a stable, flat curve.</p>
+                
+                <p>For example, studies on shrews have shown their population numbers are closely tied to soil moisture, which affects their food supply. This highlights how real-world <strong>abiotic factors</strong> can make a simple, predictable model like logistic growth less accurate. Furthermore, the model doesn't account for <strong>time lags</strong>, where the effects of resource limitations on reproduction might not be seen immediately.</p>
+            </div>
+
+            <!-- Quiz Section -->
+            <div class="section">
+                <h2>Test Your Knowledge</h2>
+                <div class="quiz-question">
+                    <p><strong>1. What is the key factor that determines whether a population will increase or decrease?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. The average lifespan of individuals.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. The number of births relative to the number of deaths.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. The size of the environment.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. The number of predators in the habitat</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>2. A species of annual flowers reproduces once each spring. Which population growth model best describes its growth under ideal conditions?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. Exponential</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. Geometric</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. Logistic</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. Sigmoidal</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>3. What is the primary distinction between the exponential and geometric models of population growth?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. One applies to organisms with unlimited resources, the other to limited resources.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. One describes continuous reproduction, the other describes reproduction at discrete intervals.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. One plots a linear growth curve, the other plots a J-shaped curve.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. One accounts for carrying capacity, the other does not.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>4. In the logistic growth model, what concept represents the maximum population size that an environment can sustain?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. Population equilibrium</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. Carrying capacity</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. Population density</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. Maximum growth rate</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>5. Which of the following is the approximate value of the mathematical constant 'e', a key component of the exponential growth equation?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. 1.618</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. 2.7</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. 3.14</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. 70</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Section 2 -->
+            <div class="section">
+                <h2>Test Your Knowledge (Continued)</h2>
+                <div class="quiz-question">
+                    <p><strong>6. A population of 100 individuals has a net reproductive rate (R₀) of 1.5. Assuming ideal conditions, what would be the approximate population size after two generations?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. 150</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. 225</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. 338</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. 760</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>7. If a population of small mammals grows from 200 to 220 in one year, what is its finite rate of increase (λ)?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. 1.0</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. 1.1</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. 20</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. 220</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>8. Which mathematical formula is used to calculate the future population size (Nₜ) for an organism that reproduces continuously?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. Nₜ = N₀λᵗ</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">b. Nₜ = N₀R₀t</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">c. Nₜ = N₀eʳᵗ</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. λ = eʳ</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>9. Why does a population that reproduces constantly tend to grow faster than one that reproduces periodically, even if their underlying growth rates are numerically similar?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">a. Continuous reproduction allows for a compounding effect.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">b. Periodic breeders are more affected by predation.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. Constant reproducers have a lower mortality rate.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. The lifespan of continuous breeders is typically shorter.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>10. A simple rule-of-thumb, often called the "rule of 70," is used to calculate what population dynamic?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. The time it takes for a population to reach carrying capacity.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. The duration required for a population to double in size.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. The maximum possible per capita growth rate.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. The number of births in a given year.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Section 3 -->
+            <div class="section">
+                <h2>Test Your Knowledge (Final Section)</h2>
+                <div class="quiz-question">
+                    <p><strong>11. An invasive plant population doubles its coverage of a lake every day. If the lake is completely covered by the plants on day 30, on which day was it exactly half-covered?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. Day 15</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. Day 29</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. Day 28</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. Day 1</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>12. Based on the logistic growth model, at what point does a population experience its highest rate of growth?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. When it is just beginning to grow.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">b. When it is nearing the carrying capacity.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">c. When its size is exactly half of the carrying capacity.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. When it is at equilibrium.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>13. A population growth curve that shows rapid, accelerating increase and a shape like the letter 'J' indicates what kind of environmental conditions?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">a. Abundant resources and no limiting factors.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">b. Fierce competition for limited resources.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. A population that has stabilized.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. An environment with a low carrying capacity.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>14. For a species with a lifespan of only one year, what is the relationship between its net reproductive rate (R₀) and its finite rate of increase (λ)?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. R₀ > λ</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">b. R₀ < λ</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">c. R₀ = λ</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. They are unrelated concepts.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>15. In the logistic growth equation, the term (K−N)/K reflects what dynamic?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. The overall population size</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">b. The growth rate under unlimited conditions.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">c. The proportion of available resources that have not yet been utilized.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. The number of new individuals added to the population.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Section 4 -->
+            <div class="section">
+                <h2>Final Quiz Questions</h2>
+                <div class="quiz-question">
+                    <p><strong>16. What can occur in a population when a delay in its response to a change in density is introduced into the logistic model?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. The population immediately reaches a stable size.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">b. The growth rate becomes constant.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">c. The population may exhibit oscillations or chaotic behavior.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. The carrying capacity of the environment is increased.</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>17. The rapid population increase observed in species that are newly introduced to a suitable, unoccupied environment is a classic example of which growth pattern?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. Density-dependent growth</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. Geometric or exponential growth</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. Logistic growth</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. Population decline</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>18. The instantaneous growth rate (r) is related to the net reproductive rate (R₀) by which of the following approximations?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. r ≈ R₀/T</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">b. r ≈ ln(R₀)/T</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">c. r ≈ λ/T</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. r ≈ 70/λ</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>19. A country's population has a per capita growth rate (r) of 0.02. Using a common rule of thumb, approximately how long will it take for the population to double?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. 3.5 years</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">b. 7 years</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">c. 35 years</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. 70 years</div>
+                    </div>
+                </div>
+
+                <div class="quiz-question">
+                    <p><strong>20. A major limitation of the basic logistic growth model is its assumption that:</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">a. The population is composed of continuous breeders.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">b. The per capita growth rate (r) is constant.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="true">c. The carrying capacity of the environment is fixed and unchanging.</div>
+                        <div class="quiz-option" onclick="selectOption(this)" data-correct="false">d. The population grows at a geometric rate.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeSection(-1)">← Previous</button>
+            
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="section-counter">
+                    <span id="currentSection">1</span> / <span id="totalSections">20</span>
+                </div>
+                <div class="progress-indicator" id="progressDots"></div>
+            </div>
+            
+            <button class="nav-button" id="nextBtn" onclick="changeSection(1)">Next →</button>
+        </div>
+
+        <footer class="footer">
+            <img class="footer-logo" src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo">
+            <p>© 2025 BETA Biosciences. All rights reserved.<br>Email: betabiosciences@gmail.com</p>
+        </footer>
+    </div>
+
+    <script>
+        let currentSectionIndex = 0;
+        const sections = document.querySelectorAll('.section');
+        const totalSections = sections.length;
+        
+        // Initialize progress dots
+        function initializeProgressDots() {
+            const progressContainer = document.getElementById('progressDots');
+            for (let i = 0; i < totalSections; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'progress-dot';
+                if (i === 0) dot.classList.add('active');
+                progressContainer.appendChild(dot);
+            }
+        }
+
+        // Update UI elements
+        function updateUI() {
+            // Update section counter
+            document.getElementById('currentSection').textContent = currentSectionIndex + 1;
+            document.getElementById('totalSections').textContent = totalSections;
+            
+            // Update progress dots
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSectionIndex);
+            });
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = currentSectionIndex === 0;
+            document.getElementById('nextBtn').disabled = currentSectionIndex === totalSections - 1;
+        }
+
+        // Change section function
+        function changeSection(direction) {
+            const newIndex = currentSectionIndex + direction;
+            
+            if (newIndex >= 0 && newIndex < totalSections) {
+                // Hide current section
+                sections[currentSectionIndex].classList.remove('active');
+                if (direction > 0) {
+                    sections[currentSectionIndex].classList.add('prev');
+                } else {
+                    sections[currentSectionIndex].classList.remove('prev');
+                }
+                
+                // Show new section
+                currentSectionIndex = newIndex;
+                sections[currentSectionIndex].classList.remove('prev');
+                sections[currentSectionIndex].classList.add('active');
+                
+                updateUI();
+                
+                // Scroll to top of content area
+                document.querySelector('.content-area').scrollTop = 0;
+            }
+        }
+
+        // Quiz functionality
+        function selectOption(element) {
+            const options = element.parentNode.querySelectorAll('.quiz-option');
+            options.forEach(option => {
+                option.style.pointerEvents = 'none'; // Disable all options
+                const isCorrect = option.dataset.correct === 'true';
+                if (isCorrect) {
+                    option.classList.add('correct'); // Always highlight the correct one
+                } else if (option === element) {
+                    // If the clicked one is not correct, mark it incorrect
+                    option.classList.add('incorrect');
+                }
+            });
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                changeSection(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSection(1);
+            }
+        });
+
+        // Touch/swipe support for mobile
+        let startX = 0;
+        let endX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            endX = e.changedTouches[0].clientX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const threshold = 50; // minimum distance for swipe
+            const diff = startX - endX;
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) {
+                    // Swiped left - go to next section
+                    changeSection(1);
+                } else {
+                    // Swiped right - go to previous section
+                    changeSection(-1);
+                }
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeProgressDots();
+            updateUI();
+        });
+    </script>
+</body>
+</html>
+
