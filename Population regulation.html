@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Population Regulation Interactive Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 100vw;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f5ff, #ff6b6b);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .section {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            min-height: 60vh;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+        
+        .section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section h2 {
+            color: #00f5ff;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .section h3 {
+            color: #ff6b6b;
+            font-size: 1.5rem;
+            margin: 25px 0 15px 0;
+        }
+
+        .section h4 {
+            color: #ffd93d;
+            font-size: 1.3rem;
+            margin: 20px 0 10px 0;
+        }
+
+        .section p, .section li {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(255, 107, 107, 0.3), rgba(0, 245, 255, 0.3));
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8787);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .nav-btn.next {
+            background: linear-gradient(45deg, #00f5ff, #00d4ff);
+            box-shadow: 0 4px 15px rgba(0, 245, 255, 0.3);
+        }
+
+        .nav-btn.next:hover {
+            box-shadow: 0 6px 20px rgba(0, 245, 255, 0.4);
+        }
+
+        .section-indicator {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .quiz-section {
+            background: rgba(255, 215, 61, 0.1);
+            border: 2px solid rgba(255, 215, 61, 0.3);
+        }
+
+        .quiz-section h2 {
+            color: #ffd93d;
+        }
+
+        .question {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #ffd93d;
+        }
+
+        .question h4 {
+            color: #ffd93d;
+            margin-bottom: 15px;
+        }
+
+        .options {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .options li {
+            padding: 10px 15px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .options li:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .options li.selected.correct {
+            background: rgba(46, 204, 113, 0.3);
+            border-color: rgba(46, 204, 113, 0.7);
+        }
+
+        .options li.selected.incorrect {
+            background: rgba(231, 76, 60, 0.3);
+            border-color: rgba(231, 76, 60, 0.7);
+        }
+
+        .correct-answer-reveal {
+            background: rgba(46, 204, 113, 0.4) !important;
+            border: 1px solid rgba(46, 204, 113, 0.8) !important;
+            font-weight: 600;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+            background: rgba(0, 0, 0, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .footer-contact p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 20px;
+                min-height: 50vh;
+            }
+
+            .section h2 {
+                font-size: 1.7rem;
+            }
+
+            .section h3 {
+                font-size: 1.3rem;
+            }
+
+            .section p, .section li {
+                font-size: 1rem;
+            }
+
+            .navigation {
+                bottom: 10px;
+                padding: 15px 20px;
+                gap: 10px;
+                background: rgba(0,0,0,0.5);
+                border: 1px solid rgba(255,255,255,0.2);
+                left: 10px;
+                right: 10px;
+                transform: none;
+                width: calc(100% - 20px);
+            }
+
+            .nav-btn {
+                padding: 12px 15px;
+                font-size: 1rem;
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Population Regulation</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="section-indicator" id="sectionIndicator">Section 1 of 12</div>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <div class="section active" id="section1">
+            <h2>Introduction</h2>
+            <p>Populations of living organisms are not static; they are constantly influenced by a complex web of interactions with their environment. The study of <span class="highlight">population regulation</span> seeks to understand what factors limit or promote population growth, preventing any single species from endlessly increasing its numbers. A fundamental debate in this field centers on whether populations are primarily controlled by forces from the "top" of the food chain, such as predators, or by forces from the "bottom," such as the availability and quality of food resources.</p>
+            
+            <p>For example, a study in the Caroni Valley of Venezuela demonstrated that the removal of large predators can lead to a massive increase in herbivore populations, which in turn devastates local plant life. This case provides a clear illustration of the <span class="highlight">top-down model</span>, where predators exert a controlling influence on the populations below them. However, other scenarios may better fit the <span class="highlight">bottom-up model</span>, which posits that the abundance of food resources is the primary determinant of population size.</p>
+            
+            <p>Understanding which of these forces, or what combination of them, is most influential is crucial for applied fields like agriculture, conservation, and forestry.</p>
+        </div>
+
+        <!-- Section 2: Population Regulation Balance -->
+        <div class="section" id="section2">
+            <h2>Population Regulation: A Balance of Top-Down and Bottom-Up Effects</h2>
+            <p>The regulation of population densities is a complex process influenced by both the availability of resources (bottom-up effects) and the pressures from natural enemies (top-down effects). While some systems may be dominated by one factor, a great deal of evidence suggests that both are crucial in natural ecosystems.</p>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig1.jpg" alt="Top-Down vs Bottom-Up Effects">
+        </div>
+
+        <!-- Section 3: Bottom-Up Effects Introduction -->
+        <div class="section" id="section3">
+            <h2>Bottom-Up Effects</h2>
+            <p>The <span class="highlight">bottom-up model</span> of population regulation asserts that the primary driver of population size across an ecosystem's food web originates from the base of that web---the producers. This model posits that the quantity and quality of plants directly control the populations of herbivores, which in turn dictate the populations of carnivores. This concept is a direct counterpoint to the top-down model, which emphasizes the role of predation. The strength of the bottom-up model lies in its foundation on two fundamental ecological and physiological principles: the thermodynamics of energy transfer and the nutritional requirements of organisms, particularly the critical role of nitrogen.</p>
+        </div>
+
+        <!-- Section 4: Energy Transfer and Thermodynamics -->
+        <div class="section" id="section4">
+            <h3>1. Energy Transfer and Thermodynamics</h3>
+            <p>The first and most foundational principle supporting the bottom-up model is the law of thermodynamics governing energy transfer. As energy moves from one trophic level to the next, it is not transferred with 100% efficiency. A substantial amount of energy is lost at each step, primarily through metabolic processes, respiration, and as heat. This concept is often visualized as an <span class="highlight">energy pyramid</span>, where the base (producers) is vast and contains the most energy, and each successive level (primary consumers, secondary consumers, etc.) is progressively smaller.</p>
+
+            <p>For example, when a herbivore consumes a plant, only about 10% of the energy from the plant's biomass is converted into new herbivore biomass. The remaining 90% is lost. This inefficiency means that the total biomass and population size that can be supported at a higher trophic level is inherently limited by the biomass of the level below it. The availability of plants at the bottom therefore sets a strict upper limit on the size of the herbivore population, which in turn limits the carnivore population. This thermodynamic constraint provides a powerful, universal argument for the bottom-up control of ecosystems. If the plant base cannot provide enough energy, no amount of predator removal can sustain a larger herbivore population.</p>
+        </div>
+
+        <!-- Section 5: Nutrient Limitation and Nitrogen-Limitation Hypothesis -->
+        <div class="section" id="section5">
+            <h3>2. Nutrient Limitation and the Nitrogen-Limitation Hypothesis</h3>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig2.jpg" alt="Nitrogen Limitation">
+            <p>Beyond the sheer quantity of energy, the nutritional quality of food resources is a critical factor. The <span class="highlight">nitrogen-limitation hypothesis</span> is a specific and powerful sub-principle of the bottom-up model. Nitrogen is a fundamental component of proteins, nucleic acids (DNA and RNA), and other vital biological molecules. Animals, in particular, require a high concentration of nitrogen in their diet to support growth and reproduction. A key challenge for herbivores is the significant difference in nitrogen concentration between their food and their own bodies. Plant tissue typically contains only a small fraction of the nitrogen found in animal tissue. As a result, herbivores often seek out plants with higher nitrogen content to meet their physiological needs.</p>
+
+            <p>This search for nitrogen creates a direct link between the nutrient content of the soil, the nutritional quality of plants, and the population dynamics of herbivores.</p>
+
+            <h4>Fertilization Experiments:</h4>
+            <p>A powerful way to test this hypothesis is through fertilization experiments, which directly manipulate the nutrient base of the ecosystem.</p>
+
+            <h4>Water Hyacinth and Weevils:</h4>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig3.jpg" alt="Water Hyacinth and Weevils">
+            <p>The study by Center and Dray provides a clear, controlled example. They systematically varied the fertilizer input to tanks of water hyacinth. As fertilizer rates increased, the nitrogen content of the plants rose. This direct bottom-up effect was then mirrored in the herbivore population: the number of beetles and the proportion of reproductively active females both increased significantly in the high-fertilizer tanks. This demonstrated that the nutritional quality of the food source directly influenced the herbivore's population growth and reproductive success.</p>
+
+            <h4>Salt Marsh Insects:</h4>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig4.jpg" alt="Salt Marsh Insects">
+            <p>Moon and Stiling's research further supported this by comparing bottom-up and top-down effects. By adding fertilizer to salt marsh plants, they observed a rise in both the plants' foliar nitrogen content and the densities of the sap-sucking insects that fed on them. Crucially, they found that this bottom-up effect was far more influential than the top-down effect of predator removal. Despite a reduction in parasitoids, insect densities did not increase unless the plants were also fertilized, proving that the availability of high-quality food was the primary limiting factor for the insect population.</p>
+
+            <p>In summary, the bottom-up model is a robust framework for understanding population regulation. It is supported by the universal principles of energy flow and by specific, empirical evidence showing that nutrient availability, particularly nitrogen, directly influences the growth and reproductive success of herbivores. This model highlights that the health and abundance of the producer base are the fundamental building blocks upon which all higher trophic levels depend.</p>
+        </div>
+
+        <!-- Section 6: The Top-Down Model -->
+        <div class="section" id="section6">
+            <h2>The Top-Down Model</h2>
+            <p>The <span class="highlight">top-down model</span> of population regulation posits that the structure and dynamics of an ecosystem are primarily controlled by consumers at the highest trophic level. In this model, predators and parasites exert a strong influence on the populations of their prey, and this effect can cascade down through the food web, indirectly affecting lower trophic levels. This chain of effects, known as a <span class="highlight">trophic cascade</span>, demonstrates how a change at the top of the food chain can have profound and widespread consequences for the entire ecosystem. The model is supported by compelling evidence from both terrestrial and aquatic systems, often stemming from human manipulations of predator populations.</p>
+
+            <h3>1. Biological Control: A Classic Example from Agriculture</h3>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig5.jpg" alt="Biological Control Example">
+            <p>The most direct and historically significant evidence for top-down control comes from the field of biological control, where natural enemies are intentionally introduced to manage pest populations. A textbook case is the control of the <span class="highlight">cottony cushion scale</span> (Icerya purchasi), a devastating pest of citrus trees in California in the late 19th century. The scale insect was an invasive species that reproduced unchecked due to the absence of its natural predators.</p>
+
+            <p>In a classic example of top-down regulation, the predatory <span class="highlight">ladybird beetle</span> (Vedalia cardinalis) was imported from Australia, the scale's native range. The beetles, as a new top predator in the Californian citrus ecosystem, preyed so effectively on the scale that they brought its population under control within just a couple of years. This rapid and dramatic success demonstrated that a single, introduced predator could exert a powerful top-down force, directly reducing the herbivore population and indirectly allowing the plants (citrus trees) to recover. This case serves as a clear illustration of how a top-down force can regulate a system by controlling a lower trophic level.</p>
+        </div>
+
+        <!-- Section 7: Predator Reintroduction -->
+        <div class="section" id="section7">
+            <h3>2. Predator Reintroduction and its Broader Ecological Impacts</h3>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig6.jpg" alt="Predator Reintroduction Impact">
+            <p>Beyond agriculture, predator reintroduction and removal experiments in natural systems provide robust evidence for trophic cascades. The reintroduction of <span class="highlight">wolves</span> (Canis lupus) to areas like Banff National Park is a compelling modern example. Wolves, as apex predators, exert direct top-down control on their primary prey, the <span class="highlight">elk</span> (Cervus elaphus). By preying on elk, the wolves reduce the elk population's size and can also alter their behavior, making them less likely to overgraze in certain areas.</p>
+
+            <p>This top-down effect doesn't stop at the elk population; it cascades down to the plant community. With fewer elk and altered grazing patterns, their preferred food plants, such as <span class="highlight">aspen</span> and <span class="highlight">willow</span>, are able to grow and proliferate. This cascade then extends to even more distant parts of the food web. The increased availability of willow, for instance, provides crucial habitat for <span class="highlight">songbirds</span>, leading to an increase in their populations. It also provides food and building material for <span class="highlight">beavers</span>, whose dams can create wetlands that further enhance biodiversity. This example illustrates how the presence of a single top predator can trigger a ripple effect that reorganizes the entire ecosystem, demonstrating the powerful regulatory role of top-down forces.</p>
+        </div>
+
+        <!-- Section 8: Trophic Cascades in Aquatic Ecosystems -->
+        <div class="section" id="section8">
+            <h3>3. Trophic Cascades in Aquatic Ecosystems</h3>
+            <p>Trophic cascades are particularly well-documented in aquatic systems, where predator-prey relationships can be more easily observed and quantified. Overfishing, which is essentially a large-scale predator removal, has provided numerous, often unintended, examples of top-down control.</p>
+
+            <h4>Cod Fishery Collapse:</h4>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig7.jpg" alt="Cod Fishery Collapse">
+            <p>The collapse of the <span class="highlight">cod</span> fishery in the North Atlantic is a classic case. Cod are a top predator that prey on smaller fish and invertebrates. With the cod population severely depleted by fishing, their prey populations---such as <span class="highlight">northern shrimp</span> and <span class="highlight">snow crabs</span>---exploded. This, in turn, led to a decline in the populations of the next trophic level down: the large-bodied zooplankton that the shrimp and crabs feed on. Finally, with fewer zooplankton to graze on them, the <span class="highlight">phytoplankton</span> population increased. This cascade demonstrates how the removal of a top predator can trigger a complete shift in the structure and abundance of all lower trophic levels.</p>
+
+            <h4>Shark Depletion:</h4>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig8.jpg" alt="Shark Depletion Cascade">
+            <p>A similar cascade was observed along the eastern seaboard of the United States. Overfishing of great sharks led to a significant decline in their populations. This released their primary prey, <span class="highlight">rays</span> and <span class="highlight">skates</span>, from top-down control, causing their populations to surge. The increased ray population then exerted intense predatory pressure on their own prey, leading to a severe decline in <span class="highlight">bivalve</span> populations, including commercially important species like bay scallops.</p>
+
+            <p>In conclusion, the top-down model provides a compelling explanation for how populations are regulated by forces acting from the top of the food chain. The evidence from biological control, predator reintroduction, and ecosystem-wide changes following the removal of top predators all demonstrates that predation is not just a source of mortality but a powerful regulatory force that can shape the abundance, distribution, and overall structure of entire ecological communities.</p>
+        </div>
+
+        <!-- Section 9: Conceptual Models of Population Regulation -->
+        <div class="section" id="section9">
+            <h2>Conceptual Models of Population Regulation</h2>
+            <p>Several conceptual models have been proposed to predict when top-down and bottom-up effects are most important in regulating populations. These models often suggest that the relative importance of these forces depends on the environment's productivity or stress level.</p>
+
+            <h3>The Green Earth Hypothesis and Ecosystem Exploitation Hypothesis</h3>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig9.jpg" alt="Green Earth Hypothesis">
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig10.jpg" alt="Ecosystem Exploitation Hypothesis">
+            <p>The <span class="highlight">Green Earth Hypothesis</span> (Hairston, Smith, and Slobodkin, 1960) was one of the first to address this question. It observed that the world appears green and plants are abundant, which implies that herbivores are not limited by their food (plants). Instead, it argued that herbivores are primarily limited by their predators (a top-down effect). In this scenario, plants are limited by competition for resources (a bottom-up effect). This model also suggests a chain of indirect effects: high numbers of predators lead to low numbers of herbivores, which in turn benefits plants.</p>
+
+            <p>Building on this idea, the <span class="highlight">Ecosystem Exploitation Hypothesis</span> (Oksanen et al., 1981) proposed that the number of trophic levels and the strength of top-down vs. bottom-up control vary with <span class="highlight">plant productivity</span>.</p>
+        </div>
+
+        <!-- Section 10: Productivity Levels -->
+        <div class="section" id="section10">
+            <ul>
+                <li><strong>Low Productivity:</strong> In environments with very few resources, there is only enough plant biomass to support a single trophic level. Plants are limited by competition for resources (bottom-up control).</li>
+                <li><strong>Intermediate Productivity:</strong> As resources increase, a second trophic level (herbivores) can be supported. There are still too few herbivores to support a carnivore population. In this two-level system, herbivore numbers are limited by competition for plant resources, and plant biomass is limited by intense herbivory.</li>
+                <li><strong>High Productivity (Green Earth Scenario):</strong> With high productivity, a third trophic level (carnivores) can be supported. Carnivores reduce the number of herbivores, which then allows the plant population to increase. In this three-level system, plants are limited by competition and herbivores are limited by predation (a trophic cascade, or top-down control).</li>
+                <li><strong>Very High Productivity:</strong> A fourth trophic level (secondary carnivores) can be supported, which preys on the primary carnivores. This reduces the top-down pressure on herbivores, potentially increasing herbivory and lessening competition among plants.</li>
+            </ul>
+
+            <p>A meta-analysis by Borer and colleagues (2006) tested these predictions. They found that fertilizer addition (a bottom-up manipulation) consistently increased plant biomass, but its effect on herbivores was not as clear as predicted by the theory. However, predator removal (a top-down manipulation) had strong effects on both herbivore and plant biomass, suggesting an <span class="highlight">asymmetry</span> where top-down effects on multiple trophic levels might be stronger than bottom-up effects. The data were only partly consistent with the Ecosystem Exploitation Hypothesis, suggesting that other factors may be at play.</p>
+        </div>
+
+        <!-- Section 11: The Environmental Stress Hypothesis -->
+        <div class="section" id="section11">
+            <h3>The Environmental Stress Hypothesis</h3>
+            <img src="https://betabiosciences.github.io//Other-Units/Population%20regulation%20fig11.jpg" alt="Environmental Stress Hypothesis">
+            <p>The <span class="highlight">Environmental Stress Hypothesis</span> (Menge and Sutherland, 1976) offers another conceptual model. It proposes that the importance of top-down control decreases as environmental stress increases.</p>
+
+            <ul>
+                <li><strong>High Stress Environments:</strong> In harsh habitats (e.g., exposed rocky shores with rough seas), environmental stress is the primary limiting factor for all organisms. Higher trophic levels like predators are rare or absent, and plants are limited by their ability to withstand the harsh conditions, not by predation or competition.</li>
+                <li><strong>Moderate Stress Environments:</strong> As stress lessens, organisms can survive in greater numbers. Higher trophic levels are still uncommon. Plants and herbivores are primarily limited by <span class="highlight">competition</span> for resources (e.g., space on rocks).</li>
+                <li><strong>Low Stress (Benign) Environments:</strong> In these productive, less stressful habitats, predators and herbivores are abundant. Here, <span class="highlight">predation and herbivory</span> (top-down control) become the dominant forces regulating population densities.</li>
+            </ul>
+
+            <p>A study by Preszler and Boecklen (1996) applied this hypothesis to terrestrial systems, specifically leaf miners on oak trees along a mountain elevation gradient. They found that at higher, more stressful elevations, parasites of the leaf miners were rare, and mortality was likely due to stress. At lower, less stressful elevations, leaf miner mortality from parasitism increased significantly. This finding supports the hypothesis that the strength of top-down control increases as environmental stress decreases.</p>
+
+            <p>In summary, these conceptual models offer frameworks for understanding when different factors might be most important, but empirical evidence suggests that the reality is more complex, with some data supporting the models and other data revealing inconsistencies.</p>
+        </div>
+
+        <!-- Section 12: Test Your Knowledge -->
+        <div class="section quiz-section" id="section12">
+            <h2>Test Your Knowledge</h2>
+            
+            <div class="question">
+                <h4>1. What is a core principle of the bottom-up model of population regulation?</h4>
+                <ul class="options">
+                    <li>a. Predators control the population size of herbivores.</li>
+                    <li data-correct="true">b. The availability of resources at the base of the food chain limits higher trophic levels.</li>
+                    <li>c. Population sizes are primarily determined by disease and parasites.</li>
+                    <li>d. Competition for mates is the main limiting factor for population growth.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>2. A study observes that a plant-eating insect population grows significantly after fertilizer is applied to its host plants. This is an example of which type of population control?</h4>
+                <ul class="options">
+                    <li>a. Top-down control</li>
+                    <li>b. Density-independent regulation</li>
+                    <li data-correct="true">c. Bottom-up control</li>
+                    <li>d. Competitive exclusion</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>3. In a three-trophic-level food web, which of the following scenarios is most consistent with the top-down model?</h4>
+                <ul class="options">
+                    <li>a. Plant growth is limited by competition for soil nutrients.</li>
+                    <li>b. Herbivore population is limited by the amount of available plant biomass.</li>
+                    <li data-correct="true">c. A decrease in predator numbers leads to a decrease in plant biomass.</li>
+                    <li>d. Plant abundance remains high because herbivores are limited by food quality.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>4. The "Green Earth" hypothesis suggests that the world appears green because:</h4>
+                <ul class="options">
+                    <li>a. Plants are not consumed by herbivores.</li>
+                    <li>b. Plant growth is limited by competition for resources.</li>
+                    <li data-correct="true">c. Herbivores are limited by their predators, not by food</li>
+                    <li>d. All of the above.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>5. The concept of a "trophic cascade" best describes which of the following?</h4>
+                <ul class="options">
+                    <li>a. The transfer of energy between different trophic levels.</li>
+                    <li>b. The progressive loss of biomass up the food chain.</li>
+                    <li data-correct="true">c. The indirect effect of a top predator on a lower trophic level.</li>
+                    <li>d. The competition between organisms at the same trophic level.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>6. The reintroduction of wolves to an ecosystem led to an increase in songbird and beaver populations. This is an example of a:</h4>
+                <ul class="options">
+                    <li>a. Density-dependent effect</li>
+                    <li>b. Bottom-up cascade</li>
+                    <li data-correct="true">c. Trophic cascade</li>
+                    <li>d. Mutualistic relationship</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>7. According to the Ecosystem Exploitation Hypothesis, which factor is most likely to limit a plant population in an environment with very low productivity?</h4>
+                <ul class="options">
+                    <li>a. Herbivory</li>
+                    <li>b. Predation</li>
+                    <li data-correct="true">c. Competition for resources</li>
+                    <li>d. Disease</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>8. The collapse of the cod fishery in the North Atlantic led to an increase in the population of shrimp and crabs. This is a real-world example of:</h4>
+                <ul class="options">
+                    <li>a. Resource partitioning</li>
+                    <li>b. A bottom-up effect</li>
+                    <li data-correct="true">c. A trophic cascade</li>
+                    <li>d. Competitive release</li>
+                </ul>
+            </div>
+
+             <div class="question">
+                <h4>9. Which of the following best supports the "Nitrogen-Limitation Hypothesis"?</h4>
+                <ul class="options">
+                    <li>a. A decrease in predator numbers leads to an increase in herbivore numbers.</li>
+                    <li>b. An increase in plant biomass leads to an increase in herbivore biomass.</li>
+                    <li data-correct="true">c. An increase in the nitrogen content of plants leads to increased herbivore reproduction.</li>
+                    <li>d. Herbivores prefer to eat plants that are more abundant.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>10. In a study comparing fertilization and predator removal, the results showed that predator removal had strong effects on both herbivores and plants, but fertilization primarily affected only the plants. This suggests:</h4>
+                <ul class="options">
+                    <li>a. The bottom-up model is always stronger than the top-down model.</li>
+                    <li data-correct="true">b. A greater asymmetry in the strength of top-down and bottom-up effects.</li>
+                    <li>c. That fertilization has a negligible effect on ecosystems.</li>
+                    <li>d. That herbivore populations are not limited by food quality.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>11. According to the Environmental Stress Hypothesis, which factor is most likely to regulate a population in a highly stressful habitat like an exposed rocky shore?</h4>
+                <ul class="options">
+                    <li>a. Predation</li>
+                    <li>b. Competition for space</li>
+                    <li data-correct="true">c. Environmental stress</li>
+                    <li>d. Herbivory</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>12. A study on a mountain found that at high elevations, parasites of herbivores were rare, and mortality was primarily due to stress. At lower elevations, parasitism increased significantly. This supports which conceptual model?</h4>
+                <ul class="options">
+                    <li>a. The Green Earth Hypothesis</li>
+                    <li>b. The Ecosystem Exploitation Hypothesis</li>
+                    <li data-correct="true">c. The Environmental Stress Hypothesis</li>
+                    <li>d. The Nitrogen-Limitation Hypothesis</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>13. The inefficiency of energy transfer between trophic levels is a fundamental argument for which model of population regulation?</h4>
+                <ul class="options">
+                    <li>a. Top-down control</li>
+                    <li>b. Density-dependent regulation</li>
+                    <li data-correct="true">c. Bottom-up control</li>
+                    <li>d. The environmental stress hypothesis</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>14. The successful use of the ladybird beetle to control the cottony cushion scale in California is a classic example of:</h4>
+                <ul class="options">
+                    <li>a. A bottom-up cascade</li>
+                    <li data-correct="true">b. Biological control</li>
+                    <li>c. Resource competition</li>
+                    <li>d. An indirect effect of herbivores on plants</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>15. In a two-level food web with plants and herbivores, according to the Ecosystem Exploitation Hypothesis, which is most likely to be true?</h4>
+                <ul class="options">
+                    <li>a. Plants are regulated by competition.</li>
+                    <li>b. Herbivores are regulated by predators.</li>
+                    <li data-correct="true">c. Plant biomass is limited primarily by herbivory.</li>
+                    <li>d. The food web will inevitably grow to a third trophic level.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>16. Which of the following statements best describes the concept of a trophic cascade?</h4>
+                <ul class="options">
+                    <li>a. A system where energy flow is reversed.</li>
+                    <li data-correct="true">b. An indirect effect of a consumer at one trophic level on another trophic level two or more steps away.</li>
+                    <li>c. The progressive increase in population density at higher trophic levels.</li>
+                    <li>d. The natural cycle of a population fluctuating between high and low densities.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>17. The observation that organisms seek out food with higher nitrogen content is a key piece of evidence for:</h4>
+                <ul class="options">
+                    <li>a. The top-down model.</li>
+                    <li data-correct="true">b. The Nitrogen-Limitation Hypothesis.</li>
+                    <li>c. The Environmental Stress Hypothesis.</li>
+                    <li>d. The principle of competitive exclusion.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>18. In an environment with moderate environmental stress, according to the Environmental Stress Hypothesis, what is the most likely limiting factor for organisms?</h4>
+                <ul class="options">
+                    <li>a. Predation</li>
+                    <li>b. Environmental stress itself</li>
+                    <li data-correct="true">c. Competition for resources</li>
+                    <li>d. Parasitism</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>19. Which of the following is an example of an indirect effect?</h4>
+                <ul class="options">
+                    <li>a. A predator eating a herbivore.</li>
+                    <li>b. A plant using soil nutrients to grow.</li>
+                    <li data-correct="true">c. A predator decreasing a herbivore population, which allows a plant population to increase.</li>
+                    <li>d. Two plants competing for sunlight.</li>
+                </ul>
+            </div>
+
+            <div class="question">
+                <h4>20. The logical primacy of bottom-up control over top-down control is best supported by:</h4>
+                <ul class="options">
+                    <li>a. The fact that predators are larger than their prey.</li>
+                    <li>b. The observation that top-down effects are often stronger in experiments.</li>
+                    <li data-correct="true">c. The fundamental thermodynamic law of energy transfer, which sets a maximum limit on all higher trophic levels.</li>
+                    <li>d. The principle that competition is a more powerful force than predation.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="navigation">
+            <button class="nav-btn prev" id="prevBtn">Previous</button>
+            <button class="nav-btn next" id="nextBtn">Next</button>
+        </div>
+    </div>
+    
+    <footer>
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+        <div class="footer-contact">
+            <p>© 2025 BETA Biosciences. All rights reserved.</p>
+            <p>Email: betabiosciences@gmail.com</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('.section');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressFill = document.getElementById('progressFill');
+            const sectionIndicator = document.getElementById('sectionIndicator');
+            const totalSections = sections.length;
+            let currentSectionIndex = 0;
+
+            function updateUI() {
+                // Show/Hide sections
+                sections.forEach((section, index) => {
+                    section.classList.toggle('active', index === currentSectionIndex);
+                });
+
+                // Update Progress Bar
+                const progressPercent = ((currentSectionIndex + 1) / totalSections) * 100;
+                progressFill.style.width = `${progressPercent}%`;
+
+                // Update Section Indicator
+                sectionIndicator.textContent = `Section ${currentSectionIndex + 1} of ${totalSections}`;
+
+                // Update Button States
+                prevBtn.disabled = currentSectionIndex === 0;
+                nextBtn.disabled = currentSectionIndex === totalSections - 1;
+                
+                // Scroll to top of the section
+                window.scrollTo(0, 0);
+            }
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSectionIndex < totalSections - 1) {
+                    currentSectionIndex++;
+                    updateUI();
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentSectionIndex > 0) {
+                    currentSectionIndex--;
+                    updateUI();
+                }
+            });
+
+            // Quiz functionality
+            const questions = document.querySelectorAll('.question');
+            questions.forEach(question => {
+                const options = question.querySelectorAll('.options li');
+                let answered = false;
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        if (answered) return;
+                        
+                        answered = true;
+                        const isCorrect = option.hasAttribute('data-correct');
+                        
+                        // Mark the selected answer
+                        option.classList.add('selected');
+                        if (isCorrect) {
+                            option.classList.add('correct');
+                        } else {
+                            option.classList.add('incorrect');
+                            // Highlight the correct answer
+                            const correctOption = question.querySelector('.options li[data-correct="true"]');
+                            correctOption.classList.add('correct-answer-reveal');
+                        }
+                    });
+                });
+            });
+
+            // Initial UI setup
+            updateUI();
+        });
+    </script>
+</body>
+</html>
+
+
