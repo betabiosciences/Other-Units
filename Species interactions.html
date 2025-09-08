@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Species Interactions</title>
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --text-color: #f0f0f0;
+            --background-dark: #121212;
+            --card-bg: #1e1e1e;
+            --card-border: #333;
+            --highlight: #4a4af0;
+            --button-bg: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            --button-hover: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--background-dark);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .section-container {
+            position: relative;
+            min-height: 70vh;
+        }
+        
+        .section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--card-border);
+            display: none;
+            animation: fadeIn 0.5s ease;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        h2 {
+            color: #6a9aff;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--highlight);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            color: #8bb9fe;
+            margin: 15px 0 10px;
+            font-size: 1.4rem;
+        }
+        
+        p, ul, ol {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        ul, ol {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            position: sticky;
+            bottom: 20px;
+            background: rgba(30, 30, 30, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        
+        button {
+            background: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background: var(--card-border);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .section-counter {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #2a2a2a;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #444;
+        }
+        
+        th {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:hover {
+            background-color: #333;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            background: var(--card-bg);
+            margin-top: 40px;
+            border-top: 1px solid var(--card-border);
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.3);
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        
+        .footer-logo {
+            width: 150px;
+            margin-bottom: 10px;
+        }
+        
+        .footer-text {
+            color: #999;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quiz-container ol {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .quiz-container li {
+            margin-bottom: 25px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .quiz-container h3 {
+            margin-top: 0;
+        }
+
+        .quiz-container ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .quiz-container li ul li {
+            background: #333;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+        
+        .quiz-container li ul li:hover {
+            background: #444;
+        }
+        
+        .quiz-container li ul li.correct {
+            background: #28a745;
+            color: white;
+            border: 2px solid #28a745;
+            transform: scale(1.02);
+        }
+        
+        .quiz-container li ul li.incorrect {
+            background: #dc3545;
+            color: white;
+            border: 2px solid #dc3545;
+        }
+        
+        .quiz-container li ul li.selected {
+            border: 2px solid #007bff;
+        }
+
+        .quiz-container .feedback-message {
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SPECIES INTERACTIONS</h1>
+    </header>
+    
+    <div class="container">
+        <div class="section-counter">
+            <span id="current-section">1</span> of <span id="total-sections">17</span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div class="section-container">
+            <!-- Section 1 -->
+            <div class="section active" id="section1">
+                <h2>SPECIES INTERACTIONS</h2>
+                <p>Species interactions are a fundamental aspect of ecology, shaping the dynamics of populations within a community. These interactions can be categorized based on their effects on the populations involved. Competition is a negative interaction for both species (-/-), as they vie for limited resources. In contrast, facilitation describes interactions where at least one species benefits. This includes mutualism (+/+), where both species benefit, and commensalism (+/0), where one benefits and the other is unaffected. Another significant category is natural enemies (+/-), which includes predation, herbivory, and parasitism, all of which benefit one species at the expense of another. Less common or studied interactions include amensalism (-/0), where one species is harmed and the other is unaffected, and neutralism (0/0), where there is no measurable interaction between species. Understanding these diverse relationships, such as those between rabbits and their competitors, predators, or parasites, is crucial for comprehending the factors that influence population densities and the overall structure of ecological systems.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig1.jpg" alt="A diagram illustrating different types of species interactions, with symbols indicating the effects on each species." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 2 -->
+            <div class="section" id="section2">
+                <h2>Competition</h2>
+                <p>Competition is a negative interaction (-/-) among two organisms. Several different types of competition are found in nature. Competition may be intraspecific, between individuals of the same species, or interspecific, between individuals of different species.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig2.jpg" alt="A flow chart illustrating the types of competition: intraspecific and interspecific, with subtypes." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 3 -->
+            <div class="section" id="section3">
+                <h2>Types of Competition</h2>
+                <p>Species competition, a fundamental ecological interaction, can be further broken down into three main types: <strong>exploitation competition</strong>, <strong>interference competition</strong> and <strong>apparent competition</strong>.</p>
+                
+                <h3>1. Exploitation Competition</h3>
+                <p>Exploitation competition is an indirect form of competition where organisms deplete a shared resource, making it less available for others. The competitors never have to physically encounter each other to be in competition.</p>
+                
+                <ul>
+                    <li><strong>Plants competing for light:</strong> In a forest, tall trees and smaller plants both require sunlight for photosynthesis. The tall trees' canopies block the sun, reducing the amount of light that reaches the smaller plants on the forest floor. The smaller plants' growth is negatively affected, not because the trees are physically attacking them, but because the trees' use of a limited resource (light) has made that resource scarce for them.</li>
+                    
+                    <li><strong>Fly maggots in a carcass:</strong> A swarm of fly maggots feeding on a dead animal is a classic example. Each maggot consumes part of the carcass, reducing the total food available to every other maggot. The maggots are competing, but they are not fighting each other; their competition is a result of their collective consumption of a limited food supply.</li>
+                    
+                    <li><strong>Diurnal and nocturnal species:</strong> A species of deer that forages for berries during the day and a species of nocturnal raccoon that forages for the same berries at night are in exploitation competition. They never cross paths, but the deer's consumption of berries during the day leaves fewer for the raccoons at night, and vice versa.</li>
+                </ul>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig3.jpg" alt="An illustration of exploitation competition, showing different animals indirectly competing for a food source." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Continue with the rest of the sections following the same pattern -->
+            <!-- Section 4 -->
+            <div class="section" id="section4">
+                <h2>Interference Competition</h2>
+                <p>Interference competition involves direct, aggressive interactions where one organism actively prevents another from accessing a resource. This can include physical force, intimidation, or even chemical warfare.</p>
+                
+                <ul>
+                    <li><strong>Male deer fighting for mates:</strong> During the mating season, or "rut," male deer often engage in intense fights, locking horns to establish dominance. The winner gets access to the females and the opportunity to reproduce, while the loser is excluded. The resource is the mate, and the competition is direct and physical.</li>
+                    
+                    <li><strong>Lions and hyenas at a kill:</strong> When a lion pride has made a kill, they will often aggressively defend it against scavenging hyenas. The hyenas may try to steal the carcass, and the lions will use intimidation and physical force to chase them away. This is a direct struggle over a shared food source.</li>
+                    
+                    <li><strong>Allelopathy in plants:</strong> Some plants produce biochemicals (allelopathic compounds) that are released into the soil and inhibit the growth of neighboring plants. The plant is directly harming its competitors by poisoning their environment, thereby securing more resources like water and nutrients for itself.</li>
+                </ul>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig4.jpg" alt="An illustration of interference competition, showing a lion pride aggressively defending a carcass from hyenas." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 5 -->
+            <div class="section" id="section5">
+                <h2>Apparent competition</h2>
+                <p><strong>Apparent competition</strong> is a type of indirect interaction where two species don't compete for the same resources but instead share a common enemy, such as a predator or a parasite. This can often lead to one species being outcompeted by the other.A clear example involves the white-tailed deer and moose, which are both hosts to the meningeal worm, <em>Parelaphostrongylus tenuis</em>. While the white-tailed deer is largely unaffected by the worm, it is a devastating parasite for moose, causing severe neurological damage and even death. Because white-tailed deer are tolerant carriers, they can act as a reservoir for the parasite, effectively increasing the risk of infection for moose. This dynamic makes the white-tailed deer an "apparent competitor" with moose; their presence and high tolerance to the worm indirectly harm the moose population. As a result, moose are often not found in areas where white-tailed deer are common.</p>
+                
+                <p><strong>Apparent competition</strong> describes an indirect relationship where two different prey species negatively affect each other by supporting the same predator. They aren't competing for the same resources; instead, their population sizes influence the predator population, which in turn affects the other prey species.</p>
+                
+                <p>Apparent competition is a fascinating ecological phenomenon where two prey species, even without competing for shared resources, indirectly influence each other's population dynamics through their shared predator. Consider a system with hawks preying on both squirrels and mice. When the squirrel population increases, it provides a more abundant food source for the hawks. This surge in food allows the hawk population to grow, leading to a larger predator population. While the mice may initially benefit from the hawks focusing on the more numerous squirrels, the long-term effect is often negative. If the squirrel population later declines, the now-larger hawk population will exert increased predation pressure on the remaining prey, including the mice. This heightened hunting pressure can lead to a significant drop in the mouse population. The opposite effect also holds true: a decline in the squirrel population means less food for the hawks, causing them to shift their predation efforts toward the mice, a more readily available food source. This increased hunting pressure from the hawks can then cause the mouse population to decline. Essentially, the fate of the two prey species is intertwined not through a struggle for food or habitat, but through their role as a food source for a common predator. Identifying this indirect interaction in the wild can be difficult, as it is often hidden within complex food webs and subject to continuous environmental shifts.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig5.jpg" alt="A diagram showing how an increase in prey A leads to an increase in predator, which then causes a decrease in prey B." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+                
+                <p><strong>Associational susceptibility</strong> is a specific type of apparent competition that occurs in plants, where a herbivore "spills over" from its preferred host species to a neighboring one, causing damage to the secondary host.</p>
+                
+                <p>For example, a study in northern Utah found that fall cankerworms, a type of caterpillar, prefer to eat box elder trees and are rarely found on isolated cottonwood trees. However, when cottonwoods grow near box elder trees, the cankerworms will spill over and feed on them, causing increased defoliation of the cottonwoods. While this interaction doesn't kill the cottonwoods, it demonstrates how the presence of a preferred food source (the box elder) can indirectly lead to a negative impact on a neighboring species (the cottonwood) by attracting a shared herbivore.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig6.jpg" alt="A diagram illustrating associational susceptibility, where a caterpillar spills over from a box elder tree to a cottonwood tree nearby." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 6 -->
+            <div class="section" id="section6">
+                <h2>Amensalism</h2>
+                <p>Sometimes, competition between species is not a balanced relationship. Instead of a negative impact on both species (-/-), one species is harmed while the other is unaffected. This is known as <strong>amensalism</strong> (-/0), and a common example is <strong>allelopathy</strong>, where one plant species secretes chemicals to inhibit the growth of another. A prime example is the <strong>black walnut tree</strong>, which produces a chemical called <strong>juglone</strong> from its roots. This chemical is toxic to the roots of many neighboring plants, killing them off and allowing the walnut tree to thrive without competition. This same principle is at play in the medical world with penicillin, a chemical derived from a fungus that kills bacteria. The fungus is unaffected, while the bacteria are eliminated. Invasive species also use allelopathy to their advantage. For instance, the South African bitou bush, introduced in Australia to stabilize sand dunes, secretes volatile compounds into the soil. These compounds inhibit the growth of native Australian plants, including the dominant acacia, allowing the bitou bush to spread more easily.</p>
+            </div>
+            
+            <!-- Section 7 -->
+            <div class="section" id="section7">
+                <h2>The Outcome of Competition can be Variable</h2>
+                <p>The outcome of competition between species is not always fixed; it can change based on both living (biotic) and non-living (abiotic) factors in the environment.</p>
+                
+                <h3>a. The Influence of Biotic Factors</h3>
+                <p>In a classic series of experiments, biologist Thomas Park studied competition between two species of flour beetles, <em>Tribolium castaneum</em> and <em>Tribolium confusum</em>. Initially, he found that <em>T. confusum</em> almost always won. However, it was later discovered that the beetle cultures were infected with a parasite, <em>Adelina triboli</em>, that was more lethal to <em>T. castaneum</em>. When the parasite was removed, the competitive outcome shifted, and <em>T. castaneum</em> became the more successful species. This showed how the presence of a parasite, a biotic factor, could completely alter the results of competition, a phenomenon now recognized as <strong>apparent competition</strong>. The experiments also revealed that even under controlled conditions, the outcome wasn't always predictable, a concept known as <strong>stochasticity</strong>.</p>
+                
+                <h3>b. The Influence of Abiotic Factors</h3>
+                <p>Park also manipulated the abiotic environment, specifically temperature and moisture. He found that the competitive ability of each species was highly dependent on climate. <em>T. confusum</em> tended to win in dry conditions, while <em>T. castaneum</em> was more successful in wet conditions. Interestingly, <em>T. confusum</em> also dominated in cold and wet environments. The mechanism behind this competition was later found to be <strong>predation</strong>, with the beetles preying on the eggs and pupae of the other species.</p>
+                
+                <p>These experiments demonstrated that the results of competition are not absolute. They are influenced by a combination of factors, including parasites, temperature, and moisture. Park's work highlights the importance of considering multiple environmental factors when studying species interactions, even in controlled settings, and suggests that competition is a common and powerful force in nature that can lead to the local extinction of some species.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig7.jpg" alt="A graph showing the outcome of competition between two species of Tribolium beetles under different environmental conditions." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 8 -->
+            <div class="section" id="section8">
+                <h2>Interspecific Competition is More Frequent in Nature</h2>
+                <p>To determine if competition is a significant factor in nature, scientists often use a direct approach: they remove one species from a natural environment and observe the effect on the other. This method has been widely used and has provided strong evidence for the commonness of competition.</p>
+                
+                <p>For example, a classic study on barnacles on the west coast of Scotland showed how two species, <em>Balanus</em> and <em>Chthamalus</em>, compete for space. By experimentally removing one species, researchers were able to see how the other was affected.</p>
+                
+                <p>In broader reviews of field studies, researchers Joseph Connell and Thomas Schoener independently found that competition is indeed frequent in nature, occurring in 55% and 75% of the surveyed species, respectively. Connell's review also revealed a key pattern: competition is almost always observed (90%) in studies of just two species sharing a resource, but this frequency drops to 50% in studies with more than two species. This is because competition is often strongest between species that are most similar in their resource use. For instance, in a system where ants, beetles, mice, and birds feed on grains of different sizes, competition is most likely to occur between "adjacent" species like beetles and mice, rather than between more distantly related species like ants and birds. This pattern demonstrates that the likelihood of competition is directly related to the number of species and the degree of overlap in their resource use.</p>
+                
+                <p>Reviews of field studies by Connell and Schoener also uncovered some general patterns regarding which types of organisms compete most. They found that plants exhibit a high degree of competition, possibly because their stationary nature prevents them from moving away from competitors, forcing them to vie for the same limited resources like water, light, and minerals. Similarly, marine organisms, particularly those in the intertidal zone, showed more competition than terrestrial species. This is likely because many of these organisms are also sessile, or attached to a limited rock surface, making space a highly contested and important resource.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig8.jpg" alt="A bar chart showing the frequency of competition in different groups of organisms." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 9 -->
+            <div class="section" id="section9">
+                <h2>Guild Concept in Ecology</h2>
+                <p>In ecology, the concept of a <strong>guild</strong> helps us understand where competition is most likely to occur. Coined by ecologist Dick Root, a guild is a group of different species that share the same resource and consume it in a similar way. This is a more specific way of classifying species than just by their diet; it focuses on their feeding strategy. For example, a community of birds might contain several different guilds. A <strong>leaf-gleaning guild</strong> consists of species that all forage for insects on the surface of leaves, while a <strong>ground-feeding guild</strong> includes species that search for worms and other invertebrates on the forest floor. Similarly, a single plant might be a host to multiple insect guilds: a <strong>leaf-chewing guild</strong>, a <strong>stem-feeding guild</strong>, and a <strong>root-feeding guild</strong>. Because all members of a guild are exploiting the exact same resource in the same manner, competition among them is highly probable. This is especially true when the resource is limited or spatially confined. A compelling example is the <strong>stem-boring guild</strong> of insects that live on salt marsh cordgrass. This guild is made up of five different species, all of which bore into the plant's stems to feed on the tissue inside. The narrow, enclosed space of the stems leads to frequent encounters between the insects. Ecologists Peter Stiling and Donald Strong documented this intense competition, observing the species directly fighting one another with their sharp mandibles, with conflicts often ending in death. This illustrates how the shared feeding method and limited space within a guild can lead to severe and direct competition.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig9.jpg" alt="A diagram illustrating a guild of different species all feeding on the same part of a plant." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 10 -->
+            <div class="section" id="section10">
+                <h2>Testing Competition Theory</h2>
+                <p>Ecologists Ian Kaplan and Robert Denno sought to test the central tenets of traditional competition theory. They identified three key predictions that suggest competition is most intense between organisms that are most alike.</p>
+                
+                <ul>
+                    <li>Intraspecific competition should be more severe than interspecific competition, since resource overlap is greater.</li>
+                    <li>The strength of interspecific competition is greater between more closely related species or species in similar guilds.</li>
+                    <li>The strength of interspecific competition increases with decreased resources</li>
+                </ul>
+                
+                <p>The first prediction is that <strong>intraspecific competition</strong>—the competition among individuals of the same species—should be more severe than <strong>interspecific competition</strong>, as members of the same species have nearly identical resource needs. The second prediction posits that the strength of competition between different species is directly related to their similarity; in other words, <strong>competition is stronger between more closely related species</strong> or those that belong to the same <strong>guild</strong> (a group of species that use the same resources in a similar way). The final prediction states that <strong>competition intensifies as resources become scarce</strong>.</p>
+                
+                <p>To test these hypotheses, Kaplan and Denno performed a large-scale meta-analysis of data from 145 different studies on plant-eating insects. They chose these insects because they are well-suited for experimental manipulation and their resource use is easily observed. The researchers analyzed data from experiments where one species was removed to see how it affected a competing species. By examining a range of variables—including growth rate, body size, survival, and reproductive success—they were able to quantify the overall effect of competition and determine if the predictions of traditional theory held true.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig10.jpg" alt="A flow chart illustrating the three main predictions of traditional competition theory." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 11 -->
+            <div class="section" id="section11">
+                <h2>Invasive Species and Competition</h2>
+                <p>Human activity, whether intentional or accidental, has introduced thousands of nonnative species worldwide. Many of these invasive species have become pests, often outcompeting native species for resources and displacing them. The following examples highlight how this has occurred across different groups of organisms.</p>
+                
+                <h3>a. Vertebrates</h3>
+                <p>On Anticosti Island in Canada, the introduction of white-tailed deer led to the extinction of the native black bear population. The deer, with no natural predators, rapidly multiplied and over-consumed shrubs, dramatically reducing the number of berries—a critical food source for the bears to build up energy for winter. This exemplifies how an introduced competitor can indirectly starve a native species to extinction. In Australia, introduced placental mammals have caused similar problems. The European rabbit, for instance, competes with native burrowing animals like the boodie and the rabbit-eared bandicoot. Introduced dingoes are believed to have contributed to the extinction of the thylacine, a marsupial wolf, on mainland Australia. Sheep introduced for the wool industry compete with various kangaroo species, including the red kangaroo and the western gray kangaroo. In New Zealand, introduced red deer and feral goats compete with the native kokako bird for food, threatening its survival. The problem extends to aquatic environments, as seen in California's freshwater systems, where 24 of 26 well-studied nonnative fish species negatively impact native fish. A prime example is the cichlid fish introduced to Gatun Lake, Panama, which eliminated six of the eight native fish species within five years. In the Great Lakes, the invasive alewife displaced much of the native fish fauna by competing for food.</p>
+                
+                <h3>b. Invertebrates</h3>
+                <p>Over 1,500 insect species have been introduced to the continental U.S., some with devastating effects. The red imported fire ant, accidentally introduced from Argentina, has spread rapidly across the southeastern U.S., outcompeting many native ant species and altering habitats with their large nests. In freshwater systems, invasive mussels and crayfish are also known to outcompete native invertebrates.</p>
+                
+                <h3>c. Plants</h3>
+                <p>Invasive plants are a global issue. In U.S. wetlands, purple loosestrife chokes out native plants, which in turn endangers species like ducks and turtles that rely on them for food and shelter. The Chinese tallow tree and garlic mustard have created vast monocultures in the southern and eastern U.S., respectively. In California, barb goatgrass thrives on nutrient-poor, toxic soils, outcompeting native species that cannot tolerate these conditions. In the Florida Everglades, Brazilian pepper, Australian pine, and especially the punk-tree are suffocating native vegetation. Kudzu vine, introduced to the southeastern states, smothers large areas of native habitat.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig11.jpg" alt="A collage of photos showing various invasive species, including a fire ant, kudzu vine, and a water hyacinth." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 12 -->
+            <div class="section" id="section12">
+                <h2>General Trends and Hypotheses</h2>
+                <p>A review of 55 case studies confirmed that competition is a common interaction between invasive and native species, with invasives having a negative effect on natives in most cases (75% of the time). Although some native species can successfully suppress colonizers, invasive species often gain a competitive advantage. Ecologists have proposed several hypotheses to explain this:</p>
+                
+                <ul>
+                    <li><strong>The Enemy Release Hypothesis:</strong> Invasives thrive because they are free from the predators, pathogens, and parasites that kept their populations in check in their native habitats, allowing them to allocate more energy to growth and reproduction.</li>
+                    
+                    <li><strong>The Superior Competitor Hypothesis:</strong> Some invasive species are simply more efficient at acquiring and using resources than native species.</li>
+                    
+                    <li><strong>The Propagule Pressure Hypothesis:</strong> Invasives produce a large number of offspring, and their sheer numbers allow them to overwhelm and outcompete native species.</li>
+                    
+                    <li><strong>The Lack of Environmental Constraints Hypothesis:</strong> Some invasive species are simply pre-adapted to the new environment, allowing them to flourish without the challenges faced by native species.</li>
+                </ul>
+            </div>
+            
+            <!-- Section 13 -->
+            <div class="section" id="section13">
+                <h2>Invasive Plant Species in India</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Invasive Plant Species</th>
+                            <th>Habitat Invaded</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="3" style="text-align: center; font-weight: bold;">Terrestrial</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><em>Ageratina adenophora</em> (Crofton weed)</td>
+                            <td>Wet and degraded forest areas</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><em>Ageratina riparia</em> (Mist flower)</td>
+                            <td>Grasslands</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><em>Alternanthera bettzickiana</em> (Calico plant)</td>
+                            <td>degraded deciduous forest, wastelands and river margins</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><em>Alternanthera pungens</em> (Khaki weed)</td>
+                            <td>Wastelands and degraded deciduous forests, Marshy places</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><em>Bidens pilosa</em> (Black jack)</td>
+                            <td>Gregarious weed of fallow lands.</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><em>Cestrum aurantiacum</em> Orange cestrum</td>
+                            <td>Dry and moist tropical forests</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><em>Chromolaena odorata</em> (Siam weed)</td>
+                            <td>Mixed deciduous forest</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td><em>Lantana camara</em> (Lantana)</td>
+                            <td>Dry and moist tropical forests. cultivated fields, scrubs, semi evergreen forests</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td><em>Parthenium hysterophorus</em> (Congress weed)</td>
+                            <td>Dry deciduous forests, also along roadsides, railway tracks and wastelands</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td><em>Prosopis juliflora</em> (Mesquite/ Algaroba)</td>
+                            <td>Arid and semi-arid habitats</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: center; font-weight: bold;">Aquatic</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><em>Alternanthera philoxeroides</em> (Alligator weed)</td>
+                            <td>Marshes, wetlands</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><em>Eichhornia crassipes</em> (Water hyacinth)</td>
+                            <td>Lakes, Wetlands</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><em>Ipomoea carnea</em> (Pink morning glory)</td>
+                            <td>Fallow land and shallow wetlands</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><em>Marsilea quadrifolia</em> (Common Water Clover)</td>
+                            <td>Wetlands</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>(Parrot's feather)</td>
+                            <td>Pond, Marsh</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Section 14 -->
+            <div class="section" id="section14">
+                <h2>Competition may occur between biological control agents</h2>
+                <p>Agricultural pest control relies on two main methods: chemical control using pesticides and <strong>biological control</strong>, which involves introducing natural enemies to manage pests. Biological control is often preferred because it avoids the environmental pollution associated with chemical residues. A common, but potentially flawed, strategy in biocontrol is to release multiple enemy species at once, hoping one will effectively control the pest.</p>
+                
+                <p>Research by Les Ehler and R. W. Hall suggests this strategy may be counterproductive. They compared the establishment rates of natural enemies released to control various pests, including sap-sucking bugs (<em>Homoptera</em>), butterflies and moths (<em>Lepidoptera</em>), and beetles (<em>Coleoptera</em>). Their findings showed that the success rate of establishing a viable enemy population dropped significantly when multiple species were released simultaneously. For instance, single-species releases had a 76% success rate, while the rate dropped to just 50% when two or more species were released together.</p>
+                
+                <p>This data indicates that competition among the introduced species could be a contributing factor to the failure of some biological control campaigns. While the study doesn't definitively prove competition, its results are consistent with the idea that introduced natural enemies can compete with each other, hindering their overall effectiveness.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig12.jpg" alt="A bar chart showing the success rate of biological control agent establishment based on the number of species released." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 15 -->
+            <div class="section" id="section15">
+                <h2>Competition Between Biological Control Agents</h2>
+                <p>Research provides strong evidence that competition occurs between biological control agents. A classic example is the sequential introduction of three parasitic wasps to control the red scale (<em>Aonidiella aurantii</em>), an insect pest on orange trees in Southern California. The red scale is a small insect that sucks sap from citrus plants, and its feeding leads to the growth of sooty mold, which devalues the fruit.</p>
+                
+                <p>Many of the red scale's enemies are parasitic wasps that lay their eggs inside the scale insects. The wasp larvae then consume the scale from the inside out. The first wasp, <em>Aphytis chrysomphali</em>, was accidentally introduced around 1900 but was not very effective at controlling the red scale. In 1948, a second species, <em>A. lignanensis</em>, was introduced from South China and began to displace <em>A. chrysomphali</em> in various regions like Santa Barbara and Orange counties. However, the red scale remained a problem.</p>
+                
+                <p>The situation changed in 1956 when a third wasp, <em>A. melinus</em>, was imported from India. This species immediately displaced <em>A. lignanensis</em> in hotter, inland areas such as the San Fernando Valley. The outcome, however, was not the same everywhere, as <em>A. lignanensis</em> remained dominant in the milder coastal habitat of Santa Barbara, demonstrating how climate can influence competitive outcomes.</p>
+                
+                <p>The reason for this competitive displacement was that the female <em>A. melinus</em> wasps were able to use smaller scale insects as hosts and lay a greater number of eggs. This gave them a reproductive advantage over the other species. The introduction of <em>A. melinus</em> proved to be a major success, as it provided effective control of the red scale in the inland areas. This case study illustrates how competition between biological control agents can occur and how it can be influenced by environmental factors. It also shows that the introduction of a superior competitor can sometimes be beneficial for pest control.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig13.jpg" alt="A graph showing the population dynamics of three different parasitic wasp species over time." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 16 -->
+            <div class="section" id="section16">
+                <h2>Competition may occur between biological control agents and native species</h2>
+                <p>While biological control agents are introduced to manage pests, they can sometimes negatively impact native species through competition. A well-documented example involves the seven-spot ladybird beetle (<em>Coccinella septempunctata</em>), which was introduced to North America from Europe to control aphids. This introduction had unintended consequences for the native nine-spot ladybird beetle (<em>Coccinella novemnotata</em>).</p>
+                
+                <p>Before the introduction of the seven-spot ladybird, the nine-spot ladybird was a common species. However, the seven-spot ladybird proved to be a superior competitor for the same food source—aphids. It was more efficient at finding and consuming aphids, and it also preyed on the larvae of the native nine-spot ladybird. As a result, the population of the nine-spot ladybird declined dramatically, and it is now considered rare in many parts of North America.</p>
+                
+                <p>This case demonstrates that the introduction of a non-native biological control agent can lead to competition with native species, potentially causing their decline. It highlights the importance of carefully considering the potential ecological impacts before introducing any new species for pest control.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20interaction%20fig14.jpg" alt="A graph showing the population decline of a native ladybird species after the introduction of a non-native competitor." onerror="this.onerror=null;this.src='https://placehold.co/600x400/2575fc/ffffff?text=Image+Not+Found'">
+            </div>
+            
+            <!-- Section 17 -->
+            <div class="section" id="section17">
+                <h2>Quiz</h2>
+                <div class="quiz-container"></div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button id="prev-btn" disabled>Previous</button>
+            <button id="next-btn">Next</button>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.<br>Email: betabiosciences@gmail.com</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const currentSectionEl = document.getElementById('current-section');
+            const totalSectionsEl = document.getElementById('total-sections');
+            const progressBar = document.getElementById('progress');
+            
+            let currentSection = 0;
+            const totalSections = sections.length;
+            
+            // Set total sections counter
+            totalSectionsEl.textContent = totalSections;
+            
+            // Update progress bar
+            function updateProgress() {
+                const progress = ((currentSection + 1) / totalSections) * 100;
+                progressBar.style.width = progress + '%';
+            }
+            
+            // Show current section
+            function showSection(index) {
+                sections.forEach(section => section.classList.remove('active'));
+                sections[index].classList.add('active');
+                
+                currentSectionEl.textContent = index + 1;
+                
+                // Update button states
+                prevBtn.disabled = index === 0;
+                nextBtn.disabled = index === totalSections - 1;
+                
+                // Update progress bar
+                updateProgress();
+                
+                // Scroll to top of section container
+                document.querySelector('.section-container').scrollTop = 0;
+            }
+            
+            // Next section
+            nextBtn.addEventListener('click', function() {
+                if (currentSection < totalSections - 1) {
+                    currentSection++;
+                    showSection(currentSection);
+                }
+            });
+            
+            // Previous section
+            prevBtn.addEventListener('click', function() {
+                if (currentSection > 0) {
+                    currentSection--;
+                    showSection(currentSection);
+                }
+            });
+
+            // Quiz data
+            const quizData = [
+                {
+                    question: "Which of the following best describes the relationship of amensalism?",
+                    options: [
+                        "Both species benefit (+/+)",
+                        "One species benefits, the other is harmed (+/-)",
+                        "Both species are harmed (-/-)",
+                        "One species is harmed, the other is unaffected (-/0)"
+                    ],
+                    correctAnswer: "One species is harmed, the other is unaffected (-/0)"
+                },
+                {
+                    question: "In <strong>exploitation competition</strong>, organisms compete:",
+                    options: [
+                        "Directly through physical force.",
+                        "Indirectly by consuming a limited resource.",
+                        "By being prey for the same predator.",
+                        "By producing chemicals that inhibit others."
+                    ],
+                    correctAnswer: "Indirectly by consuming a limited resource."
+                },
+                {
+                    question: "The aggressive defense of a kill by a lion pride against scavenging hyenas is an example of:",
+                    options: [
+                        "Exploitation competition",
+                        "Apparent competition",
+                        "Interference competition",
+                        "Amensalism"
+                    ],
+                    correctAnswer: "Interference competition"
+                },
+                {
+                    question: "What is the phenomenon called when a plant produces chemicals that inhibit the growth of neighboring plants?",
+                    options: [
+                        "Apparent competition",
+                        "Allelopathy",
+                        "Commensalism",
+                        "Mutualism"
+                    ],
+                    correctAnswer: "Allelopathy"
+                },
+                {
+                    question: "What factor was found to alter the outcome of competition between the two species of flour beetles, <em>Tribolium castaneum</em> and <em>Tribolium confusum</em>?",
+                    options: [
+                        "Sunlight",
+                        "The presence of a parasite",
+                        "The availability of water",
+                        "The number of beetles"
+                    ],
+                    correctAnswer: "The presence of a parasite"
+                },
+                {
+                    question: "According to Thomas Park's experiments, in which condition did <em>T. confusum</em> tend to win the competition against <em>T. castaneum</em>?",
+                    options: [
+                        "Wet conditions",
+                        "Cold and wet environments",
+                        "Hot and dry conditions",
+                        "When a parasite was absent"
+                    ],
+                    correctAnswer: "Cold and wet environments"
+                },
+                {
+                    question: "What is a key finding from Joseph Connell's review of competition studies?",
+                    options: [
+                        "Competition is more common in studies with more than two species.",
+                        "Competition is almost always observed in two-species studies.",
+                        "Competition is always absent in terrestrial systems.",
+                        "Competition is less common in sessile organisms."
+                    ],
+                    correctAnswer: "Competition is almost always observed in two-species studies."
+                },
+                {
+                    question: "Which group of organisms was found to exhibit a high degree of competition according to the reviews of Connell and Schoener?",
+                    options: [
+                        "Terrestrial animals",
+                        "Birds",
+                        "Plants",
+                        "Marine species"
+                    ],
+                    correctAnswer: "Plants"
+                },
+                {
+                    question: "A group of different species that share the same resource and consume it in a similar way is known as a(n):",
+                    options: [
+                        "A group of species that share the same habitat.",
+                        "A group of species that are all parasites.",
+                        "A group of species that feed on the same resource in the same way.",
+                        "A group of species that are all closely related."
+                    ],
+                    correctAnswer: "A group of species that feed on the same resource in the same way."
+                },
+                {
+                    question: "The associational susceptibility between cottonwood and box elder trees is an example of:",
+                    options: [
+                        "Direct competition for light",
+                        "A herbivore \"spilling over\" from a preferred host.",
+                        "A predator preying on two different species.",
+                        "Allelopathy."
+                    ],
+                    correctAnswer: "A herbivore \"spilling over\" from a preferred host."
+                },
+                {
+                    question: "Which of the following invasive plant species in India is known to invade arid and semi-arid habitats?",
+                    options: [
+                        "Lantana camara",
+                        "Parthenium hysterophorus",
+                        "Prosopis juliflora",
+                        "Eichhornia crassipes"
+                    ],
+                    correctAnswer: "Prosopis juliflora"
+                },
+                {
+                    question: "The study by Ehler and Hall on biological control agents showed that releasing multiple species at once resulted in:",
+                    options: [
+                        "Higher pest mortality.",
+                        "A significantly lower rate of establishment.",
+                        "Greater biodiversity.",
+                        "The complete elimination of the pest."
+                    ],
+                    correctAnswer: "A significantly lower rate of establishment."
+                },
+                {
+                    question: "The decline of the moose population in areas with a high density of white-tailed deer is due to which of the following?",
+                    options: [
+                        "Interference competition for food.",
+                        "Exploitation competition for habitat.",
+                        "Apparent competition mediated by a shared parasite.",
+                        "Direct predation."
+                    ],
+                    correctAnswer: "Apparent competition mediated by a shared parasite."
+                },
+                {
+                    question: "What was a finding of the meta-analysis by Kaplan and Denno regarding competition in herbivorous insects?",
+                    options: [
+                        "Intraspecific competition was always stronger than interspecific competition.",
+                        "Competition was strongest between distantly related species.",
+                        "Competition was just as strong when minimal resources were used as it was when large amounts were consumed.",
+                        "Competition was only found in two-species systems."
+                    ],
+                    correctAnswer: "Intraspecific competition was always stronger than interspecific competition."
+                },
+                {
+                    question: "Which of the following is an example of an invasive plant species in India that invades aquatic habitats?",
+                    options: [
+                        "Ageratina adenophora",
+                        "Chromolaena odorata",
+                        "Lantana camara",
+                        "Eichhornia crassipes"
+                    ],
+                    correctAnswer: "Eichhornia crassipes"
+                },
+                {
+                    question: "The seven-spot ladybird beetle outcompeting the native nine-spot ladybird beetle is an example of competition between:",
+                    options: [
+                        "Two native species",
+                        "an invasive and a native species",
+                        "two invasive species",
+                        "two biological control agents"
+                    ],
+                    correctAnswer: "an invasive and a native species"
+                },
+                {
+                    question: "The <strong>Enemy Release Hypothesis</strong> states that invasive species thrive because they are free from:",
+                    options: [
+                        "Predation and parasites",
+                        "Competition with native species",
+                        "Environmental constraints",
+                        "Other invasive species"
+                    ],
+                    correctAnswer: "Predation and parasites"
+                },
+                {
+                    question: "In the case of the parasitic wasps introduced to control red scale, what factor allowed <em>A. melinus</em> to displace the other species?",
+                    options: [
+                        "It was a more aggressive fighter",
+                        "It laid eggs more quickly",
+                        "It used smaller scale insects as hosts and laid more eggs",
+                        "It was a larger wasp"
+                    ],
+                    correctAnswer: "It used smaller scale insects as hosts and laid more eggs"
+                },
+                {
+                    question: "What is the main characteristic of <strong>amensalism</strong>?",
+                    options: [
+                        "One species is harmed, the other is unaffected",
+                        "Both species benefit from the interaction",
+                        "One species benefits while the other is harmed",
+                        "Both species are negatively impacted"
+                    ],
+                    correctAnswer: "One species is harmed, the other is unaffected"
+                },
+                {
+                    question: "In the study by Thomas Park, what abiotic factors were manipulated to show the change in competitive outcome between the flour beetles?",
+                    options: [
+                        "Light and water",
+                        "Temperature and light",
+                        "Temperature and moisture",
+                        "Food source and temperature"
+                    ],
+                    correctAnswer: "Temperature and moisture"
+                }
+            ];
+
+            const quizContainer = document.querySelector('.quiz-container');
+
+            function renderQuiz() {
+                let quizHTML = '';
+                quizData.forEach((q, index) => {
+                    quizHTML += `
+                        <li data-question-index="${index}">
+                            <h3>${index + 1}. ${q.question}</h3>
+                            <ul>
+                                ${q.options.map(option => `
+                                    <li data-option-value="${option}">${option}</li>
+                                `).join('')}
+                            </ul>
+                        </li>
+                    `;
+                });
+                quizContainer.innerHTML = `<ol>${quizHTML}</ol>`;
+                addQuizEventListeners();
+            }
+
+            function addQuizEventListeners() {
+                const options = quizContainer.querySelectorAll('li[data-option-value]');
+                options.forEach(option => {
+                    option.addEventListener('click', handleQuizClick);
+                });
+            }
+
+            function handleQuizClick(event) {
+                const clickedOption = event.currentTarget;
+                const questionLi = clickedOption.closest('li[data-question-index]');
+                const questionIndex = parseInt(questionLi.dataset.questionIndex);
+                const questionData = quizData[questionIndex];
+                const selectedValue = clickedOption.dataset.optionValue;
+
+                // Disable further clicks on this question
+                questionLi.querySelectorAll('li[data-option-value]').forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                    opt.style.cursor = 'default';
+                });
+
+                // Highlight the selected option
+                clickedOption.classList.add('selected');
+
+                // Find the correct option and highlight it
+                questionLi.querySelectorAll('li[data-option-value]').forEach(opt => {
+                    if (opt.dataset.optionValue === questionData.correctAnswer) {
+                        opt.classList.add('correct');
+                    }
+                });
+
+                // If the selected answer is incorrect, add the incorrect class
+                if (selectedValue !== questionData.correctAnswer) {
+                    clickedOption.classList.add('incorrect');
+                }
+            }
+            
+            // Initialize
+            showSection(currentSection);
+            if (sections[currentSection].id === 'section17') {
+                renderQuiz();
+            }
+            
+            // Update showSection to handle quiz rendering
+            function showSectionAndUpdate(index) {
+                showSection(index);
+                if (sections[index].id === 'section17') {
+                    renderQuiz();
+                }
+            }
+            
+            // Next section
+            nextBtn.addEventListener('click', function() {
+                if (currentSection < totalSections - 1) {
+                    currentSection++;
+                    showSectionAndUpdate(currentSection);
+                }
+            });
+            
+            // Previous section
+            prevBtn.addEventListener('click', function() {
+                if (currentSection > 0) {
+                    currentSection--;
+                    showSectionAndUpdate(currentSection);
+                }
+            });
+
+            // Add keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight') {
+                    if (currentSection < totalSections - 1) {
+                        currentSection++;
+                        showSectionAndUpdate(currentSection);
+                    }
+                } else if (e.key === 'ArrowLeft') {
+                    if (currentSection > 0) {
+                        currentSection--;
+                        showSectionAndUpdate(currentSection);
+                    }
+                }
+            });
+            
+            // Add swipe functionality for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.querySelector('.section-container').addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.querySelector('.section-container').addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50; // Minimum swipe distance
+                
+                if (touchEndX < touchStartX - swipeThreshold) {
+                    // Swipe left - next section
+                    if (currentSection < totalSections - 1) {
+                        currentSection++;
+                        showSectionAndUpdate(currentSection);
+                    }
+                } else if (touchEndX > touchStartX + swipeThreshold) {
+                    // Swipe right - previous section
+                    if (currentSection > 0) {
+                        currentSection--;
+                        showSectionAndUpdate(currentSection);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
