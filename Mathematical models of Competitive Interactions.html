@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mathematical Models of Competitive Interactions</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00f5ff, #ff6b6b);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .section {
+            display: none;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 220px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            margin-bottom: 20px;
+        }
+        .section.active { display: block; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .section h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3498db;
+        }
+        .section h3 { color: #34495e; font-size: 1.2rem; margin: 20px 0 15px 0; font-weight: 600; }
+        .section p { line-height: 1.6; margin-bottom: 15px; text-align: justify; }
+        .section ul { margin: 15px 0; padding-left: 20px; }
+        .section li { margin-bottom: 10px; line-height: 1.5; }
+        .math-equation {
+            background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 15px 0;
+            border-left: 4px solid #3498db; font-family: 'Courier New', monospace;
+            text-align: center; font-weight: bold;
+        }
+
+        /* Figures */
+        .figure {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 12px 0 18px 0;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+            border: 1px solid rgba(0,0,0,0.06);
+            background: #fff;
+            padding: 6px;
+        }
+
+        .navigation {
+            display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 15px;
+        }
+        .nav-btn {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border: none; color: white; padding: 15px 25px;
+            border-radius: 50px; cursor: pointer; font-size: 1rem; font-weight: 600;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2); min-width: 120px;
+        }
+        .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+        .nav-btn:disabled { background: linear-gradient(45deg, #95a5a6, #bdc3c7); cursor: not-allowed; transform: none; }
+
+        .section-indicator {
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 25px; backdrop-filter: blur(10px);
+        }
+        .section-number { font-size: 0.9rem; font-weight: 600; margin: 0 10px; }
+
+        /* Quiz styling */
+        .quiz-question { background: #e3f2fd; padding: 20px; border-radius: 15px; margin: 15px 0; border-left: 5px solid #2196f3; }
+        .quiz-options { margin-top: 15px; }
+        .quiz-option {
+            display: block; margin: 10px 0; padding: 10px 15px; background: #fff; border-radius: 10px;
+            cursor: pointer; transition: all 0.2s ease; border: 2px solid transparent;
+            user-select: none;
+        }
+        .quiz-option:hover { background: #f5f5f5; border-color: #3498db; }
+        .quiz-option.selected { outline: 3px solid rgba(52,152,219,0.12); }
+        .quiz-option.correct { background: #d4edda; border-color: #28a745; font-weight: 700; }
+        .quiz-option.incorrect { background: #f8d7da; border-color: #dc3545; font-weight: 700; opacity: 0.95; }
+
+        footer.site-footer {
+            margin-top: 18px;
+            background: rgba(0,0,0,0.12);
+            color: #fff;
+            padding: 18px 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            justify-content: center;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        footer.site-footer img.logo {
+            width: 14%;
+            max-width: 75px;
+            height: auto;
+            display: block;
+        }
+        footer.site-footer p { margin-top: 6px; font-size: 0.95rem; color: #fff; text-align: center; }
+
+        @media (max-width: 768px) {
+            .container { padding: 15px; }
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 20px; max-height: calc(100vh - 180px); }
+            .nav-btn { padding: 12px 20px; font-size: 0.9rem; min-width: 100px; }
+            .section-indicator { padding: 8px 15px; }
+            footer.site-footer img.logo { width: 28%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MATHEMATICAL MODELS OF COMPETITIVE INTERACTIONS</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Introduction Section -->
+        <div class="section active" data-section="0">
+            <h2>Introduction</h2>
+            <p>The first mathematical models used to describe the outcomes of competition were provided in the 1920s by two people working independently: Alfred J. Lotka (1925), an insurance actuary who worked for the Metropolitan Life Insurance Company in the United States, and Vito Volterra (1926), a professor of mathematical physics in Rome, Italy. Later, in the 1980s, David Tilman provided competition models based on patterns of resource use.</p>
+        </div>
+
+        <!-- Lotka-Volterra Models Section -->
+        <div class="section" data-section="1">
+            <h2>The Lotka-Volterra competition models</h2>
+            <h3>The Foundation: The Logistic Equation</h3>
+            <p>At its core, the Lotka-Volterra model builds upon the logistic growth equation, which describes how a single population grows in a limited environment.</p>
+            <div class="math-equation">dN/dt = r N [(K − N) / K]</div>
+            <p>This equation shows that a population's growth rate (dN/dt) slows down as its size (N) approaches the environment's carrying capacity (K). The term (K − N) represents the remaining "room" for population growth and is a measure of the negative effects of <strong>intraspecific competition</strong>—the competition among individuals of the same species.</p>
+        </div>
+
+        <!-- Two Species Section (with images inserted as requested) -->
+        <div class="section" data-section="2">
+            <h2>Expanding to Two Species</h2>
+            <p>To account for <strong>interspecific competition</strong> (competition between different species), Lotka and Volterra modified the logistic equation.</p>
+
+            <!-- Image fig1 -->
+            <img class="figure" src="https://betabiosciences.github.io//Other-Units/MATHEMATICAL%20MODELS%20OF%20COMPETITIVE%20INTERACTIONS%20fig1.jpg" alt="Figure 1: Expanding to two species (Lotka-Volterra modification)">
+
+            <p>They introduced <strong>competition coefficients</strong>, α and β, which quantify the competitive effect one species has on the other.</p>
+
+            <!-- Image fig2 -->
+            <img class="figure" src="https://betabiosciences.github.io//Other-Units/MATHEMATICAL%20MODELS%20OF%20COMPETITIVE%20INTERACTIONS%20fig2.jpg" alt="Figure 2: Competition coefficients alpha and beta">
+
+            <ul>
+                <li>α (alpha) is the per capita competitive effect of species 2 on species 1. It converts individuals of species 2 into an "equivalent" number of individuals of species 1 in terms of resource consumption. For example, if α = 0.5, it means two individuals of species 2 have the same competitive effect as one individual of species 1.</li>
+                <li>β (beta) is the per capita competitive effect of species 1 on species 2. It does the same conversion, but from the perspective of species 2.</li>
+            </ul>
+
+            <p>β (beta) is the per capita competitive effect of species 1 on species 2. It does the same conversion, but from the perspective of species 2.</p>
+
+            <p><em>The modified equations, which are the core of the model, are:</em></p>
+
+            <!-- Image fig3 (equations) -->
+            <img class="figure" src="https://betabiosciences.github.io//Other-Units/MATHEMATICAL%20MODELS%20OF%20COMPETITIVE%20INTERACTIONS%20fig3.jpg" alt="Figure 3: Lotka-Volterra two-species equations">
+
+            <p>These equations show that the growth rate of each species is now limited not only by its own population size (N1 or N2) but also by the population size of the competing species (N2 or N1), scaled by the competition coefficient.</p>
+
+            <!-- Image fig4 -->
+            <img class="figure" src="https://betabiosciences.github.io//Other-Units/MATHEMATICAL%20MODELS%20OF%20COMPETITIVE%20INTERACTIONS%20fig4.jpg" alt="Figure 4: Interpretation of the modified equations">
+        </div>
+
+        <!-- Isoclines Section -->
+        <div class="section" data-section="3">
+            <h2>Predicting Outcomes with Isoclines</h2>
+            <p>The most powerful aspect of the Lotka-Volterra model is its ability to predict the long-term outcome of competition. This is done by plotting <strong>zero growth isoclines</strong>—lines on a graph where the growth rate of one of the species is zero.</p>
+
+            <!-- Image fig5 -->
+            <img class="figure" src="https://betabiosciences.github.io//Other-Units/MATHEMATICAL%20MODELS%20OF%20COMPETITIVE%20INTERACTIONS%20fig5.jpg" alt="Figure 5: Zero growth isoclines">
+
+            <ul>
+                <li>The isocline for species 1 shows all combinations of N1 and N2 where dN1/dt = 0.</li>
+                <li>The isocline for species 2 shows all combinations of N1 and N2 where dN2/dt = 0.</li>
+            </ul>
+
+            <p>By plotting both isoclines on the same graph, their relative positions reveal the four possible outcomes of competition:</p>
+
+            <!-- Image fig6 -->
+            <img class="figure" src="https://betabiosciences.github.io//Other-Units/MATHEMATICAL%20MODELS%20OF%20COMPETITIVE%20INTERACTIONS%20fig6.jpg" alt="Figure 6: Four possible competition outcomes">
+        </div>
+
+        <!-- Outcomes Interpretation Section -->
+        <div class="section" data-section="4">
+            <h2>Interpretation of Competition Outcomes</h2>
+            <p><strong>Species 2 is eliminated:</strong> The isocline for species 1 (dN1/dt = 0) is located outside (to the right of) the isocline for species 2 (dN2/dt = 0). Species 1 is a stronger competitor and always wins, leading to the competitive exclusion of species 2.</p>
+            <p><strong>Species 1 is eliminated:</strong> The isocline for species 2 (dN2/dt = 0) is located outside (above) the isocline for species 1 (dN1/dt = 0). Species 2 is the stronger competitor and always wins, leading to the competitive exclusion of species 1.</p>
+            <p><strong>Either species eliminated (unstable equilibrium):</strong> The isoclines cross each other, but the equilibrium point where they intersect is unstable. Interspecific competition is stronger than intraspecific competition for both species. The outcome is competitive exclusion, but the winner is determined by the initial conditions.</p>
+            <p><strong>Both species coexist (stable equilibrium):</strong> The isoclines cross, and the intersection point is a stable equilibrium point. Intraspecific competition is stronger than interspecific competition for both species. Both species can coexist at a stable equilibrium.</p>
+        </div>
+
+        <!-- Crombie Experiment Section -->
+        <div class="section" data-section="5">
+            <h2>A.C. Crombie's Beetle Experiment</h2>
+            <p>A classic experiment by A.C. Crombie in 1946 demonstrated the practical application of the Lotka-Volterra model. Crombie studied competition between two species of grain beetles, <em>Tribolium confusum</em> and <em>Oryzaephilus surinamensis</em>.</p>
+            <ul>
+                <li><strong>In fine-grained flour:</strong> <em>Tribolium</em> preyed on the pupae of <em>Oryzaephilus</em>, effectively driving the latter to extinction. This outcome aligns with one of the competitive exclusion scenarios predicted by the model.</li>
+                <li><strong>In whole wheat:</strong> The larger grains provided a refuge for the <em>Oryzaephilus</em> pupae, protecting them from predation by <em>Tribolium</em>. This protection reduced the interspecific competitive effect. As a result, coexistence was observed.</li>
+            </ul>
+            <p>Crombie was able to quantify this observation by measuring the carrying capacities (K1, K2) and competition coefficients (α, β) for the beetles in the whole wheat environment. By plotting the zero growth isoclines based on these measurements, he found that their relative positions perfectly matched the theoretical prediction for <strong>stable coexistence</strong>. He further validated this by starting experiments with different initial beetle densities. In every case, regardless of the starting numbers, the populations eventually stabilized at a predictable equilibrium point—approximately 375 <em>Tribolium</em> and 180 <em>Oryzaephilus</em>—confirming the model's predictive power. This experiment provided strong empirical support for the Lotka-Volterra model as a tool for understanding and predicting the outcomes of competition in real-world ecological systems.</p>
+
+            <!-- Image fig7 -->
+            <img class="figure" src="https://betabiosciences.github.io//Other-Units/MATHEMATICAL%20MODELS%20OF%20COMPETITIVE%20INTERACTIONS%20fig7.jpg" alt="Figure 7: Crombie beetle experiment results">
+        </div>
+
+        <!-- Tilman's R* Models Section -->
+        <div class="section" data-section="6">
+            <h2>Tilman's R* models</h2>
+            <h3>The Problem with Earlier Models</h3>
+            <p>The Lotka-Volterra models, while foundational, are considered phenomenological. This means they describe the outcome of competition without specifying the underlying cause. They use mathematical coefficients (α, β) to represent the competitive effect, but they don't explain <em>why</em> one species is a better competitor. David Tilman argued that to make truly predictive models, ecologists must understand the specific <strong>mechanisms</strong> of competition. His R* concept provides this mechanistic foundation by focusing on resource availability and use.</p>
+        </div>
+
+        <!-- R* Concept Section -->
+        <div class="section" data-section="7">
+            <h2>The R* (R-star) Concept: The Minimum Resource Requirement</h2>
+            <p>At its heart, the R* model posits that competition is driven by a species' ability to acquire a limiting resource. R* represents the equilibrium point for a given resource. It is defined as the minimum concentration of a single limiting resource that a population needs to maintain a stable, non-declining population size.</p>
+            <p>Think of it as a metabolic threshold. A population needs a certain amount of a resource (like nitrogen for plants or silicate for diatoms) to grow. However, individuals also die from various causes like being eaten, disease, or extreme weather. When the per capita growth rate, which depends on resource availability, equals the per capita death rate, the population size remains constant. The resource level at which this occurs is the species' R*.</p>
+
+            <!-- Image fig8 -->
+            <img class="figure" src="https://betabiosciences.github.io//Other-Units/MATHEMATICAL%20MODELS%20OF%20COMPETITIVE%20INTERACTIONS%20fig8.jpg" alt="Figure 8: R* concept illustration">
+
+            <ul>
+                <li>If the resource level is <strong>above</strong> a species' R*, the population's growth rate is positive, and its population size will increase.</li>
+                <li>If the resource level is <strong>below</strong> a species' R*, its death rate exceeds its growth rate, and the population will decline toward extinction.</li>
+            </ul>
+        </div>
+
+        <!-- Competitive Exclusion Principle Section -->
+        <div class="section" data-section="8">
+            <h2>The Principle of Competitive Exclusion</h2>
+            <p>The R* concept leads to a powerful and simple prediction: <strong>for a single limiting resource, the species with the lowest R* will be the superior competitor.</strong></p>
+            <p>Here's why: Imagine two species, A and B, competing for the same resource. Let's say Species A has a lower R* than Species B. As both populations grow, they consume the resource, causing its concentration to drop. Species A can continue to grow even as the resource becomes scarce. It will drive the resource concentration down to its own R*, which is a level too low for Species B to survive. Since Species B cannot grow or even maintain its population at this low resource level, it will eventually go extinct. Species A will then monopolize the habitat, having excluded Species B.</p>
+            <p>This principle was dramatically demonstrated in Tilman's classic experiment with diatoms. He showed that <em>Synedra ulna</em> had a lower R* for silicate than <em>Asterionella formosa</em>. As a result, <em>Synedra</em> was able to outcompete and exclude <em>Asterionella</em> from the laboratory cultures. This provided strong empirical evidence that the R* model's predictions hold true under controlled conditions.</p>
+        </div>
+
+        <!-- Coexistence Section -->
+        <div class="section" data-section="9">
+            <h2>Coexistence in a Complex World</h2>
+            <p>While the R* model elegantly predicts competitive exclusion for a single limiting resource, it also helps to explain why so many species coexist in nature. The natural world is rarely as simple as a single limiting resource.</p>
+            <ul>
+                <li><strong>Multiple Limiting Resources:</strong> Most ecosystems have multiple resources that can limit growth (e.g., nitrogen, phosphorus, light, water). A species that is a great competitor for nitrogen might be a poor competitor for phosphorus. In a dynamic environment, no single species can have the lowest R* for all resources, allowing for a complex balance and coexistence. This is the basis for the <strong>resource ratio hypothesis</strong>, a major extension of Tilman's work.</li>
+                <li><strong>Spatial and Temporal Heterogeneity:</strong> Resource availability is not constant. It varies across landscapes and over time. A species that is outcompeted in one area might be the superior competitor in another due to soil type, light availability, or water levels. Furthermore, a species that is dominant during a wet season might be outcompeted by another during a dry season. This constant fluctuation and spatial patchiness prevent any one species from winning everywhere and all the time.</li>
+                <li><strong>Dispersal and Metapopulations:</strong> Species might persist in a habitat even if they are being outcompeted there, as long as they are regularly supplied with new individuals from a source population where they are the superior competitor. This constant dispersal can "rescue" a population from local extinction, allowing it to persist in a broader landscape.</li>
+            </ul>
+
+            <!-- Image fig9 -->
+            <img class="figure" src="https://betabiosciences.github.io//Other-Units/MATHEMATICAL%20MODELS%20OF%20COMPETITIVE%20INTERACTIONS%20fig9.jpg" alt="Figure 9: Coexistence and complexity">
+        </div>
+
+        <!-- Diatom Experiment Results Section -->
+        <div class="section" data-section="10">
+            <h2>Diatom Competition Experiment Results</h2>
+            <p>The experiment displays five graphs detailing the competition between two species of diatoms, Asterionella and Synedra, for the nutrient silicate. The results demonstrate:</p>
+            <ul>
+                <li><strong>Asterionella alone:</strong> When grown by itself, Asterionella's population rapidly increases, reaching a stable density around day 20. Simultaneously, the silicate concentration decreases from an initial high level to a stable, low level.</li>
+                <li><strong>Synedra alone:</strong> Similarly, when grown alone, Synedra's population increases and then stabilizes. The silicate concentration also decreases to a stable, low level, but this level is lower than the one observed with Asterionella.</li>
+                <li><strong>High starting densities of both species:</strong> When both species are grown together with a high initial population, Synedra's population remains high and stable, while Asterionella's population sharply declines to near zero.</li>
+                <li><strong>High starting density of Asterionella:</strong> Asterionella begins with a high density and Synedra with a low density. The outcome is similar: Asterionella's population decreases significantly, while Synedra's population increases and stabilizes.</li>
+                <li><strong>High starting density of Synedra:</strong> Synedra starts with a high density and Asterionella with a low density. Synedra's population remains high, while Asterionella's population declines to zero.</li>
+            </ul>
+            <p>In summary, the graphs demonstrate that Synedra is the superior competitor for silicate. It is able to reduce the silicate concentration to a lower level than Asterionella can on its own. Regardless of the starting population densities, when the two species are grown together, Synedra outcompetes Asterionella, leading to the near-total disappearance of the Asterionella population.</p>
+        </div>
+
+        <!-- Quiz Section (20 questions) -->
+        <div class="section" data-section="11">
+            <h2>Test Your Knowledge</h2>
+
+            <!-- Q1 -->
+            <div class="quiz-question" data-answer="1">
+                <p><strong>1. The Lotka-Volterra competition models are based on which fundamental population growth equation?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. Lotka-Volterra prey-predator equation</div>
+                    <div class="quiz-option" data-value="b">b. Logistic growth equation</div>
+                    <div class="quiz-option" data-value="c">c. Hardy-Weinberg Principle</div>
+                    <div class="quiz-option" data-value="d">d. Exponential growth equation</div>
+                </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="quiz-question" data-answer="2">
+                <p><strong>2. What does the term (K−N) represent in the single-species logistic equation?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. The effects of interspecific competition</div>
+                    <div class="quiz-option" data-value="b">b. The effects of intraspecific competition</div>
+                    <div class="quiz-option" data-value="c">c. The carrying capacity of the environment</div>
+                    <div class="quiz-option" data-value="d">d. The per capita growth rate</div>
+                </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="quiz-question" data-answer="1">
+                <p><strong>3. What is the primary purpose of the competition coefficient (α or β) in the Lotka-Volterra model?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. To quantify the per capita competitive effect of one species on another</div>
+                    <div class="quiz-option" data-value="b">b. To measure the population's carrying capacity</div>
+                    <div class="quiz-option" data-value="c">c. To describe the population size of a single species</div>
+                    <div class="quiz-option" data-value="d">d. To determine the per capita rate of population growth</div>
+                </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="quiz-question" data-answer="2">
+                <p><strong>4. In the Lotka-Volterra model, if two individuals of species 2 have the same competitive effect as one individual of species 1, what is the value of the competition coefficient α?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. α = 2.0</div>
+                    <div class="quiz-option" data-value="b">b. α = 0.5</div>
+                    <div class="quiz-option" data-value="c">c. α = 4.0</div>
+                    <div class="quiz-option" data-value="d">d. α = 1.0</div>
+                </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="quiz-question" data-answer="2">
+                <p><strong>5. The zero growth isocline for a species represents all combinations of population sizes where...</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. The population size is equal to the carrying capacity</div>
+                    <div class="quiz-option" data-value="b">b. The population growth rate is zero</div>
+                    <div class="quiz-option" data-value="c">c. The population size of both species is equal</div>
+                    <div class="quiz-option" data-value="d">d. The population growth rate is at its maximum</div>
+                </div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="quiz-question" data-answer="1">
+                <p><strong>6. Which of the following is NOT one of the four possible outcomes of competitive interactions predicted by the Lotka-Volterra model?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. Both species go extinct</div>
+                    <div class="quiz-option" data-value="b">b. One species eliminates the other, regardless of initial densities</div>
+                    <div class="quiz-option" data-value="c">c. Both species coexist</div>
+                    <div class="quiz-option" data-value="d">d. Either species is eliminated depending on initial densities</div>
+                </div>
+            </div>
+
+            <!-- Q7 -->
+            <div class="quiz-question" data-answer="2">
+                <p><strong>7. What condition must be met for two competing species to coexist at a stable equilibrium?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. The competition coefficients (α and β) must be equal to 1.</div>
+                    <div class="quiz-option" data-value="b">b. Population growth of each species is limited more by intraspecific than by interspecific competition.</div>
+                    <div class="quiz-option" data-value="c">c. Interspecific competition is greater than intraspecific competition for both species.</div>
+                    <div class="quiz-option" data-value="d">d. The carrying capacities of both species are equal.</div>
+                </div>
+            </div>
+
+            <!-- Q8 -->
+            <div class="quiz-question" data-answer="2">
+                <p><strong>8. In the Lotka-Volterra equation for species 1, what does the term (K1 − N1 − αN2) represent?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. The per capita growth rate of species 1.</div>
+                    <div class="quiz-option" data-value="b">b. The combined effect of interspecific and intraspecific competition on species 1.</div>
+                    <div class="quiz-option" data-value="c">c. The population growth rate of species 2.</div>
+                    <div class="quiz-option" data-value="d">d. The total population size of both species.</div>
+                </div>
+            </div>
+
+            <!-- Q9 -->
+            <div class="quiz-question" data-answer="4">
+                <p><strong>9. When A.C. Crombie placed Tribolium confusum and Oryzaephilus surinamensis in fine-grained flour, what was the outcome of their competition?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. Both species coexisted at a stable equilibrium.</div>
+                    <div class="quiz-option" data-value="b">b. Tribolium went extinct because it could not eat the flour.</div>
+                    <div class="quiz-option" data-value="c">c. The outcome depended on the initial densities of the beetles.</div>
+                    <div class="quiz-option" data-value="d">d. Oryzaephilus went extinct because it was outcompeted by Tribolium.</div>
+                </div>
+            </div>
+
+            <!-- Q10 -->
+            <div class="quiz-question" data-answer="3">
+                <p><strong>10. In the Lotka-Volterra model, what does the term K1/α represent?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. The per capita competitive effect on species 1 of species 2.</div>
+                    <div class="quiz-option" data-value="b">b. The carrying capacity of species 2.</div>
+                    <div class="quiz-option" data-value="c">c. The number of individuals of species 2 that would fully occupy the carrying capacity of species 1.</div>
+                    <div class="quiz-option" data-value="d">d. The population growth rate of species 1.</div>
+                </div>
+            </div>
+
+            <!-- Q11 -->
+            <div class="quiz-question" data-answer="1">
+                <p><strong>11. What is the key difference between Tilman's R* models and earlier phenomenological models like Lotka-Volterra?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. Tilman’s models provide a mechanistic explanation for why one species is a better competitor.</div>
+                    <div class="quiz-option" data-value="b">b. Lotka-Volterra models are more accurate in predicting long-term outcomes.</div>
+                    <div class="quiz-option" data-value="c">c. Tilman’s models are less complex and easier to apply in diverse ecosystems.</div>
+                    <div class="quiz-option" data-value="d">d. Lotka-Volterra models account for multiple limiting resources, unlike Tilman's R* model.</div>
+                </div>
+            </div>
+
+            <!-- Q12 -->
+            <div class="quiz-question" data-answer="4">
+                <p><strong>12. What is the definition of R*?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. The equilibrium point where a population's growth rate exceeds its death rate.</div>
+                    <div class="quiz-option" data-value="b">b. The rate at which a species consumes a limiting resource.</div>
+                    <div class="quiz-option" data-value="c">c. The maximum population density a species can achieve in a given environment.</div>
+                    <div class="quiz-option" data-value="d">d. The minimum concentration of a single limiting resource a population needs to maintain a stable size.</div>
+                </div>
+            </div>
+
+            <!-- Q13 -->
+            <div class="quiz-question" data-answer="4">
+                <p><strong>13. According to the principle of competitive exclusion based on the R* concept, which species will be the superior competitor for a single limiting resource?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. The species with the largest starting population size.</div>
+                    <div class="quiz-option" data-value="b">b. The species with the highest R*.</div>
+                    <div class="quiz-option" data-value="c">c. The species with the fastest population growth rate.</div>
+                    <div class="quiz-option" data-value="d">d. The species with the lowest R*.</div>
+                </div>
+            </div>
+
+            <!-- Q14 -->
+            <div class="quiz-question" data-answer="2">
+                <p><strong>14. In the diatom competition experiment, which species was the superior competitor for silicate?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. Neither, as both populations declined to zero.</div>
+                    <div class="quiz-option" data-value="b">b. Synedra</div>
+                    <div class="quiz-option" data-value="c">c. Asterionella</div>
+                    <div class="quiz-option" data-value="d">d. Both were equally good competitors</div>
+                </div>
+            </div>
+
+            <!-- Q15 -->
+            <div class="quiz-question" data-answer="4">
+                <p><strong>15. Based on the R* concept, a population will decline toward extinction if the resource level is...</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. at its maximum carrying capacity.</div>
+                    <div class="quiz-option" data-value="b">b. above its R*.</div>
+                    <div class="quiz-option" data-value="c">c. equal to its R*.</div>
+                    <div class="quiz-option" data-value="d">d. below its R*.</div>
+                </div>
+            </div>
+
+            <!-- Q16 -->
+            <div class="quiz-question" data-answer="1">
+                <p><strong>16. The R* model explains coexistence in a complex world by highlighting factors such as:</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. Multiple limiting resources, spatial heterogeneity, and dispersal.</div>
+                    <div class="quiz-option" data-value="b">b. The principle that the species with the lowest R* will always exclude others.</div>
+                    <div class="quiz-option" data-value="c">c. The fact that all species have the same R* for all resources.</div>
+                    <div class="quiz-option" data-value="d">d. The idea that competition is not a factor in natural environments.</div>
+                </div>
+            </div>
+
+            <!-- Q17 -->
+            <div class="quiz-question" data-answer="4">
+                <p><strong>17. What is meant by the term 'phenomenological' when describing models like Lotka-Volterra?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. They are highly accurate and predictive of real-world outcomes.</div>
+                    <div class="quiz-option" data-value="b">b. They are complex mathematical models that are difficult to understand.</div>
+                    <div class="quiz-option" data-value="c">c. They are specifically designed to be applied to plant and diatom competition.</div>
+                    <div class="quiz-option" data-value="d">d. They are based on observable phenomena without explaining the underlying cause.</div>
+                </div>
+            </div>
+
+            <!-- Q18 -->
+            <div class="quiz-question" data-answer="4">
+                <p><strong>18. The R* model explains the lack of competitive exclusion in nature by suggesting that:</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. The natural world is too simple for the R* model to apply.</div>
+                    <div class="quiz-option" data-value="b">b. The principle of competitive exclusion is only valid in laboratory settings.</div>
+                    <div class="quiz-option" data-value="c">c. No two species ever compete for the same limiting resource.</div>
+                    <div class="quiz-option" data-value="d">d. Ecosystems have multiple limiting resources and are not uniform over time and space.</div>
+                </div>
+            </div>
+
+            <!-- Q19 -->
+            <div class="quiz-question" data-answer="3">
+                <p><strong>19. In the context of the R* model, what happens to a population's per capita growth rate when the resource level is below its R*?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. The growth rate is equal to the death rate, so the population size remains stable.</div>
+                    <div class="quiz-option" data-value="b">b. The growth rate is positive, causing the population to increase.</div>
+                    <div class="quiz-option" data-value="c">c. The growth rate is negative, causing the population to decline.</div>
+                    <div class="quiz-option" data-value="d">d. The growth rate becomes zero, so the population size does not change.</div>
+                </div>
+            </div>
+
+            <!-- Q20 -->
+            <div class="quiz-question" data-answer="3">
+                <p><strong>20. How did Tilman’s experiments with diatoms provide 'strong empirical evidence' for his R* model?</strong></p>
+                <div class="quiz-options">
+                    <div class="quiz-option" data-value="a">a. By proving that competition does not occur in laboratory cultures.</div>
+                    <div class="quiz-option" data-value="b">b. By showing that both species could coexist indefinitely in the same culture.</div>
+                    <div class="quiz-option" data-value="c">c. By demonstrating that the species with the lowest R* for silicate (Synedra) excluded the other species (Asterionella).</div>
+                    <div class="quiz-option" data-value="d">d. By showing that the species with the highest R* for silicate outcompeted the other species.</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSection(-1)">← Previous</button>
+            <div class="section-indicator">
+                <span class="section-number" id="sectionNumber">1 / 12</span>
+            </div>
+            <button class="nav-btn" id="nextBtn" onclick="changeSection(1)">Next →</button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <img class="logo" src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo">
+            <p>© 2025 BETA Biosciences. All rights reserved. Email: betabiosciences@gmail.com</p>
+        </footer>
+    </div>
+
+    <script>
+        /* Section navigation */
+        let currentSection = 0;
+        const sections = document.querySelectorAll('.section');
+        const totalSections = sections.length; // 12
+        function updateDisplay() {
+            sections.forEach((section, i) => {
+                section.classList.toggle('active', i === currentSection);
+            });
+            const progressFill = document.getElementById('progressFill');
+            const progress = ((currentSection + 1) / totalSections) * 100;
+            progressFill.style.width = `${progress}%`;
+            document.getElementById('sectionNumber').textContent = `${currentSection + 1} / ${totalSections}`;
+            document.getElementById('prevBtn').disabled = currentSection === 0;
+            document.getElementById('nextBtn').disabled = currentSection === totalSections - 1;
+            // scroll section to top each time for consistent view
+            if (sections[currentSection]) sections[currentSection].scrollTop = 0;
+        }
+        function changeSection(direction) {
+            const newSection = currentSection + direction;
+            if (newSection >= 0 && newSection < totalSections) {
+                currentSection = newSection;
+                updateDisplay();
+            }
+        }
+        // keyboard and touch navigation
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSection(-1);
+            else if (event.key === 'ArrowRight') changeSection(1);
+        });
+        let touchStartX = 0, touchEndX = 0;
+        document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); });
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            if (Math.abs(swipeDistance) > swipeThreshold) {
+                if (swipeDistance > 0) changeSection(-1); else changeSection(1);
+            }
+        }
+        updateDisplay();
+
+        /* QUIZ INTERACTIVITY */
+
+        // Map of correct answer letters per question element (we set them as data-answer attributes above, matching a=1,b=2,c=3,d=4)
+        // Helper to convert data-value 'a','b','c','d' to numeric index 1..4
+        function letterToIndex(letter) {
+            if (!letter) return null;
+            const map = { 'a': 1, 'b': 2, 'c': 3, 'd': 4 };
+            return map[letter.toLowerCase()] || null;
+        }
+
+        // Attach click handlers to all options
+        const quizQuestions = document.querySelectorAll('.quiz-question');
+        quizQuestions.forEach((qElem, qIndex) => {
+            const correctIndex = parseInt(qElem.getAttribute('data-answer'), 10); // numeric 1..4
+            const options = qElem.querySelectorAll('.quiz-option');
+            // store flag to prevent multiple attempts
+            qElem.dataset.answered = 'false';
+
+            options.forEach(optionElem => {
+                optionElem.addEventListener('click', function () {
+                    if (qElem.dataset.answered === 'true') return; // one attempt only
+                    // mark as attempted
+                    qElem.dataset.answered = 'true';
+
+                    // find which option was clicked: convert its data-value to numeric
+                    const clickedLetter = optionElem.getAttribute('data-value');
+                    const clickedIndex = letterToIndex(clickedLetter);
+
+                    // highlight clicked option temporarily as selected
+                    optionElem.classList.add('selected');
+
+                    // If correct
+                    if (clickedIndex === correctIndex) {
+                        optionElem.classList.remove('selected');
+                        optionElem.classList.add('correct');
+                    } else {
+                        // mark clicked as incorrect
+                        optionElem.classList.remove('selected');
+                        optionElem.classList.add('incorrect');
+                        // also highlight the correct option
+                        options.forEach(opt => {
+                            const optIndex = letterToIndex(opt.getAttribute('data-value'));
+                            if (optIndex === correctIndex) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+
+                    // After answering, disable pointer events for all options in this question
+                    options.forEach(opt => {
+                        opt.style.pointerEvents = 'none';
+                        // keep cursor default
+                        opt.style.cursor = 'default';
+                    });
+                });
+            });
+        });
+
+        // Optional: expose a function to reset the quiz (not requested, but useful during editing)
+        function resetQuiz() {
+            const quizQuestions = document.querySelectorAll('.quiz-question');
+            quizQuestions.forEach(q => {
+                q.dataset.answered = 'false';
+                const opts = q.querySelectorAll('.quiz-option');
+                opts.forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect', 'selected');
+                    opt.style.pointerEvents = '';
+                    opt.style.cursor = '';
+                });
+            });
+        }
+        // window.resetQuiz = resetQuiz; // uncomment to allow calling from console
+    </script>
+</body>
+</html>
