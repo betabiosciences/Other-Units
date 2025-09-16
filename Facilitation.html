@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF--8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilitation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2j+d+2I7B1a182Ew4W9qL+2u4oE2D8y957zXg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0c0a09;
+            color: #f5f5f4;
+        }
+        .glossy-button {
+            background: linear-gradient(145deg, #1f2937, #111827);
+            box-shadow: 
+                inset 2px 2px 5px #374151,
+                inset -5px -5px 10px #030712,
+                5px 5px 10px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glossy-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                inset 2px 2px 5px #374151,
+                inset -5px -5px 10px #030712,
+                8px 8px 15px rgba(0,0,0,0.7);
+        }
+        .glossy-button:active {
+            transform: translateY(0);
+            box-shadow: 
+                inset 2px 2px 5px #030712,
+                inset -5px -5px 10px #374151,
+                2px 2px 5px rgba(0,0,0,0.3);
+        }
+        .section-container {
+            min-height: calc(100vh - 128px); /* Adjust for header/footer height */
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #a1a1aa #292524;
+        }
+        .section-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .section-container::-webkit-scrollbar-track {
+            background: #292524;
+            border-radius: 10px;
+        }
+        .section-container::-webkit-scrollbar-thumb {
+            background-color: #a1a1aa;
+            border-radius: 10px;
+            border: 2px solid #292524;
+        }
+        @media (max-width: 768px) {
+            .section-container {
+                min-height: calc(100vh - 120px);
+            }
+        }
+        .card-content {
+            background-color: #1c1917;
+            border: 1px solid #44403c;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        .highlight {
+            color: #d1d5db;
+        }
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .responsive-table {
+            min-width: 600px;
+        }
+        .quiz-option {
+            padding: 0.75rem;
+            border: 1px solid #44403c;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .quiz-option:hover {
+            background-color: #292524;
+        }
+        .quiz-option.selected {
+            background-color: #3f3f46;
+            border-color: #a1a1aa;
+        }
+        .quiz-option.correct {
+            background-color: #166534; /* Green */
+            color: white;
+            border-color: #22c55e;
+        }
+        .quiz-option.incorrect {
+            background-color: #991b1b; /* Red */
+            color: white;
+            border-color: #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-stone-950 text-stone-100 flex flex-col items-center justify-center p-4 min-h-screen">
+
+    <div id="container" class="relative w-full max-w-3xl flex flex-col justify-center items-center">
+        
+        <!-- Navigation Buttons -->
+        <div class="fixed top-4 left-1/2 -translate-x-1/2 flex space-x-2 z-50">
+            <button id="prevBtn" class="glossy-button px-4 py-2 rounded-full text-sm sm:text-base font-semibold text-zinc-300 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-stone-900">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button id="nextBtn" class="glossy-button px-4 py-2 rounded-full text-sm sm:text-base font-semibold text-zinc-300 hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-stone-900">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <!-- Content Container -->
+        <div id="content" class="w-full flex-1 flex flex-col items-center justify-center p-4 overflow-hidden">
+            <!-- Content will be injected here by JavaScript -->
+        </div>
+
+    </div>
+    
+    <footer class="text-center p-4 mt-8 text-stone-400">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="w-14 mx-auto mb-2">
+        <p class="text-xs">&copy; 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="text-xs">Email: betabiosciences@gmail.com</p>
+    </footer>
+
+    <script>
+        // Data from the provided document, now grouped by subheading
+        const documentSections = [
+            `
+            <h1 class="text-3xl sm:text-4xl font-bold mb-4 text-center">FACILITATION</h1>
+            <p class="text-base sm:text-lg text-gray-300">Facilitation is often considered a type of  <span class="highlight font-semibold">symbiosis</span>, which is a broad term for any long-term biological interaction between different species. More specifically, facilitation describes a positive symbiotic relationship, sometimes referred to as  <span class="highlight font-semibold">probiosis</span>  or  <span class="highlight font-semibold">ecological facilitation</span> , where at least one species benefits and neither is harmed.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">There are two main categories of these beneficial symbiotic relationships:  <span class="highlight font-semibold">mutualism</span>  and  <span class="highlight font-semibold">commensalism</span>.</p>
+            <h2 class="text-2xl sm:text-3xl font-bold my-4 text-center">Mutualism</h2>
+            <p class="text-base sm:text-lg text-gray-300">In this type of symbiosis, both species gain a benefit. It’s a reciprocal relationship where each partner provides something the other needs. For example, in the classic case of plant-pollinator mutualism, the plant receives the essential service of pollen transfer, which enables it to reproduce. In return, the pollinator, such as a bee, gains a food source in the form of nectar. Mutualism can be further categorized based on the benefit provided, such as  <span class="highlight font-semibold">dispersive mutualism</span>  (pollen or seed dispersal),  <span class="highlight font-semibold">defensive mutualism</span>  (one species protects the other from predators), or  <span class="highlight font-semibold">resource-based mutualism</span>  (trading resources like nutrients for carbohydrates).</p>
+            <h2 class="text-2xl sm:text-3xl font-bold my-4 text-center">Commensalism</h2>
+            <p class="text-base sm:text-lg text-gray-300">This interaction is a one-way street, where one species benefits while the other is neither helped nor harmed. A classic example is a bird building a nest in a tree. The bird benefits from a safe place to live, but the tree is unaffected. Another example is the transport of barbed seeds on an animal's fur. The seeds are dispersed to a new location, which is a significant benefit, but the animal is generally not inconvenienced by the hitchhiker.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">Interestingly, the prevalence of certain symbiotic relationships is often tied to the environment.  <span class="highlight font-semibold">Mutualism and commensalism</span>  are more commonly observed in  <span class="highlight font-semibold">stressful or harsh environments</span>. In these conditions, the benefits of cooperation are often critical for survival. For instance, in a resource-scarce desert, a "nurse plant" might provide shade and moisture that allows a younger, more vulnerable plant to grow underneath it. This facilitative interaction can be the difference between life and death for the beneficiary. In contrast, in more benign or resource-rich environments, species may not need to rely on others for survival, and competitive interactions become more prominent.</p>
+            <h2 class="text-2xl sm:text-3xl font-bold my-4 text-center">Mutualism vs. Commensalism</h2>
+            <div class="table-container">
+                <table class="w-full responsive-table border-collapse text-sm sm:text-base">
+                    <thead>
+                        <tr class="bg-zinc-800 border-b border-gray-600">
+                            <th class="p-4 text-left font-medium text-gray-400 border-r border-gray-600">Feature</th>
+                            <th class="p-4 text-left font-medium text-gray-400 border-r border-gray-600">Mutualism</th>
+                            <th class="p-4 text-left font-medium text-gray-400">Commensalism</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700">Relationship</td>
+                            <td class="p-4 border-r border-gray-700">Both species benefit from the interaction.</td>
+                            <td class="p-4">One species benefit, while the other is neither helped nor harmed.</td>
+                        </tr>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700">Dependency</td>
+                            <td class="p-4 border-r border-gray-700">Often an obligatory or long-term relationship, sometimes necessary for the survival of one or both species.</td>
+                            <td class="p-4">Typically, a non-obligatory and temporary relationship, though some can be long-term.</td>
+                        </tr>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700">Who Benefits?</td>
+                            <td class="p-4 border-r border-gray-700">Both organisms involved.</td>
+                            <td class="p-4">Only one organism (the ""commensal"")."</td>
+                        </tr>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700">Examples</td>
+                            <td class="p-4 border-r border-gray-700">Bees and flowers, humans and gut bacteria, oxpeckers and rhinos.</td>
+                            <td class="p-4">Cattle egrets and cattle, barnacles on whales, birds nesting in trees.</td>
+                        </tr>
+                        <tr class="bg-zinc-900">
+                            <td class="p-4 border-r border-gray-700">Benefit Type</td>
+                            <td class="p-4 border-r border-gray-700">Can involve food, shelter, protection, or transportation for both species.</td>
+                            <td class="p-4">Can involve food, shelter, support, or transportation for the benefitting species.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            `,
+            `
+            <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-center">Mutualism (+/+)</h2>
+            <p class="text-base sm:text-lg text-gray-300">Mutualism is a type of symbiotic relationship where two different species interact and both benefit from the association. This partnership can be essential for survival or simply a helpful arrangement. The types of mutualism can be categorized in a few different ways, depending on the nature of the relationship.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Types of Mutualism</h3>
+            <p class="text-base sm:text-lg text-gray-300">Mutualism can be divided into two main categories based on how dependent the species are on one another:</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Obligate Mutualism:</span>  This is a relationship where neither species can survive without the other. Their lives are completely intertwined.</p>
+            <p class="mt-2 text-base sm:text-lg text-gray-300"><span class="font-semibold">Example:</span>  Lichens are a perfect example. They are made up of a fungus and an alga (or a cyanobacterium) living together. The fungus provides a protective structure and absorbs water and minerals, while the alga performs photosynthesis, creating food for both. They are so dependent on each other that they are often considered a single organism.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Facultative Mutualism:</span>  In this type of relationship, the interaction is beneficial for both species, but it is not essential for their survival. They can live and reproduce on their own.</p>
+            <p class="mt-2 text-base sm:text-lg text-gray-300"><span class="font-semibold">Example:</span>  Many species of ants and aphids have a facultative mutualistic relationship. The ants "herd" the aphids, protecting them from predators, and in return, the ants get to feed on a sweet liquid called honeydew that the aphids excrete. While this is a helpful arrangement for both, neither species is entirely dependent on the other for survival.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Another way to classify mutualism</h3>
+            <p class="text-base sm:text-lg text-gray-300">Another way to classify mutualism is based on the primary service or resource being exchanged:</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Resource-Based Mutualism:</span>  This involves the exchange of resources, like food or nutrients, that are essential for the survival of both species.</p>
+            <p class="mt-2 text-base sm:text-lg text-gray-300"><span class="font-semibold">Example:</span>  The relationship between deep-sea worms (<span class="italic">Riftia pachytila</span>) and sulfur-oxidizing bacteria is a great example. These worms live near hydrothermal vents and have no mouth or digestive system. Instead, they have an organ filled with bacteria. The worms provide the bacteria with a safe place to live and access to sulfur from the vents. In return, the bacteria oxidize the sulfur to produce sugars, which are the worm's sole source of food.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Defensive Mutualism:</span>  This is when one species receives a benefit of protection from herbivores, parasites, or predators in exchange for food or shelter.</p>
+            <p class="mt-2 text-base sm:text-lg text-gray-300"><span class="font-semibold">Example:</span>  "Cleaner" fish on coral reefs have a defensive mutualistic relationship with "client" fish. The cleaner fish remove and eat parasites and dead skin from the client fish, getting a meal in the process. The client fish are protected from disease and stay healthy. When these cleaner fish are removed from a reef, the populations of the client fish often decline due to an increase in skin diseases.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Dispersive Mutualism:</span>  This relationship involves one species helping another to disperse its seeds or pollen. This is a crucial interaction for the reproduction of many plant species.</p>
+            <p class="mt-2 text-base sm:text-lg text-gray-300"><span class="font-semibold">Example:</span>  A classic example is the relationship between plants and their pollinators, such as bees, butterflies, or bats. The animal gets a meal of nectar, and in the process, it carries pollen from one flower to another, allowing the plant to reproduce. A similar relationship exists between plants and animals that eat their fruits and disperse their seeds through their waste.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Examples of Mutualism</h3>
+            <p class="text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Deep-sea fish and bioluminescent bacteria:</span>  This is a fascinating example of a resource-based mutualism in a unique environment. In the pitch-black of the deep sea, light is an incredibly valuable resource. The bacteria get a safe, nutrient-rich home within the fish's specialized light organs, called photophores. The fish, in turn, use this living flashlight for various purposes, such as luring prey, attracting mates, or communicating with other members of their species. Without the bacteria, the fish would lose their primary sensory tool in this dark world. The bacteria cannot survive in the open ocean and thrive only within the host. This highly specific relationship is often considered a form of obligate mutualism.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Deep-sea worms and mussels with sulfur-oxidizing bacteria:</span>  This is a prime example of obligate resource-based mutualism that allows life to flourish in an otherwise hostile environment. The worms and mussels live near hydrothermal vents that spew out superheated, sulfide-rich water. These animals cannot use the sulfide directly for energy. Instead, they house massive colonies of bacteria within their bodies. The bacteria perform chemosynthesis, using the chemical energy from oxidizing the sulfide to produce organic compounds (sugars). The host animals, in turn, get a continuous supply of food, allowing them to grow to immense sizes in a place where no sunlight exists to power photosynthesis. The <span class="italic">Riftia pachytila</span> worm is a truly extreme case, having evolved to completely depend on these bacteria, lacking a mouth, gut, or anus.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Cleaner fish and client fish:</span>  This is a classic example of defensive mutualism, and it's a common sight on coral reefs. Client fish, from small damselfish to large groupers, will actively seek out "cleaning stations" where cleaner fish reside. The client fish adopt specific poses that signal their willingness to be cleaned. The cleaner fish then eat parasites, dead scales, and other unwanted materials from the client's body, including from inside their mouths and gills. The cleaner fish get a reliable source of food, and the client fish maintain their health, avoiding skin diseases and other ailments. While the client fish could theoretically find other ways to deal with parasites, and the cleaner fish could find other food, this highly developed and widespread interaction is a crucial part of reef ecology.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Humans and crops/livestock:</span>  This mutualism has fundamentally changed the planet and is perhaps the most significant on a global scale. It's a prime example of facultative mutualism that has become so ingrained it feels almost obligate. Humans provide crops (like corn, wheat, and rice) and livestock (like cows and chickens) with a protected environment, access to water and nutrients, and freedom from competition, allowing their populations to explode to densities they could never achieve in the wild. In return, these species provide a stable, high-calorie food supply that has enabled human populations to grow from hunter-gatherer societies to a global civilization of billions. The relationship benefits both, but both species could exist independently (though in much smaller numbers).</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Humans and gut microbes:</span>  This is a remarkable example of resource-based mutualism within our own bodies. Our digestive system can't break down complex carbohydrates like cellulose, which is the main component of plant cell walls. However, the trillions of bacteria and other microbes in our gut, collectively known as the microbiome, can. They ferment these plant fibers, breaking them down into simpler, absorbable molecules like monosaccharides, fatty acids, and essential vitamins (like Vitamin K and B vitamins). We get access to nutrients that would otherwise be lost, and the microbes get a warm, stable, and food-rich environment to live in. This is a mutually beneficial arrangement that is critical to human health.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Lichens (fungi and algae):</span>  As mentioned, this is the textbook case of obligate mutualism. The fungus provides a physical structure that protects the algae from harsh environmental conditions like desiccation and intense sunlight. The fungus also absorbs water and minerals from the substrate. In exchange, the alga, through photosynthesis, produces sugars that serve as food for both organisms. Neither can survive alone in the habitats where lichens are found. The relationship is so close that they form a single morphological unit, which is why we call them lichens rather than simply a fungus and an alga.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Ants and aphids:</span>  This facultative mutualism is a fascinating display of cooperation and resource management. The aphids, also known as "ant cows," feed on plant sap and excrete a sugary waste product called honeydew. The ants love this substance and will actively "farm" the aphids. They protect them from predators like ladybugs, move them to better feeding locations, and can even build shelters for them. In return, they get a consistent supply of food. The aphids benefit from the ants' protection, but they can and do survive without them. The ants can also find other food sources. The relationship is beneficial but not necessary for the long-term survival of either species.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">Humans have also entered into many mutualistic relationships. The agricultural partnership between humans and crops, where we provide land and care for plants that in turn provide us with food, is one of the most significant mutualisms on Earth. Another important example is the relationship with the vast number of bacteria and other microorganisms in our digestive tracts, which help us break down food we couldn't digest otherwise.</p>
+            `,
+            `
+            <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-center">Dispersive Mutualism</h2>
+            <p class="text-base sm:text-lg text-gray-300">Dispersive mutualism is a type of relationship where one species helps another spread its pollen or seeds. This is crucial for the reproduction and survival of many plant species.</p>
+            <img src="https://betabiosciences.github.io//Other-Units/Facilitation%20fig1.jpg" alt="Dispersive Mutualism examples" class="my-4 rounded-lg shadow-lg">
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Pollination</h3>
+            <p class="text-base sm:text-lg text-gray-300">The relationship between plants and their pollinators is a careful balance. Plants want specialized pollinators that are loyal to their species, ensuring their pollen isn't wasted. They achieve this by flowering at specific times and synchronizing their blooms. Pollinators, on the other hand, want to be generalists, visiting many different flowers in a small area to save energy. This difference in goals highlights that even in a mutualistic relationship, the needs of the two species are not identical.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Pollination Syndromes</h3>
+            <p class="text-base sm:text-lg text-gray-300">This is a term for special adaptations that have evolved between plants and specific pollinators. For example, flowers pollinated by hummingbirds are often brightly colored to attract the birds, but they lack a strong smell because birds have a poor sense of smell. They also produce a lot of nectar to meet the hummingbirds' high energy needs.</p>
+            <div class="table-container mt-4">
+                <h4 class="text-lg sm:text-xl font-bold mb-2">Pollination syndromes.</h4>
+                <table class="w-full responsive-table border-collapse text-sm sm:text-base">
+                    <thead>
+                        <tr class="bg-zinc-800 border-b border-gray-600">
+                            <th class="p-4 text-left font-medium text-gray-400 border-r border-gray-600">Animal features</th>
+                            <th class="p-4 text-left font-medium text-gray-400">Coevolved flower features</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700"><strong>Bees</strong></td>
+                            <td class="p-4"></td>
+                        </tr>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700"><ul><li>Color vision includes UV, not red</li><li>Good sense of smell</li><li>Require nectar and pollen</li></ul></td>
+                            <td class="p-4"><ul><li>Often blue, purple, yellow, white (not red colors)</li><li>Fragrant</li><li>Provide nectar and abundant pollen</li></ul></td>
+                        </tr>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700"><strong>Butterflies</strong></td>
+                            <td class="p-4"></td>
+                        </tr>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700"><ul><li>Good color vision</li><li>Sense odors with feet</li><li>Need landing place</li><li>Feed with long tubular tongue</li></ul></td>
+                            <td class="p-4"><ul><li>Blue, purple, deep pink, orange, red colors</li><li>Light floral scent</li><li>Provide landing place</li><li>Nectar in deep, narrow flora tubes</li></ul></td>
+                        </tr>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700"><strong>Birds</strong></td>
+                            <td class="p-4"></td>
+                        </tr>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700"><ul><li>Color vision, includes red</li><li>Often require perch</li><li>Poor sense of smell</li><li>Feed in daytime</li><li>High nectar requirement</li></ul></td>
+                            <td class="p-4"><ul><li>Often colored red</li><li>Strong, damage-resistant structure</li><li>No fragrance</li><li>Open in daytime</li><li>Copious nectar in floral tubes</li></ul></td>
+                        </tr>
+                        <tr class="bg-zinc-900 border-b border-gray-700">
+                            <td class="p-4 border-r border-gray-700"><strong>Bats</strong></td>
+                            <td class="p-4"></td>
+                        </tr>
+                        <tr class="bg-zinc-900">
+                            <td class="p-4 border-r border-gray-700"><ul><li>Color blind</li><li>Good sense of smell</li><li>Active at night</li><li>High food requirements</li><li>Often require perch</li></ul></td>
+                            <td class="p-4"><ul><li>White or light, reflective colors</li><li>Strong odors</li><li>Open at night</li><li>Copious nectar and pollen provided</li><li>Pendulous or borne on tree trunks</li></ul></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="mt-2 text-xs text-gray-400">After Brooker, et al., 2008.</p>
+            </div>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Cheating in Pollination</h3>
+            <p class="text-base sm:text-lg text-gray-300">Not all interactions are truly mutualistic. Some species "cheat" to get a benefit without giving one in return.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Orchids:</span> The grass pink orchid in Maine has no nectar but mimics another nectar-producing flower to attract bees. The bee orchid mimics a female bee, causing male bees to try to mate with the flower and, in the process, pick up and transfer pollen.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Bees:</span> Some bees, like certain <span class="italic">Bombus</span> species, cheat by biting a hole at the base of a flower to steal nectar without entering the flower and picking up pollen.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Invasive Mutualisms</h3>
+            <p class="text-base sm:text-lg text-gray-300">The introduction of new species can create new mutualistic relationships with ecological consequences.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Orchid bees in Florida:</span> An invasive orchid bee species in Florida was found to significantly increase the fruit and seed production of an invasive plant species, potentially worsening the management problems posed by the weed.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Lupines and thistles in Chile:</span> Invasive lupine plants in Chile acted as "magnet species," attracting many pollinators that also ended up visiting nearby invasive thistles, increasing their seed output.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Seed Dispersal</h3>
+            <p class="text-base sm:text-lg text-gray-300">Plants also rely on animals to disperse their seeds. Fruits serve as a reward, providing carbohydrates and vitamins for animals. In return for the meal, the animals disperse the seeds, which pass through their digestive systems unharmed. Plants signal that their fruit is ripe by changing color, from green to red, orange, blue, or black. Fruits dispersed by nocturnal animals like bats may not be brightly colored but instead give off a strong odor. Even fish in the Amazon have evolved to eat fruit and disperse seeds.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Hypotheses for the Advantages of Seed Dispersal:</h3>
+            <p class="text-base sm:text-lg text-gray-300">Scientists have several ideas about why seed dispersal is so beneficial to plants, and these hypotheses are not mutually exclusive.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">The Competition Avoidance Hypothesis:</span> The <span class="highlight font-semibold">competition avoidance hypothesis</span> is a theory explaining one of the main benefits of seed dispersal for plants. It suggests that by having their seeds moved away from the parent plant, the offspring avoid direct competition for vital resources like sunlight, water, and nutrients. Since the parent plant is already established and has a large root system, any nearby seedlings would be at a significant disadvantage. However, a key limitation of this hypothesis is that there is no guarantee the dispersed seed will land in an ideal spot. While the seed avoids competition with its parent, it might end up in a location with poor soil, too little sunlight, or other less-than-optimal conditions. So, while the seed gets a head start by escaping its parent's "shadow," it takes a gamble on finding a suitable new home.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">The Predator Escape Hypothesis:</span> The <span class="highlight font-semibold">predator escape hypothesis</span> explains that seed dispersal helps plants survive by moving seeds away from a high-risk area. It's based on the idea that many seed-eating animals, like insects or rodents, gather and thrive directly under or near a parent plant, where there is a constant supply of fallen seeds. This congregation of predators creates a "killing zone" where a seed's chance of survival is very low. By dispersing its seeds away from the parent, the plant gives them a much better chance of survival. A scattered seed is less likely to be found and eaten by these concentrated predators. It's a strategy that trades a potentially abundant food source (the seeds right under the parent tree) for a higher probability of survival by "hiding" a few seeds in a safer, more distant location.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">The Colonization Hypothesis:</span> The <span class="highlight font-semibold">colonization hypothesis</span> argues that seed dispersal is a strategy for plants to cope with an unpredictable environment. The idea is that the best place for a parent plant to grow right now may not be the best place for its offspring to grow in the future. Environmental conditions like soil quality, light availability, and water can change constantly. For example, in a forest, a seedling might need a "light gap"—an opening in the tree canopy created by a fallen tree—to get enough sunlight to survive and grow. Since the formation of these gaps is an unpredictable event, a parent tree can't guarantee that the space directly below it will be a good spot for its seeds. By dispersing seeds over a wide area, the parent plant increases the odds that at least some of its offspring will land in a suitable, or even a newly created, habitat. It's a numbers game: instead of putting all its eggs in one basket, the plant spreads its seeds around to "colonize" new areas and take advantage of any good fortune that might arise.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">The Directed Dispersal Hypothesis:</span> The <span class="highlight font-semibold">directed dispersal hypothesis</span> proposes that some animals don't just randomly spread seeds but actively place them in the best possible locations for the plant to grow. This is different from the other dispersal hypotheses, which focus more on avoiding bad situations (like competition or predation) rather than aiming for a good one.This "targeted" dispersal is a sophisticated form of mutualism, and two examples illustrate its effectiveness:</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">A. Mistletoe and Birds:</span> Mistletoe is a parasitic plant that can only grow on tree branches. Its seeds must land on a branch of the right size to germinate successfully. If a seed lands on a large branch, its root can't penetrate the bark. If it lands on a small branch, the branch might die. Passerine birds, which eat the mistletoe fruit, are the perfect dispersers. They tend to perch on the medium-sized branches that are the ideal size for the mistletoe. Additionally, the seeds are coated with a sticky substance called <span class="highlight font-semibold">viscin</span> that makes them cling to the bird's feathers. The bird, in turn, often wipes its beak and seeds onto a branch, ensuring the seeds are precisely placed where they have the best chance of survival. If a seed falls to the ground, it will die.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">B. Plants and Ants:</span> Many plants, especially in tropical and temperate regions, produce seeds with a fatty, nutrient-rich attachment called an <span class="highlight font-semibold">elaiosome</span> or <span class="highlight font-semibold">aril</span>. Ants are attracted to this fatty food. They carry the seed back to their nest, eat the elaiosome, and then discard the seed in a waste pile. This pile, full of discarded nutrients and other organic matter, creates a perfect, fertile location for the seed to germinate and grow. The ants get a meal, and the plant's seeds are not just dispersed but are "planted" in a nutrient-rich and protected environment.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Cheating in Seed Dispersal</h3>
+            <p class="text-base sm:text-lg text-gray-300">Even in mutualistic relationships like seed dispersal, cheating can occur. In this case, microbes act as cheaters by consuming the fruit without providing the service of seed dispersal. The ecologist Daniel Janzen proposed that microbes have developed a clever strategy to gain an advantage. They cause a fruit to rot, making it unappealing and inedible to larger animals like birds and mammals that would normally disperse the seeds. By spoiling the fruit, the microbes effectively reserve the food source for themselves, completely bypassing the mutualistic part of the relationship. This gives them a selective advantage, as they get the nutritional reward from the fruit without having to compete with larger animals or help the plant by spreading its seeds.</p>
+            `,
+            `
+            <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-center">Defensive Mutualism</h2>
+            <p class="text-base sm:text-lg text-gray-300">Defensive mutualism is a type of relationship where one species protects another from predators or competitors in exchange for a reward, typically food or shelter.</p>
+            <img src="https://betabiosciences.github.io//Other-Units/Facilitation%20fig3.jpg" alt="Defensive Mutualism examples" class="my-4 rounded-lg shadow-lg">
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Ants and Aphids:</h3>
+            <p class="text-base sm:text-lg text-gray-300">A well-known example is the relationship between ants and aphids. Aphids are vulnerable to predators, but they excrete a sugary liquid called <span class="highlight font-semibold">honeydew</span> as they feed on plant sap. Ants drink this honeydew and, in return, act as "bodyguards" for the aphids, aggressively defending them from predators.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Ants and Acacia Trees:</h3>
+            <p class="text-base sm:text-lg text-gray-300">Another example involves ants and certain plants, like the Central American acacia tree. The acacia tree provides the ants with a home inside its large, hollow thorns and also offers two food sources: <span class="highlight font-semibold">Beltian bodies</span> (protein-rich food nodules) and <span class="highlight font-semibold">extrafloral nectaries</span> (carbohydrate-rich glands). In exchange, the ants aggressively protect the tree by biting and deterring both insect and vertebrate herbivores. They even clear away competing plants from the base of the acacia, ensuring it gets more sunlight, water, and nutrients. This specific relationship can be <span class="highlight font-semibold">obligate</span>, meaning both species are entirely dependent on each other. A study by Daniel Janzen showed that when ants were removed from the acacia, the number of herbivores increased significantly and the tree's growth was severely reduced.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Fungi and Grasses:</h3>
+            <p class="text-base sm:text-lg text-gray-300">Some grasses have a defensive mutualistic relationship with fungi that live inside their leaves. The fungi produce toxic chemicals that deter herbivores from eating the grass. The fungi benefit by getting a food source from the plant. A study on Soay sheep in Scotland showed how this relationship influences the sheep population. When sheep numbers increase, they graze the grass down to its base, where the concentration of the fungal toxins is highest. The high intake of these toxins then causes a population crash in the sheep, allowing the grass to grow back, and the cycle repeats. This research helps us understand and manage livestock losses in industries that use fescue grass, which is often infested with this fungus.</p>
+            `,
+            `
+            <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-center">Resource-Based Mutualism</h2>
+            <p class="text-base sm:text-lg text-gray-300">Resource-based mutualism is a type of symbiotic relationship where two species work together to obtain resources they couldn't get as easily on their own.</p>
+            <img src="https://betabiosciences.github.io//Other-Units/Facilitation%20fig4.jpg" alt="Resource-Based Mutualism examples" class="my-4 rounded-lg shadow-lg">
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Examples of Resource-Based Mutualism</h3>
+            <p class="text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Mycorrhizae and Plants:</span> About 90% of all plants have a mutualistic relationship with fungi known as mycorrhizae. The fungi live in or on the plant roots and get carbohydrates from the host plant as a food source. In return, the fungi's vast network of filaments helps the plant more efficiently extract water and mineral resources from the soil. This is especially important in nutrient-poor environments, such as tropical rainforests.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Leaf-cutting Ants and Fungi:</span> Leaf-cutting ants have an elaborate mutualistic relationship with a specific type of fungus. Instead of eating the leaves they harvest, the ants chew them into a pulp to serve as a substrate for the fungus to grow on. The ants protect, tend, and feed the fungus. In exchange, the fungus produces specialized food structures called gongylidia for the ants. This allows the ants to overcome the chemical defenses of the leaves and provides a stable food source. The relationship is even more complex, involving other species that help maintain the fungus garden.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Corals and Dinoflagellates:</span> Corals host tiny, single-celled algae called dinoflagellates within their tissues. The dinoflagellates perform photosynthesis, providing oxygen and nutrients to the coral. They also give the coral its vibrant color. In return, the coral provides the dinoflagellates with a safe habitat and waste products like carbon dioxide, which the algae use for photosynthesis. When corals are stressed by conditions like high temperatures, the mutualism breaks down, and the corals expel the algae, leading to coral bleaching.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Lichens:</span> Lichens are a classic example of a resource-based mutualism between a fungus and algae. The fungus provides a protective structure and absorbs water and nutrients, while the algae, through photosynthesis, provide food (carbohydrates) for both. This partnership allows them to live in a wide range of habitats, from deserts to alpine regions.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Honeyguides and Honey Badgers:</span> In African savannas, the honeyguide bird has a mutualistic relationship with the honey badger. The bird finds a bees' nest but can't open it on its own. It uses a specific call to attract a honey badger, which is capable of tearing open the nest. The honey badger gets to eat the honey and bee larvae, and the honeyguide gets to feed on the remaining scraps of wax and larvae.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Oxpeckers and Mammals:</span> Oxpeckers in Africa often perch on large mammals like cattle and ungulates. They remove ticks and earwax, providing a benefit to the host. However, studies have shown that this relationship isn't always purely mutualistic. Oxpeckers also feed on blood and can delay the healing of wounds, which suggests they can be more like parasites than "cleaners," raising questions about the overall benefit they provide to their hosts.</p>
+            `,
+            `
+            <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-center">Endosymbiosis: A Deeper Form of Mutualism</h2>
+            <p class="text-base sm:text-lg text-gray-300">Endosymbiosis is a type of close relationship where one organism lives inside the body of another. While this can include parasitic relationships, many are mutualistic, meaning both species benefit.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Examples of Endosymbiosis:</h3>
+            <p class="text-base sm:text-lg text-gray-300">Many of the mutualistic relationships we've discussed are endosymbiotic. This includes the bioluminescent bacteria living inside deep-sea fish, the fungi that reside within grass blades, the mycorrhizal fungi in plant roots, and the algae that give coral its color. The most famous example, however, is the <span class="highlight font-semibold">Endosymbiotic Theory</span> of evolution.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">The Endosymbiotic Theory:</span> This widely accepted theory proposes that billions of years ago, some of the key components of modern eukaryotic cells (cells with a nucleus) were actually free-living organisms.</p>
+            <p class="mt-2 text-base sm:text-lg text-gray-300">An ancient, simple anaerobic cell (one that didn't use oxygen) ingested an aerobic bacterium (one that could use oxygen to produce energy). Instead of digesting it, the cell kept the bacterium inside.</p>
+            <p class="mt-2 text-base sm:text-lg text-gray-300">The bacterium thrived in its new, food-rich environment. In return, the bacterium's ability to produce large amounts of energy (in the form of ATP) was a huge benefit to the host cell. Over time, the bacterium lost the ability to live independently and became what we now know as a <span class="highlight font-semibold">mitochondrion</span>.</p>
+            <p class="mt-2 text-base sm:text-lg text-gray-300">A similar event is thought to have happened with photosynthetic cyanobacteria, which were captured by a host cell. These cyanobacteria continued to photosynthesize, providing the host cell with food. Eventually, they became the <span class="highlight font-semibold">chloroplasts</span> found in plant and algae cells today.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Evidence for the Theory:</h3>
+            <p class="text-base sm:text-lg text-gray-300">There are several key pieces of evidence supporting this theory:</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Independent DNA:</span> Both mitochondria and chloroplasts have their own DNA, separate from the cell's main DNA in the nucleus. This suggests they were once independent organisms.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Genetic Similarity:</span> The DNA sequences of mitochondria are very similar to a group of bacteria called <span class="highlight font-semibold">α-proteobacteria</span>, while chloroplast DNA is a near-match for <span class="highlight font-semibold">cyanobacteria</span>. This strong genetic link points to a shared evolutionary history.</p>
+            <p class="mt-2 text-base sm:text-lg text-gray-300">This theory fundamentally changes our understanding of evolution, showing that cooperation and mutualism are just as important as competition in shaping the diversity of life on Earth.</p>
+            `,
+            `
+            <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-center">Commensalism (+/0)</h2>
+            <p class="text-base sm:text-lg text-gray-300">Commensalism is a type of symbiotic relationship in which one species benefits while the other is neither helped nor harmed. The beneficiary gains an advantage, such as better access to food, protection, or transportation, without affecting the other organism.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="font-semibold">Example:</span> Cattle Egrets and Cattle: This classic example illustrates how cattle egrets benefit from the movement of cattle. As the cattle graze, they disturb insects, making them easy prey for the egrets. The egrets get a meal, while the cattle are unaffected.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Types of Commensalism</h3>
+            <p class="text-base sm:text-lg text-gray-300">Commensalism can be further categorized into more specific types:</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Inquilinism</span> is a type of commensal relationship where one organism, called the <span class="highlight font-semibold">inquiline</span>, lives on or within another organism, known as the host, for shelter. The inquiline benefits from the housing, while the host is neither helped nor harmed. A classic example of this is the relationship between <span class="highlight font-semibold">orchids</span> and <span class="highlight font-semibold">tropical trees</span>. Orchids are a type of <span class="highlight font-semibold">epiphyte</span>, which are plants that grow on other plants. They find a home in the forks or on the branches of large trees, where they get a stable place to live. By growing high up in the canopy, the orchid gains better access to sunlight and rain, which are essential for its survival. It gets its water and nutrients from the air and from the rain that runs down the tree, not by taking resources directly from the tree itself. The tree, in this case, is simply a physical structure, a safe haven that offers no benefit or harm to the orchid. This one-sided relationship perfectly illustrates how one species can use another for support without affecting it. While orchids are a well-known example, inquilinism is a common strategy in nature. Other examples include:</p>
+            <ul class="list-disc list-inside mt-4 text-base sm:text-lg text-gray-300">
+                <li><span class="highlight font-semibold">Pond-dwelling insects:</span> Some aquatic insects, like certain beetle larvae, live inside the discarded shells of snails at the bottom of a pond. The shells provide a protective home, and the snail's death is unrelated to the insect's use of its shell.</li>
+                <li><span class="highlight font-semibold">Gall-forming insects:</span> Certain insects, like gall wasps, lay their eggs on a plant. The plant's reaction to the eggs is to form a gall—a protective, plant-based structure—around the larvae. The larvae then live inside the gall, which provides a safe place to grow and develop. The plant, in this case, is not harmed, though it has to expend some energy to create the gall.</li>
+            </ul>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">These examples highlight how diverse and widespread inquilinism is as a symbiotic strategy in ecosystems around the world.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Phoresy</span> is a type of commensal relationship where one organism, known as the <span class="highlight font-semibold">phoront</span>, uses another organism for transportation. The phoront benefits by being moved to a new location, while the host is neither helped nor harmed. It's essentially a one-way, free ride.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">A great example of this is how <span class="highlight font-semibold">flower mites</span> travel between flowers. The flowers that these mites live on are short-lived. To find new homes and food sources, the mites will crawl into the nostrils (nares) of visiting hummingbirds. The hummingbird then unknowingly carries the mite to the next flower, where the mite disembarks and starts a new life. The hummingbird is completely unaffected by its tiny passenger.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">Phoresy isn't limited to mites and hummingbirds; it's a common strategy across the natural world.</p>
+            <ul class="list-disc list-inside mt-4 text-base sm:text-lg text-gray-300">
+                <li><span class="highlight font-semibold">Plant Seeds and Animals:</span> Many plants have evolved seeds with hooks, barbs, or sticky surfaces. These specialized seeds, like those of burdock, latch onto an animal's fur or feathers. As the animal moves, it carries the seeds with it, eventually dropping them in a new location. This "free seed dispersal" is a huge advantage for the plant, helping it colonize new areas. For the animal, the seeds are just a minor annoyance. If you've ever had a dog that came back from a walk covered in burs, you've seen this relationship firsthand.</li>
+                <li><span class="highlight font-semibold">Mites on Insects:</span> Some mites use larger insects, like beetles or flies, for transportation. They'll climb onto the host insect and get a ride to a new food source, such as a decaying carcass or a pile of dung. The mite benefits from the ride to a new, nutrient-rich environment, while the host is unharmed.</li>
+            </ul>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">These examples show how organisms can use others as a form of "public transport" to find new resources or habitats, highlighting the clever and often-overlooked symbiotic relationships that shape ecosystems.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Metabiosis</span> is a specific type of commensalism where one organism uses something created by another, typically after the creator has died. The beneficiary gets to use a resource, like a shelter or a nesting site, without harming the original producer because it's no longer alive. A perfect example of this is the <span class="highlight font-semibold">hermit crab</span> and the <span class="highlight font-semibold">snail shell</span>. Hermit crabs have soft, vulnerable abdomens and need a hard shell for protection. They can't make their own, so they search for empty snail shells left behind after the snail has died. The crab then moves into the shell, using it as a mobile home and a shield against predators. The snail is no longer living, so it's not affected by the crab's use of its shell. The crab, however, gains a crucial benefit: protection.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">Metabiosis is a common strategy in nature, highlighting how organisms are resourceful and can use existing materials to their advantage.</p>
+            <ul class="list-disc list-inside mt-4 text-base sm:text-lg text-gray-300">
+                <li><span class="highlight font-semibold">Vultures and Carcasses:</span> Vultures and other scavengers that feed on the remains of dead animals are a form of metabiosis. The scavenger benefits from the food source, while the dead animal is no longer living, so it's unaffected.</li>
+                <li><span class="highlight font-semibold">Worms and Soil:</span> Earthworms and other soil-dwelling organisms create burrows and channels in the soil. After they die, these tunnels can be used by other smaller organisms for shelter or to help aerate the soil. This benefits other species, as the soil becomes more fertile and easier to move through, without any harm to the dead worms.</li>
+                <li><span class="highlight font-semibold">Birds and Nests:</span> Many birds will use nesting materials or even old nests built by other species. For example, a wren might build its nest inside an abandoned woodpecker hole. The wren benefits from a pre-made, safe nesting site, while the woodpecker has already moved on, so there is no negative impact on it.</li>
+            </ul>
+            <img src="https://betabiosciences.github.io//Other-Units/Facilitation%20fig5.jpg" alt="Commensalism examples table" class="mt-4 rounded-lg shadow-lg">
+            <p class="mt-4 text-base sm:text-lg text-gray-300">These examples show how organisms can cleverly and efficiently reuse resources from the environment, showcasing the intricate and often-overlooked connections within ecosystems.</p>
+            `,
+            `
+            <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-center">Commensalism in Plant Communities</h2>
+            <p class="text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Associational Resistance:</span> Associational resistance is a form of commensalism where a desirable, or <span class="highlight font-semibold">palatable</span>, plant gains protection from herbivores by growing near an unappealing, or <span class="highlight font-semibold">unpalatable</span>, neighbour. The unpalatable plant often produces chemicals that deter insects, and this defensive shield also benefits its neighbor.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">A study in Sweden by Peter Hambäck and his colleagues provides a clear example of this phenomenon. They observed the <span class="highlight font-semibold">chrysomelid beetle</span>, which preys on the invasive plant <span class="highlight font-semibold">purple loosestrife</span>. The researchers found that when purple loosestrife grew in dense patches of the aromatic shrub <span class="highlight font-semibold">Myrica gale</span>, it experienced significantly less damage from the beetles. The Myrica shrub secretes chemicals from its roots and leaves that repel insects, and these same chemicals interfered with the beetles' ability to find and feed on the purple loosestrife. This led to fewer beetle larvae and less harm to the loosestrife plants.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300">This research has significant implications for <span class="highlight font-semibold">biological control</span>, which is the use of natural predators to manage invasive species. Since purple loosestrife is a major invader in the northeastern U.S., this study suggests that using beetles to control it would be less effective in areas where the loosestrife grows near Myrica. Pockets of the invasive plant would survive in these thickets, potentially "reinfecting" other areas that had been successfully cleared by the biological control agents.</p>
+            <h3 class="text-xl sm:text-2xl font-bold my-4 text-center">Commensalism as a Building Block</h3>
+            <p class="text-base sm:text-lg text-gray-300">Beyond associational resistance, commensalism is a surprisingly common and crucial interaction within plant communities. Botanist Ragan Callaway documented many cases of these positive relationships, highlighting how plants often "facilitate" each other's growth.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Resource and Substrate Modification:</span> One common way plants help each other is by modifying their shared environment. A plant might improve the availability of resources like light, water, or nutrients for its neighbors. Another might change the physical substrate; for instance, its roots could accumulate soil, which a second species could then use.</p>
+            <p class="mt-4 text-base sm:text-lg text-gray-300"><span class="highlight font-semibold">Species-Specific Interactions:</span> Callaway also found that these facilitations aren't just random physical effects, like a rock providing shade. Instead, they are often <span class="highlight font-semibold">species-specific</span>, meaning a particular plant species benefits most from being near a specific benefactor species. This shows that plant communities are not just random collections of species. They are often highly interdependent and structured assemblages, with plants relying on their neighbors in a variety of intricate ways.</p>
+            <img src="https://betabiosciences.github.io//Other-Units/Facilitation%20fig6.jpg" alt="Associational Resistance graph" class="mt-4 rounded-lg shadow-lg">
+            `,
+            `
+            <h2 class="text-2xl sm:text-3xl font-bold mb-4 text-center">Test Your Knowledge</h2>
+            <div id="quiz-container" class="space-y-6">
+                <!-- Quiz questions will be injected here -->
+            </div>
+            <button id="check-answers-btn" class="glossy-button w-full sm:w-auto mt-6 px-6 py-3 rounded-lg text-lg font-semibold text-white hover:bg-opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-stone-900">Check Answers</button>
+            `
+        ];
+
+        const quizData = [
+            {
+                question: "What is the primary difference between mutualism and commensalism?",
+                options: [
+                    "In mutualism, both species benefit; in commensalism, one benefits and the other is unharmed.",
+                    "In mutualism, one species benefits and the other is harmed; in commensalism, neither is harmed.",
+                    "In mutualism, one species benefits and the other is unharmed; in commensalism, both are harmed.",
+                    "Mutualism is a temporary relationship, while commensalism is a permanent one."
+                ],
+                answer: 0
+            },
+            {
+                question: "What is the key characteristic of obligate mutualism?",
+                options: [
+                    "Neither species can survive without the other.",
+                    "The interaction is temporary and non-obligatory.",
+                    "The relationship is beneficial but not essential for survival.",
+                    "The relationship is always a one-way street."
+                ],
+                answer: 0
+            },
+            {
+                question: "The relationship between deep-sea worms and sulfur-oxidizing bacteria is an example of which type of mutualism?",
+                options: ["Facultative mutualism", "Defensive mutualism", "Resource-based mutualism", "Dispersive mutualism"],
+                answer: 2
+            },
+            {
+                question: "What is the main argument of the Predator Escape Hypothesis for seed dispersal?",
+                options: [
+                    "Animals actively plant seeds in ideal locations.",
+                    "Dispersed seeds are less likely to be found and eaten by concentrated seed-eaters.",
+                    "Seeds are spread to new, more fertile locations.",
+                    "Offspring avoid competition with the parent plant."
+                ],
+                answer: 1
+            },
+            {
+                question: "Which of the following is a key piece of evidence for the Endosymbiotic Theory?",
+                options: [
+                    "Eukaryotic cells have a nucleus.",
+                    "Mitochondria and chloroplasts have their own independent DNA.",
+                    "Mitochondria and chloroplasts can live independently outside a cell.",
+                    "Bacteria and animal cells have similar shapes."
+                ],
+                answer: 1
+            },
+             {
+                question: "What is the purpose of a 'pollination syndrome'?",
+                options: [
+                    "To create specific adaptations between a plant and a particular pollinator.",
+                    "To synchronize flowering times between plants.",
+                    "To help a plant cheat a pollinator.",
+                    "To help pollinators become generalists."
+                ],
+                answer: 0
+            },
+            {
+                question: "The relationship between cattle egrets and cattle is described as a one-way street because:",
+                options: [
+                    "The cattle benefit, and the egrets are unharmed.",
+                    "Both species benefit from the interaction.",
+                    "The egrets benefit, while the cattle are neither helped nor harmed.",
+                    "The egrets benefit, and the cattle are harmed."
+                ],
+                answer: 2
+            },
+            {
+                question: "Which of the following is an example of a defensive mutualistic relationship?",
+                options: ["Humans and crops", "Cleaner fish and client fish", "Lichens", "Honeyguides and honey badgers"],
+                answer: 1
+            },
+            {
+                question: "The relationship between orchids and tropical trees is an example of which type of commensalism?",
+                options: ["Defensive", "Inquilinism", "Phoresy", "Dispersive"],
+                answer: 1
+            },
+            {
+                question: "How do 'cheating' microbes gain a selective advantage in seed dispersal?",
+                options: [
+                    "They produce sticky substances that attach seeds to animals.",
+                    "They disperse the seeds to new locations and then consume the fruit.",
+                    "They make the fruit unappealing to larger animals, reserving it for themselves.",
+                    "They consume the fruit after it has been dispersed."
+                ],
+                answer: 2
+            },
+            {
+                question: "The colonization hypothesis for seed dispersal suggests that:",
+                options: [
+                    "Seeds are dispersed to avoid competition.",
+                    "Seeds are dispersed to avoid predators.",
+                    "Animals actively plant seeds in ideal locations.",
+                    "Plants spread seeds to increase the odds that offspring will land in a suitable, new habitat."
+                ],
+                answer: 3
+            },
+            {
+                question: "What is the primary benefit that mycorrhizal fungi provide to plants in resource-based mutualism?",
+                 options: [
+                    "They produce carbohydrates for the plant.",
+                    "They help the plant more efficiently extract water and mineral resources from the soil.",
+                    "They protect the plant from disease.",
+                    "They produce toxins to deter herbivores."
+                ],
+                answer: 1
+            },
+            {
+                question: "The relationship between a fungus and an alga that form a lichen is a classic example of:",
+                options: [
+                    "Facultative mutualism",
+                    "Defensive mutualism",
+                    "Obligate resource-based mutualism",
+                    "Commensalism"
+                ],
+                answer: 2
+            },
+            {
+                question: "What is the key difference between inquilinism and phoresy?",
+                options: [
+                    "Inquilinism benefits both species, while phoresy benefits only one.",
+                    "Inquilinism is a type of mutualism, while phoresy is a type of commensalism.",
+                    "Inquilinism is for shelter, while phoresy is for transportation.",
+                    "Inquilinism involves a temporary relationship, while phoresy is permanent."
+                ],
+                answer: 2
+            },
+            {
+                question: "Why is the relationship between honeyguides and honey badgers considered a mutualism?",
+                options: [
+                    "The honey badger gets honey, and the honeyguide gets leftover wax and larvae.",
+                    "The honeyguide finds a nest and opens it for the honey badger.",
+                    "The honey badger gets no benefit from the relationship.",
+                    "The relationship is purely for transportation."
+                ],
+                answer: 0
+            }
+        ];
+
+        let currentIndex = 0;
+        const contentDiv = document.getElementById('content');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        const generateQuiz = () => {
+            const quizContainer = document.getElementById('quiz-container');
+            if (!quizContainer) return;
+            
+            quizContainer.innerHTML = quizData.map((item, index) => `
+                <div class="quiz-question" data-question-index="${index}">
+                    <p class="text-base sm:text-lg text-gray-300 font-semibold">${item.question}</p>
+                    <div class="quiz-options mt-2">
+                        ${item.options.map((option, optionIndex) => `
+                            <div class="quiz-option" data-option-index="${optionIndex}">${option}</div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        const updateContent = () => {
+            contentDiv.innerHTML = `
+                <div class="card-content w-full p-6 sm:p-8 rounded-lg flex flex-col justify-between transition-opacity duration-500 ease-in-out">
+                    <div class="flex-1 overflow-y-auto mb-4 section-container">
+                        ${documentSections[currentIndex]}
+                    </div>
+                    <div class="text-center text-sm sm:text-base text-gray-500 mt-4">
+                        Page ${currentIndex + 1} of ${documentSections.length}
+                    </div>
+                </div>
+            `;
+            
+            if (currentIndex === documentSections.length - 1) {
+                generateQuiz();
+                attachQuizListeners();
+            }
+
+            prevBtn.style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+            nextBtn.style.visibility = currentIndex === documentSections.length - 1 ? 'hidden' : 'visible';
+            
+            const sectionContainer = contentDiv.querySelector('.section-container');
+            if (sectionContainer) {
+                sectionContainer.scrollTop = 0;
+            }
+        };
+
+        const attachQuizListeners = () => {
+            const quizContainer = document.getElementById('quiz-container');
+            if (quizContainer) {
+                quizContainer.addEventListener('click', (event) => {
+                    if (event.target.classList.contains('quiz-option')) {
+                         if (quizContainer.classList.contains('answered')) return;
+
+                        const options = event.target.parentElement.querySelectorAll('.quiz-option');
+                        options.forEach(opt => opt.classList.remove('selected'));
+                        event.target.classList.add('selected');
+                    }
+                });
+            }
+
+            const checkAnswersBtn = document.getElementById('check-answers-btn');
+            if (checkAnswersBtn) {
+                checkAnswersBtn.addEventListener('click', () => {
+                    const quizContainer = document.getElementById('quiz-container');
+                    if (quizContainer.classList.contains('answered')) return;
+                    quizContainer.classList.add('answered');
+
+                    const questions = document.querySelectorAll('.quiz-question');
+                    questions.forEach((question, index) => {
+                        const questionIndex = parseInt(question.dataset.questionIndex);
+                        const correctAnswerIndex = quizData[questionIndex].answer;
+                        const options = question.querySelectorAll('.quiz-option');
+                        
+                        const selectedOption = question.querySelector('.quiz-option.selected');
+                        
+                        if(selectedOption){
+                            const selectedAnswerIndex = parseInt(selectedOption.dataset.optionIndex);
+                             if (selectedAnswerIndex !== correctAnswerIndex) {
+                                selectedOption.classList.add('incorrect');
+                            }
+                        }
+                       
+                        options[correctAnswerIndex].classList.add('correct');
+                    });
+                });
+            }
+        };
+
+        const handleNext = () => {
+            if (currentIndex < documentSections.length - 1) {
+                currentIndex++;
+                updateContent();
+            }
+        };
+
+        const handlePrev = () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateContent();
+            }
+        };
+
+        prevBtn.addEventListener('click', handlePrev);
+        nextBtn.addEventListener('click', handleNext);
+
+        // Initial content load
+        updateContent();
+    </script>
+
+</body>
+</html>
+
