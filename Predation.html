@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PREDATION - Interactive Study Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100vw;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2d1b69 0%, #11998e 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(45deg, #fff, #a8edea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section {
+            display: none;
+            padding: 30px 20px;
+            min-height: calc(100vh - 160px);
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .section-content {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .section h2 {
+            color: #00d4aa;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            border-bottom: 2px solid #00d4aa;
+            padding-bottom: 10px;
+        }
+
+        .section h3 {
+            color: #ff6b6b;
+            font-size: 1.4rem;
+            margin: 25px 0 15px 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .section p, .section li {
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section li {
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 600;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .section-indicator {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #00d4aa;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .quiz-question {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid #ff6b6b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .quiz-options {
+            margin: 15px 0;
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.05);
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .quiz-selected {
+            background: rgba(0, 212, 170, 0.2);
+            border: 1px solid #00d4aa;
+        }
+
+        .quiz-correct {
+            background: rgba(0, 212, 170, 0.3);
+            border: 1px solid #00d4aa;
+        }
+
+        .quiz-incorrect {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+        }
+
+        .section-menu {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 500;
+        }
+
+        .menu-item {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-item.active {
+            background: #00d4aa;
+            transform: scale(1.3);
+        }
+
+        .section-image {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%);
+            padding: 30px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 50px;
+        }
+
+        .footer-logo {
+            width: 60px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .footer-text {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .section-content {
+                padding: 20px;
+                margin: 0 10px;
+            }
+            
+            .section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .nav-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .section-menu {
+                right: 10px;
+            }
+            
+            .section p, .section li {
+                font-size: 1rem;
+            }
+        }
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PREDATION</h1>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <div class="section active" id="section-1">
+            <div class="section-content">
+                <h2>Introduction to Predation</h2>
+                <p><span class="highlight">Predation</span>, an ecological interaction where one organism, <span class="highlight">the predator</span>, kills and consumes another organism, <span class="highlight">the prey</span>, is a fundamental force shaping ecosystems worldwide. This dynamic relationship is not merely a matter of life and death; <span class="highlight">it is a critical driver of natural selection</span>, influencing the evolution of both predator and prey species. Predators have evolved an astonishing array of hunting strategies, from the stealthy ambush of a spider to the coordinated pack hunting of wolves, while prey species have developed equally diverse defense mechanisms, including camouflage, mimicry, and the ability to outrun their pursuers.</p>
+                
+                <p>Consider the classic example of the <span class="highlight">cheetah and the gazelle on the African savanna.</span> The cheetah, a predator, has evolved a body built for incredible speed, with a flexible spine and long legs that allow it to reach bursts of over 100 km/h. This adaptation is a direct result of the selective pressure exerted by its prey---the gazelle. The gazelle, in turn, has evolved its own counter-adaptations: an acute sense of hearing, powerful legs for a quick start, and an erratic, zig-zagging running pattern that makes it difficult for the cheetah to predict its movements. This ongoing "co-evolutionary arms race" pushes both species to become faster and more agile over generations.</p>
+            </div>
+        </div>
+
+        <!-- Section 2: Examples of Predation -->
+        <div class="section" id="section-2">
+            <div class="section-content">
+                <h2>Examples of Predation Strategies</h2>
+                
+                <h3>Orchid Mantis - Ambush Predation</h3>
+                <p>Another fascinating example is the relationship between the <span class="highlight">orchid mantis and its insect prey.</span> The orchid mantis has evolved a body that perfectly mimics the petals of an orchid flower. It sits motionless, blending seamlessly into its floral surroundings, and waits for an unsuspecting bee or butterfly to land nearby. This ambush strategy is a highly specialized form of predation that relies on deception rather than speed. In response, many insects have evolved keen eyesight and a wary approach to flowers, learning to distinguish between a harmless bloom and a hidden predator.</p>
+                
+                <h3>Killer Whales - Cooperative Hunting</h3>
+                <p>On the other end of the spectrum is the group hunting of <span class="highlight">killer whales (orcas)</span>. These marine predators work together in sophisticated pods to corner and capture seals, dolphins, and even larger whales. They use complex communication and coordinated strategies, such as creating a wave to wash a seal off an ice floe. This cooperative hunting is a powerful example of a social adaptation for predation. The prey, in this case, has also evolved defenses, such as living in large, well-defended herds or using their own social structures to create a protective barrier around their young.</p>
+                
+                <p>These examples highlight how predation is a powerful evolutionary force. Predators that are more effective at hunting are more likely to survive and reproduce, passing on their traits to the next generation. Simultaneously, prey that are more effective at escaping are also more likely to pass on their genes. This continuous process of natural selection shapes the physical, behavioural, and even social characteristics of species, creating the incredible diversity of life we see in ecosystems today.</p>
+            </div>
+        </div>
+
+        <!-- Section 3: Anti-predator Adaptations -->
+        <div class="section" id="section-3">
+            <div class="section-content">
+                <h2>Anti-predator Adaptations</h2>
+                <p>Animals have developed a wide range of adaptations to avoid being eaten. These antipredator adaptations can be categorized into several main types, including chemical defenses, camouflage, mimicry, physical defenses, intimidation, and predator satiation.</p>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig1.jpg" alt="Anti-predator adaptations" class="section-image">
+                
+                <h3>Chemical Defenses and Warning Coloration</h3>
+                <p>Many animals use chemicals to deter predators. The <span class="highlight">bombardier beetle</span> is a prime example, using a hot, violent spray of chemicals from its abdomen to fend off attackers. Similarly, some millipedes also employ chemical sprays. Often, animals with chemical defenses also have <span class="highlight">aposematic coloration</span>, or <span class="highlight">warning coloration</span>, to advertise their toxicity. <span class="highlight">Ladybird beetles</span> use their bright red color, while many <span class="highlight">tropical frogs</span> have vibrant patterns that warn of their lethal skin toxins. Some animals, like the <span class="highlight">monarch butterfly</span>, acquire their toxins by eating specific plants, in this case, milkweed, which contains cardiac glycosides that cause predators to vomit. The butterflies then display their toxicity with their bold orange and black wings.</p>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig2.jpg" alt="Chemical defenses and warning coloration" class="section-image">
+                
+                <h3>Cryptic Coloration (Camouflage)</h3>
+                <p><span class="highlight">Cryptic coloration</span> is a form of camouflage where an animal blends in with its environment to avoid detection. This is a common strategy for both invertebrates and vertebrates. For instance, some <span class="highlight">grasshoppers</span> are green to match the foliage they eat, while <span class="highlight">leaf-wing butterflies</span> have wings that perfectly mimic leaves, including the veins. <span class="highlight">Stick insects</span> have long, slender bodies that resemble twigs. Many of these animals remain perfectly still when threatened to enhance their camouflage. <span class="highlight">Seahorses</span> also use cryptic coloration, with their body shape and color patterns mimicking their specific habitats.</p>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig3.jpg" alt="Cryptic coloration and camouflage" class="section-image">
+            </div>
+        </div>
+
+        <!-- Section 4: Mimicry -->
+        <div class="section" id="section-4">
+            <div class="section-content">
+                <h2>Mimicry</h2>
+                <p><span class="highlight">Mimicry</span> involves one species (the mimic) resembling another species (the model) for protection. There are two main types:</p>
+                
+                <h3>Batesian Mimicry</h3>
+                <ul>
+                    <li><span class="highlight">Batesian Mimicry</span>, named after the English naturalist Henry Bates. A harmless, palatable species(the mimic) mimics a dangerous, unpalatable one(the model). The non-venomous <span class="highlight">scarlet king snake</span> mimics the venomous <span class="highlight">coral snake</span> to deter predators. Similarly, some <span class="highlight">syrphid flies</span> have black and yellow stripes to resemble stinging bees and wasps, even though they are harmless.</li>
+                </ul>
+                
+                <h3>Müllerian Mimicry</h3>
+                <ul>
+                    <li><span class="highlight">Müllerian Mimicry</span>, named after the German biologist Fritz Muller. Multiple unpalatable or noxious species evolve to look similar, reinforcing the warning signal. Many toxic species mimics each other and look the same, thus reinforcing the basic distasteful design. This is seen in the black and yellow stripes of many different species of <span class="highlight">bees and wasps</span>. The <span class="highlight">monarch, queen, and viceroy butterflies</span> also exhibit this, as all three are distasteful to predators and share similar wing patterns. Mullerian mimicry is also found among toxic Amazonian butterflies.</li>
+                </ul>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig4.jpg" alt="Müllerian mimicry examples" class="section-image">
+            </div>
+        </div>
+
+        <!-- Section 5: Physical Defenses -->
+        <div class="section" id="section-5">
+            <div class="section-content">
+                <h2>Physical Defenses and Intimidation</h2>
+                
+                <h3>Physical Defenses and Intimidation Displays</h3>
+                <p>Animals also use physical features to protect themselves. The tough shells of <span class="highlight">tortoises and turtles</span> provide a strong defense. Many <span class="highlight">beetles</span> have a hard exoskeleton. Animals like <span class="highlight">gazelles</span> and <span class="highlight">flying fish</span> use their agility and speed to escape predators. Some animals use horns and antlers for defense. Invertebrates like <span class="highlight">scorpions</span> and <span class="highlight">crabs</span> have claws or venomous stingers.</p>
+                
+                <p>Some animals use <span class="highlight">intimidation displays</span> to scare off potential predators. A <span class="highlight">toad</span> will inflate itself with air to appear larger, while a <span class="highlight">frilled lizard</span> will extend its neck collar to create a similar effect. A <span class="highlight">porcupine fish</span> also inflates its body when threatened, making it seem much larger and more difficult to eat.</p>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig5.jpg" alt="Physical defenses and intimidation displays" class="section-image">
+                
+                <h3>Predator Satiation</h3>
+                <p><span class="highlight">Predator satiation</span> is a strategy where a large number of offspring are produced at the same time to overwhelm predators, ensuring some will survive. The most famous example is the <span class="highlight">13- and 17-year periodical cicadas</span>. By emerging in massive, synchronized swarms every 13 or 17 years (both prime numbers), they satiate any predators in the area, allowing a significant portion of the population to survive. The use of prime numbers for their emergence cycles ensures that predators with shorter life cycles cannot rely on them as a consistent food source.</p>
+            </div>
+        </div>
+
+        <!-- Section 6: Predator Adaptations -->
+        <div class="section" id="section-6">
+            <div class="section-content">
+                <h2>Predator Adaptations</h2>
+                <p>Predators, in turn, have evolved their own strategies to catch prey. <span class="highlight">Aggressive mimicry</span> is one such adaptation, where a predator mimics a harmless model to get close to its prey. <span class="highlight">Crab spiders</span> and <span class="highlight">praying mantises</span> mimic flowers or leaves to ambush insects. The <span class="highlight">humpback anglerfish</span> uses a bioluminescent lure to attract prey, and the <span class="highlight">alligator snapping turtle</span> wiggles its worm-like tongue to attract fish. Other examples include <span class="highlight">female bolas spiders</span> that mimic female moth pheromones to attract males, and the <span class="highlight">saber-toothed blenny</span> that mimics a cleaner wrasse to get close enough to bite off a piece of a fish's fin. The <span class="highlight">zone-tailed hawk</span> even mimics a turkey vulture's flight to get close to its prey before ambushing it.</p>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig6.jpg" alt="Predator adaptations" class="section-image">
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig7.jpg" alt="Additional predator examples" class="section-image">
+            </div>
+        </div>
+
+        <!-- Section 7: Lotka-Volterra Model -->
+        <div class="section" id="section-7">
+            <div class="section-content">
+                <h2>Lotka-Volterra Equations for Predator-prey Interactions</h2>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig8.jpg" alt="Lotka-Volterra equations diagram" class="section-image">
+                
+                <p>The predator-prey relationship can be understood using the <span class="highlight">Lotka-Volterra models</span>, which are based on population growth principles.</p>
+                
+                <h3>Prey Population Growth</h3>
+                <p>The model starts with the basic assumption that a <span class="highlight">prey population</span> grows exponentially in the absence of predators. The rate of this growth is represented by the formula:</p>
+                <p><strong>dN/dt​=rN</strong></p>
+                <p>Here, N is the number of prey and r is their intrinsic growth rate. When predators are introduced, they consume prey. The rate of prey consumption depends on the <span class="highlight">predator's searching efficiency (s)</span>, the <span class="highlight">number of predators (P)</span>, and the <span class="highlight">number of prey (N)</span>. This consumption is represented by the term <strong>sPN</strong>. Subtracting this from the prey's growth rate gives us the full equation for the <span class="highlight">prey population:</span></p>
+                <p><strong>dN/dt ​=rN−sPN</strong></p>
+                
+                <h3>Predator Population Growth</h3>
+                <p>The <span class="highlight">predator population</span>'s birth rate depends on how many prey they consume and how efficiently they can convert that food into new predators, a value called <span class="highlight">conversion efficiency (e)</span>. The growth rate, ignoring mortality, is given by <strong>esPN</strong>. However, predators also have a natural death rate, which depends on their <span class="highlight">mortality rate (m)</span> and their own population size (P). The complete equation for the predator population is:</p>
+                <p><strong>dP/dt​=esPN−mP</strong></p>
+            </div>
+        </div>
+
+        <!-- Section 8: Zero Isoclines -->
+        <div class="section" id="section-8">
+            <div class="section-content">
+                <h2>Zero Isoclines and Population Cycles</h2>
+                <p>To understand the dynamics of these populations, we can use <span class="highlight">zero isoclines</span>, which are lines representing the conditions where a population's growth rate is zero (dN/dt=0 or dP/dt=0).</p>
+                
+                <ul>
+                    <li><span class="highlight">Prey Isocline</span>: The prey population is stable (not growing or shrinking) when the predator population (P) is equal to a constant value, P=r/s. If the number of predators is below this line, prey numbers will increase. If predator numbers are above this line, prey numbers will decrease due to high predation pressure.</li>
+                    <li><span class="highlight">Predator Isocline</span>: The predator population is stable when the prey population (N) is equal to a constant value, N=m/es. If the number of prey is to the left of this line (too few prey), predator numbers will decrease due to starvation. If the number of preys is to the right of this line (sufficient prey), predator numbers will increase.</li>
+                </ul>
+                
+                <h3>The Combined Model and Oscillations</h3>
+                <p>When these two zero isoclines are combined, they show a cyclical relationship between the predator and prey populations. This creates a pattern of <span class="highlight">coupled oscillations</span> over time:</p>
+                
+                <ol>
+                    <li>When both predator and prey numbers are moderate, both populations grow.</li>
+                    <li>The increasing predator population puts intense pressure on the prey, causing the prey population to decline.</li>
+                    <li>The lack of prey leads to a decrease in the predator population due to starvation.</li>
+                    <li>With fewer predators, the prey population begins to rebound.</li>
+                    <li>Finally, the increase in prey allows the predator population to recover, starting the cycle over again.</li>
+                </ol>
+                
+                <p>The original <span class="highlight">Lotka-Volterra model</span> predicts an endless cycle of predator and prey populations. This is driven by a time lag: predators increase in response to an increase in prey, which then causes the prey population to crash, leading to a subsequent crash in the predator population.</p>
+            </div>
+        </div>
+
+        <!-- Section 9: Modified Model -->
+        <div class="section" id="section-9">
+            <div class="section-content">
+                <h2>Refining the Lotka-Volterra Model</h2>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig9.jpg" alt="Modified Lotka-Volterra model" class="section-image">
+                
+                <p>The Lotka-Volterra model is too simplistic for real-world scenarios, so it has been modified to be more accurate. These modified models incorporate additional factors that influence predator and prey populations.</p>
+                
+                <ul>
+                    <li><span class="highlight">Prey Isocline Modification</span>: In the original model, the prey isocline is a straight, horizontal line. However, in reality, as prey density increases, <span class="highlight">intraspecific competition</span> for resources also increases. This means that at a certain point, the prey population cannot grow further, even with low predator numbers. The modified prey isocline therefore bends downward, eventually hitting a <span class="highlight">carrying capacity (KN​)</span> on the prey abundance axis.</li>
+                    <li><span class="highlight">Predator Isocline Modification</span>: The predator isocline, which is a straight vertical line in the original model, is also modified. It now curves to the right because <span class="highlight">mutual interference</span> among predators (e.g., fighting for territory) makes them less efficient hunters. This means a higher prey density is required to support the same number of predators. At a certain point, the predator population may level off because even an abundance of prey cannot support more predators due to other limiting factors.</li>
+                </ul>
+                
+                <h3>Outcomes of the Modified Model</h3>
+                <p>When these modified isoclines are combined, they intersect at a single stable point, leading to different outcomes than the endless cycles of the original model.</p>
+                
+                <ul>
+                    <li><span class="highlight">Damped Oscillations</span>: The model can still show oscillations, but they are <span class="highlight">damped</span>, meaning they become less severe over time until both populations stabilize.</li>
+                    <li><span class="highlight">No Oscillations</span>: In some cases, especially when there is a high degree of mutual interference or territoriality among predators, the oscillations may disappear entirely, and the populations can reach a stable equilibrium without cycling.</li>
+                </ul>
+                
+                <p>These refinements show that the outcome of a predator-prey interaction---from endless cycles to complete stability---depends heavily on the specific behaviors and ecological factors of the species involved</p>
+            </div>
+        </div>
+
+        <!-- Section 10: Real-World Examples -->
+        <div class="section" id="section-10">
+            <div class="section-content">
+                <h2>Real-World Examples and Complex Dynamics</h2>
+                
+                <h3>The Impact of Predator Diet</h3>
+                <p>Another refinement shows that <span class="highlight">predator efficiency</span> and diet diversity can drastically change the model's outcome. Predators that eat a variety of prey can sometimes drive a rare prey species to extinction. For example, if <span class="highlight">lions</span> hunt both common <span class="highlight">wildebeest</span> and rare <span class="highlight">sable antelope</span>, they can sustain themselves on the wildebeest population while still heavily preying on the sable antelope. This "subsidized predation" means the lions can drive the rare antelope to extinction even though the antelope alone would not be enough to sustain the lion population.</p>
+                
+                <h3>Real-World Examples</h3>
+                <p>There are real-world examples that demonstrate these complex dynamics. The classic 9- to 11-year cycle between the <span class="highlight">Canada lynx</span> and <span class="highlight">snowshoe hare</span> was initially thought to be a simple predator-prey oscillation. However, further research revealed that other factors are at play. As the hare population grows, it overgrazes its food plants, which then produce chemical defenses in response. This lack of quality food makes the hares weaker and more susceptible to predation, contributing to their population crash. The cycle is not just driven by predators but also by the availability of food for the prey, highlighting a <span class="highlight">three-level interaction</span> (plant-herbivore-predator).</p>
+                
+                <h3>Additional Ecological Factors</h3>
+                <p>Other ecological factors can also change the predator's carrying capacity and modify the isocline.</p>
+                
+                <ul>
+                    <li><span class="highlight">Super-predators or parasites</span> can limit the predator population, independent of the prey population, creating a horizontal predator isocline.</li>
+                    <li>The <span class="highlight">availability of alternate prey</span> allows the predator population to increase even without an increase in the main prey population, shifting the isocline.</li>
+                    <li>A straight predator isocline indicates that the predator population's carrying capacity is solely determined by the abundance of its primary prey.</li>
+                </ul>
+                
+                <p>Ultimately, while the Lotka-Volterra model provides a foundation, incorporating these real-world ecological and behavioral factors is essential for accurately predicting predator-prey dynamics.</p>
+            </div>
+        </div>
+
+        <!-- Section 11: Humans as Predators -->
+        <div class="section" id="section-11">
+            <div class="section-content">
+                <h2>Humans as Predators</h2>
+                <p>Humans are apex predators capable of hunting species to extinction. This raises the question of whether we can harvest animal populations without causing long-term harm. The concept of <span class="highlight">Maximum Sustainable Yield (MSY)</span> is a key ecological and economic model designed to address this. MSY is the largest number of individuals that can be removed from a population without causing a lasting decline. This is analogous to living off the interest of a bank account without touching the principal.</p>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig10.jpg" alt="Human predation and Maximum Sustainable Yield" class="section-image">
+                
+                <p>According to the <span class="highlight">logistic model of population growth</span>, the maximum population increase occurs when the population is at half of its carrying capacity (K/2). Therefore, the MSY is estimated as <strong>MSY=rK/2</strong>, where r is the population's growth rate and K is its carrying capacity. This model suggests that to maximize yield, we should harvest populations when they are growing fastest, not when they are at their highest density.</p>
+                
+                <h3>Why Sustainable Fishing Is Difficult</h3>
+                
+                <img src="https://betabiosciences.github.io/Other-Units/Predation%20fig11.jpg" alt="Challenges in sustainable fishing" class="section-image">
+                <p>Despite this simple model, maintaining a sustainable fishery is challenging for several reasons:</p>
+                
+                <ul>
+                    <li><span class="highlight">Difficulty in Estimating Population Size</span>: It's hard for biologists to accurately count fish populations underwater, leading to overestimates of the sustainable harvest.</li>
+                    <li><span class="highlight">Technological Advances</span>: Improvements in fishing gear over time mean that the same amount of effort yields larger catches, leading to overexploitation.</li>
+                    <li><span class="highlight">Economic Pressures</span>: Economic models show that the maximum profit from a fishery is achieved at a level of effort <strong>below</strong> the MSY. However, commercial fisheries often operate at a level of effort that exceeds the MSY, leading to overfishing and population collapse. A notable example is the <span class="highlight">Canadian cod fishery</span>, which collapsed in the early 1990s and has not been economically viable since.</li>
+                    <li><span class="highlight">Recreational Fishing Impact</span>: Recreational fishing can also have a major impact. In the US, recreational landings accounted for a significant portion of the total catch for species of concern, such as <span class="highlight">red snapper</span> in the Gulf of Mexico and <span class="highlight">red drum</span> in the South Atlantic.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section 12: Consequences of Overfishing -->
+        <div class="section" id="section-12">
+            <div class="section-content">
+                <h2>The Consequences of Overfishing</h2>
+                <p>Overfishing can have devastating consequences, leading to the collapse of entire industries and long-term changes to ecosystems.</p>
+                
+                <ul>
+                    <li><span class="highlight">Peruvian Anchovy Fishery</span>: One of the most famous examples is the collapse of the Peruvian anchovy fishery in the 1970s, which was the world's largest at the time. The collapse was caused by a combination of overfishing and an <span class="highlight">El Niño event</span> that reduced the nutrient-rich waters the anchovies relied on. The fishery was suspended for 16 years, and it took another five years for the population to fully recover.</li>
+                    <li><span class="highlight">Changes in Fish Size and Species</span>: A study of historical photographs from the Florida Keys documented a significant decline in the average size of fish caught from 1956 to 2007. The species composition also shifted from large-bodied fish like groupers and sharks to smaller fish like snappers. This suggests that overfishing targets larger fish, leading to a long-term reduction in average fish size within a community.</li>
+                </ul>
+                
+                <h3>Whaling: A Historical Perspective</h3>
+                <p>The history of whaling is a clear illustration of unsustainable human predation. As one whale species was depleted, whalers would move on to the next, less desirable one. In the Antarctic, the industry started by targeting the massive <span class="highlight">blue whales</span>, then moved on to <span class="highlight">fin whales</span>, <span class="highlight">humpback whales</span>, and finally the smaller <span class="highlight">sei whales</span> and <span class="highlight">minke whales</span> as the larger species were depleted.</p>
+                
+                <p>The International Whaling Commission (IWC) eventually voted for a moratorium on commercial whaling in 1982, which took effect in 1988. This protection has allowed some whale populations to begin to recover, with <span class="highlight">blue whale</span> numbers off the California coast quadrupling in the 1980s and <span class="highlight">gray whale</span> populations recovering to pre-whaling levels. This recovery demonstrates the powerful impact that reducing human predation can have on a species.</p>
+            </div>
+        </div>
+
+        <!-- Section 13: Test Your Knowledge -->
+        <div class="section" id="section-13">
+            <div class="section-content">
+                <h2>Test Your Knowledge</h2>
+                
+                <div class="quiz-question">
+                    <p><strong>1. Which of the following is an example of co-evolutionary adaptation in the context of predation?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. A lion using its strength to take down a zebra.</div>
+                        <div class="quiz-option" data-correct="true">b. The cheetah's speed and the gazelle's erratic running pattern.</div>
+                        <div class="quiz-option" data-correct="false">c. A wolf pack working together to hunt large prey.</div>
+                        <div class="quiz-option" data-correct="false">d. The orchid mantis's mimicry of a flower to ambush prey</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>2. A harmless hoverfly, which looks like a bee, is an example of what type of defense mechanism?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. Müllerian mimicry</div>
+                        <div class="quiz-option" data-correct="false">b. Cryptic coloration</div>
+                        <div class="quiz-option" data-correct="false">c. Aposematic coloration</div>
+                        <div class="quiz-option" data-correct="true">d. Batesian mimicry</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>3. The synchronized emergence of 13- and 17-year periodical cicadas is a classic example of:</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. Intimidation display</div>
+                        <div class="quiz-option" data-correct="true">b. Predator satiation</div>
+                        <div class="quiz-option" data-correct="false">c. Aposematic coloration</div>
+                        <div class="quiz-option" data-correct="false">d. Müllerian mimicry</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>4. According to the Lotka-Volterra model, the prey zero isocline is represented by which of the following equations?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. dP/dt=esPN−mP</div>
+                        <div class="quiz-option" data-correct="true">b. P=r/s</div>
+                        <div class="quiz-option" data-correct="false">c. dN/dt=rN−sPN</div>
+                        <div class="quiz-option" data-correct="false">d. N=m/es</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>5. In the Lotka-Volterra model, a decrease in the prey population leads to a subsequent decrease in the predator population. What is the primary reason for this predator decrease?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. The predators also die from disease.</div>
+                        <div class="quiz-option" data-correct="false">b. The predators are leaving the area to find new prey.</div>
+                        <div class="quiz-option" data-correct="false">c. The predators are being hunted by a super-predator.</div>
+                        <div class="quiz-option" data-correct="true">d. There are insufficient prey to support them.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 14: More Quiz Questions -->
+        <div class="section" id="section-14">
+            <div class="section-content">
+                <h2>Test Your Knowledge (Continued)</h2>
+                
+                <div class="quiz-question">
+                    <p><strong>6. What is the primary factor that causes the prey zero isocline to curve downward in the modified Lotka-Volterra model?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. The impact of human harvesting on the prey population</div>
+                        <div class="quiz-option" data-correct="false">b. Increased predator efficiency at high prey densities.</div>
+                        <div class="quiz-option" data-correct="true">c. Intraspecific competition among prey for resources.</div>
+                        <div class="quiz-option" data-correct="false">d. The presence of alternate prey for the predators.</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>7. A predator species that exhibits high levels of mutual interference or territoriality would most likely lead to which outcome in a modified Lotka-Volterra model?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="true">a. Damped oscillations or no oscillations at all.</div>
+                        <div class="quiz-option" data-correct="false">b. A constantly oscillating cycle of predator and prey.</div>
+                        <div class="quiz-option" data-correct="false">c. A predator population that always grows exponentially.</div>
+                        <div class="quiz-option" data-correct="false">d. An endless cycle of predator and prey, but with a different time lag.</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>8. The collapse of the Canadian cod fishery is presented as an example of what primary problem with sustainable yield models?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="true">a. Overestimating the population size and exceeding the sustainable harvest.</div>
+                        <div class="quiz-option" data-correct="false">b. Unforeseen climate events like El Niño.</div>
+                        <div class="quiz-option" data-correct="false">c. The inability to use modern fishing technology.</div>
+                        <div class="quiz-option" data-correct="false">d. Fishermen illegally hunting protected species.</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>9. Why did the Peruvian anchovy fishery take so long to recover after fishing was suspended?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. The anchovies' primary predators also went extinct.</div>
+                        <div class="quiz-option" data-correct="false">b. The government did not enforce the fishing suspension.</div>
+                        <div class="quiz-option" data-correct="false">c. The water became too polluted for the anchovy population to survive</div>
+                        <div class="quiz-option" data-correct="true">d. It was impacted by a severe El Niño event in addition to overfishing.</div>
+                    </div>
+                </div>
+                
+                <div class="quiz-question">
+                    <p><strong>10. Which of the following is a key finding from the research on the Canada lynx and snowshoe hare cycle?</strong></p>
+                    <div class="quiz-options">
+                        <div class="quiz-option" data-correct="false">a. The cycle has been stabilized by human intervention.</div>
+                        <div class="quiz-option" data-correct="false">b. The cycle is a perfect example of the original Lotka-Volterra model.</div>
+                        <div class="quiz-option" data-correct="true">c. The cycle is influenced by a three-level interaction involving plants, hares, and lynx.</div>
+                        <div class="quiz-option" data-correct="false">d. The hares' population is solely controlled by the number of lynx.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <div class="nav-container">
+                <button class="nav-btn" id="prevBtn" onclick="previousSection()">← Previous</button>
+                <div class="section-indicator" id="sectionIndicator">Section 1 of 14</div>
+                <button class="nav-btn" id="nextBtn" onclick="nextSection()">Next →</button>
+            </div>
+        </div>
+
+        <!-- Section Menu -->
+        <div class="section-menu" id="sectionMenu">
+            <div class="menu-item active" onclick="goToSection(1)"></div>
+            <div class="menu-item" onclick="goToSection(2)"></div>
+            <div class="menu-item" onclick="goToSection(3)"></div>
+            <div class="menu-item" onclick="goToSection(4)"></div>
+            <div class="menu-item" onclick="goToSection(5)"></div>
+            <div class="menu-item" onclick="goToSection(6)"></div>
+            <div class="menu-item" onclick="goToSection(7)"></div>
+            <div class="menu-item" onclick="goToSection(8)"></div>
+            <div class="menu-item" onclick="goToSection(9)"></div>
+            <div class="menu-item" onclick="goToSection(10)"></div>
+            <div class="menu-item" onclick="goToSection(11)"></div>
+            <div class="menu-item" onclick="goToSection(12)"></div>
+            <div class="menu-item" onclick="goToSection(13)"></div>
+            <div class="menu-item" onclick="goToSection(14)"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <img src="https://betabiosciences.github.io/Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+            <div class="footer-text">
+                © 2025 BETA Biosciences. All rights reserved.<br>
+                Email: betabiosciences@gmail.com
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 14;
+
+        function updateNavigation() {
+            document.getElementById('prevBtn').disabled = currentSection === 1;
+            document.getElementById('nextBtn').disabled = currentSection === totalSections;
+            document.getElementById('sectionIndicator').textContent = `Section ${currentSection} of ${totalSections}`;
+            
+            // Update section menu
+            document.querySelectorAll('.menu-item').forEach((item, index) => {
+                item.classList.toggle('active', index + 1 === currentSection);
+            });
+        }
+
+        function showSection(sectionNumber) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show target section
+            document.getElementById(`section-${sectionNumber}`).classList.add('active');
+            
+            currentSection = sectionNumber;
+            updateNavigation();
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function nextSection() {
+            if (currentSection < totalSections) {
+                showSection(currentSection + 1);
+            }
+        }
+
+        function previousSection() {
+            if (currentSection > 1) {
+                showSection(currentSection - 1);
+            }
+        }
+
+        function goToSection(sectionNumber) {
+            showSection(sectionNumber);
+        }
+
+        // Initialize
+        updateNavigation();
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' && currentSection < totalSections) {
+                nextSection();
+            } else if (e.key === 'ArrowLeft' && currentSection > 1) {
+                previousSection();
+            }
+        });
+
+        // Add touch/swipe support for mobile
+        let startX = 0;
+        let endX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            startX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            endX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const threshold = 50;
+            const diff = startX - endX;
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0 && currentSection < totalSections) {
+                    // Swipe left - next section
+                    nextSection();
+                } else if (diff < 0 && currentSection > 1) {
+                    // Swipe right - previous section
+                    previousSection();
+                }
+            }
+        }
+
+        // Add quiz interaction
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const questionContainer = this.parentElement;
+                const allOptions = questionContainer.querySelectorAll('.quiz-option');
+                const isCorrect = this.getAttribute('data-correct') === 'true';
+                
+                // Check if already answered
+                const alreadyAnswered = Array.from(allOptions).some(opt => 
+                    opt.classList.contains('quiz-correct') || opt.classList.contains('quiz-incorrect')
+                );
+                
+                if (alreadyAnswered) return;
+                
+                if (isCorrect) {
+                    this.classList.add('quiz-correct');
+                } else {
+                    this.classList.add('quiz-incorrect');
+                    // Also highlight the correct answer
+                    const correctOption = questionContainer.querySelector('[data-correct="true"]');
+                    if (correctOption) {
+                        correctOption.classList.add('quiz-correct');
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
