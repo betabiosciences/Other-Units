@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Parasitism Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e6ed;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #0f3460 0%, #e94560 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding-bottom: 100px; /* Space for fixed navigation */
+        }
+
+        .section {
+            flex: 1;
+            padding: 30px 20px;
+            display: none;
+            overflow-y: auto;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #00d2ff;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+            font-weight: 600;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-card h3 {
+            color: #e94560;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .content-card p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .content-card ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .content-card li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .navigation {
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-btn {
+            background: linear-gradient(45deg, #0f3460 0%, #e94560 100%);
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.4);
+            min-width: 100px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.6);
+        }
+
+        .nav-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 10px rgba(233, 69, 96, 0.2);
+        }
+
+        .nav-btn:disabled::before {
+            display: none;
+        }
+
+        .section-counter {
+            color: #00d2ff;
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
+            background: rgba(0, 210, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 210, 255, 0.3);
+        }
+
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: rgba(0, 210, 255, 0.1);
+            border-color: #00d2ff;
+        }
+
+        .quiz-option.correct {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: #00ff00;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #ff0000;
+        }
+
+        .highlight {
+            background: linear-gradient(45deg, rgba(233, 69, 96, 0.2), rgba(0, 210, 255, 0.2));
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+		@media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .section {
+                padding: 20px 15px;
+            }
+            
+            .content-card {
+                padding: 20px;
+                margin-bottom: 15px;
+            }
+            
+            .navigation {
+                padding: 15px;
+            }
+            
+            .nav-btn {
+                padding: 12px 18px;
+                font-size: 0.9rem;
+                min-width: 80px;
+            }
+            
+            .section-counter {
+                font-size: 1rem;
+                padding: 8px 15px;
+            }
+        }
+		
+		/* Footer Styles */
+		.site-footer {
+            padding: 25px;
+            background-color: #10101b; /* A color that fits the theme */
+            text-align: center;
+            color: rgba(224, 230, 237, 0.7);
+            font-size: 0.9em;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-logo {
+            width: 56px; /* w-14 equivalent */
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        .footer-text {
+            line-height: 1.6;
+        }
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PARASITISM</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Introduction Section -->
+            <div class="section active" id="section-0">
+                <h2 class="section-title">Introduction to Parasitism</h2>
+                <div class="content-card">
+                    <p><strong>Parasitism</strong> is a type of symbiotic relationship between organisms of different species in which the parasite, benefits from a prolonged, close association with the other, the host, which is harmed. Usually, parasites are much smaller than their hosts, show a high degree of specialization for their mode of life and reproduce more quickly and in greater numbers than their hosts. Classic examples of parasitism include the interactions between vertebrate hosts and such diverse animals as the tapeworms, flukes, Plasmodium species and fleas.</p>
+                    <p>The detriment and benefit in parasitic interactions concern the biological fitness of the organisms involved. Parasites reduce host fitness in many ways, ranging from general or specialized pathology (such as castration), impairment of secondary sex characteristics, to the modification of host behaviour. Parasites increase their fitness by exploiting hosts for food, habitat and dispersal.</p>
+                </div>
+            </div>
+
+            <!-- Types of Parasitism Section -->
+            <div class="section" id="section-1">
+                <h2 class="section-title">Types of Parasitism</h2>
+                <div class="content-card">
+                    <h3>Microparasites</h3>
+                    <p>These are tiny parasites, like <span class="highlight">pathogenic bacteria</span> and <span class="highlight">viruses</span>, that live and multiply directly inside their hosts, often within the host's cells. They reproduce rapidly, and their infections are typically described as <span class="highlight">diseases</span>. Transmission can happen directly between hosts or be aided by another organism, like a mosquito. The <span class="highlight">virulence</span> of a microparasite refers to how much it harms or kills its host. Hosts generally have a strong and immediate immune response to these infections.</p>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Macroparasites</h3>
+                    <p>These parasites are usually visible to the naked eye and have a longer generation time. Examples include <span class="highlight">schistosomes</span>. They live inside a host but release their infective young stages outside of it. Most macroparasites need more than one host species to complete their life cycle. A host's immune response to these infections is usually weak and temporary, leading to long-lasting infections and the possibility of getting infected again and again.</p>
+                </div>
+
+                <div class="content-card">
+                    <h3>Parasitoids</h3>
+                    <p>Parasitoids are parasitic insects that lay their eggs in or on another insect's immature stage (like a larva or pupa). The parasitoid larvae then develop inside the host, eventually killing it when the adult emerges. This interaction is similar to <span class="highlight">predation</span> because the host is ultimately killed. If a parasitoid is itself a host for another parasitoid, the second one is called a <span class="highlight">hyperparasitoid</span>.</p>
+                </div>
+            </div>
+
+            <!-- Ectoparasites and Endoparasites Section -->
+            <div class="section" id="section-2">
+                <h2 class="section-title">Ectoparasites and Endoparasites</h2>
+                <div class="content-card">
+                    <p>This classification is based on where the parasite lives on the host. <span class="highlight">Ectoparasites</span>, such as <span class="highlight">ticks</span> and <span class="highlight">fleas</span>, live on the outside of the host's body. <span class="highlight">Endoparasites</span>, like <span class="highlight">pathogenic bacteria</span> and <span class="highlight">tapeworms</span>, live inside the host. Endoparasitism requires more specialized adaptations to overcome the host's defenses. This is why ectoparasites like <span class="highlight">leeches</span> are often <span class="highlight">polyphagous</span> (having many hosts), while endoparasites like <span class="highlight">liver flukes</span> are more likely to be <span class="highlight">monophagous</span> (having only one host).</p>
+                    <p>The text notes that some plant parasites, like <span class="highlight">mistletoe</span>, can be both ecto- and endoparasitic. They have parts that are outside the host and other parts, called <span class="highlight">haustoria</span>, that penetrate inside to get nutrients.</p>
+                </div>
+            </div>
+
+            <!-- Plant Parasites Section -->
+            <div class="section" id="section-3">
+                <h2 class="section-title">Plant Parasites</h2>
+                <div class="content-card">
+                    <h3>Holoparasites and Hemiparasites</h3>
+                    <p>This category further divides parasitic flowering plants. <span class="highlight">Holoparasites</span> are entirely dependent on their host for water and nutrients because they lack chlorophyll and cannot photosynthesize. A notable example is the massive flower of <span class="highlight">Rafflesia arnoldii</span>, which lives most of its life inside a vine host. These parasites often have a very limited range of hosts.</p>
+                    <p><span class="highlight">Hemiparasites</span>, on the other hand, can photosynthesize but lack a root system and must draw water from their host. <span class="highlight">Mistletoe</span> is a good example. Hemiparasites typically have a broader range of hosts than holoparasites do.</p>
+					<img src="https://betabiosciences.github.io//Other-Units/Parasitism%20fig1.jpg" alt="Holoparasites and Hemiparasites Diagram" style="width: 100%; border-radius: 10px; margin-top: 20px;">
+                </div>
+            </div>
+
+            <!-- Enslaver Parasites Section -->
+            <div class="section" id="section-4">
+                <h2 class="section-title">Enslaver Parasites</h2>
+                <div class="content-card">
+                    <p>Many macroparasites have <span class="highlight">complex life cycles</span>, meaning they need at least two different host species to complete their life cycle. A <span class="highlight">definitive host</span> is where the parasite sexually reproduces, while an <span class="highlight">intermediate host</span> contains the parasite's non-reproducing forms. Many of these parasites, often called <span class="highlight">"enslaver parasites,"</span> manipulate their intermediate hosts to increase the likelihood of being transmitted to the definitive host.</p>
+                    <p><span class="highlight">Enslaver parasites</span> are parasites that manipulate the behavior or physical appearance of their host to increase the chances of the parasite being transmitted to its next host in a complex life cycle. This manipulation often makes the infected host more vulnerable to predation by the definitive host.</p>
+                </div>
+            </div>
+
+            <!-- Host Behavior Manipulation Section -->
+            <div class="section" id="section-5">
+                <h2 class="section-title">Parasitic Manipulation of Host Behavior</h2>
+                <div class="content-card">
+                    <p>Parasites can change the behavior, color, or other characteristics of their intermediate host to make it more vulnerable to being eaten by the definitive host. This manipulation increases the chances of the parasite completing its life cycle.</p>
+                    <ul>
+                        <li><strong>Pillbugs and Thorny-headed Worms:</strong> The parasitic worm <em>Plagiorhynchus cylindraceus</em> lives in songbirds. Its eggs are consumed by pillbugs, which are an intermediate host. The parasites alter the pillbugs' behavior, causing them to move away from their usual humid, hidden spots into open areas where they are more easily seen and eaten by birds.</li>
+                        <li><strong>Ants and Lancet Flukes:</strong> The lancet fluke, <em>Dicrocoelium dendritium</em>, reproduces in cows. Its eggs are consumed by snails, which produce slime balls full of immature flukes. Ants then eat these slime balls, and the flukes move to the ant's head, causing it to climb to the top of grass blades. This behavior makes the ant more likely to be eaten by a grazing cow, continuing the cycle.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- More Host Behavior Examples Section -->
+            <div class="section" id="section-6">
+                <h2 class="section-title">More Manipulation Examples</h2>
+                <div class="content-card">
+                    <ul>
+                        <li><strong>Amphipods and Acanthocephalans:</strong> The freshwater amphipod <em>Gammarus pulex</em> can be infected by two different acanthocephalan species. Uninfected amphipods hide from predators by staying near the bottom of the water column. However, those infected with <em>Pomphorhynchus laevis</em> are attracted to light, making them swim out in the open and be eaten by fish. Similarly, those infected with <em>Polymorphus minutus</em> swim near the surface, increasing their chances of being eaten by birds.</li>
+                        <li><strong>Rats and <em>Toxoplasma gondii</em>:</strong> <em>Toxoplasma gondii</em> can infect many mammals but only reproduces in cats. It encysts in the brains of intermediate hosts, like rats. Normally, rats avoid the smell of cats, but infected rats are actually attracted to cat urine, which makes them more likely to be preyed upon.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Feeding Behavior Manipulation Section -->
+            <div class="section" id="section-7">
+                <h2 class="section-title">Parasitic Manipulation of Feeding Behavior</h2>
+                <div class="content-card">
+                    <p>Some parasites manipulate the feeding behavior of their vectors (organisms that transmit the parasite). This manipulation increases the number of bites or feeding attempts, thereby maximizing the transmission of the parasite to new hosts.</p>
+                    <ul>
+                        <li><strong>Malaria and Mosquitoes:</strong> The malaria parasite, <em>Plasmodium</em>, reproduces in mosquitoes and vertebrates. It interferes with a mosquito's ability to draw blood efficiently. This makes the mosquito bite more frequently and on multiple hosts, increasing the rate at which the parasite is transmitted. This behavior is also seen in other parasites like leishmaniasis in sand flies and bubonic plague in fleas.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Kleptoparasitism Section -->
+            <div class="section" id="section-8">
+                <h2 class="section-title">Kleptoparasitism</h2>
+                <div class="content-card">
+                    <p><span class="highlight">Kleptoparasitism</span> is a type of feeding where one animal steals food or resources that another has already acquired. This behavior can occur between members of the same species or different species. For example, some small spiders steal prey from the webs of larger spiders, while some seagulls and frigatebirds snatch food from other birds that have just caught it.</p>
+                </div>
+            </div>
+
+            <!-- Brood Parasitism Section -->
+            <div class="section" id="section-9">
+                <h2 class="section-title">Brood Parasitism</h2>
+                <div class="content-card">
+                    <p><span class="highlight">Brood parasitism</span> is a specific form of <span class="highlight">kleptoparasitism</span> where one species manipulates another to raise its young. In this scenario, the parasitic parent lays its eggs in the nest of a host species, leaving the host to incubate the eggs and care for the hatchlings. Common examples include cuckoos, cowbirds, and certain other bird species.</p>
+                </div>
+            </div>
+
+            <!-- Brood Parasitism Details Section -->
+            <div class="section" id="section-10">
+                <h2 class="section-title">Brood Parasitism Details</h2>
+                <div class="content-card">
+                    <ul>
+                        <li><strong>Why Hosts Allow It:</strong> You might wonder why host birds don't just get rid of the foreign eggs. While some hosts can recognize and eject parasitic eggs, the "<span class="highlight">mafia hypothesis</span>" suggests a reason for their compliance. This theory proposes that parasitic birds like cuckoos and cowbirds will monitor the nests they've targeted. If they find their egg has been removed, they may destroy the host's nest, and harm or kill the host's young. This forces the host to build a new nest, giving the parasite another opportunity to lay an egg.</li>
+                        <li><strong>Defenses:</strong> The best way for host birds to defend against this is to prevent the parasitism from happening in the first place. They might choose nesting sites that are hard for parasites to find or access, or nest in large groups to provide a collective defense.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Brood Parasitism Specialization Section -->
+            <div class="section" id="section-11">
+                <h2 class="section-title">Brood Parasitism Specialization</h2>
+                <div class="content-card">
+                    <ul>
+                        <li><strong>Specialization:</strong> Although some brood parasites use many different host species, individual females often specialize on just one or a few. It's believed that female cuckoos, for example, learn to target the species that raised them. They can also pass on genes for egg color through the maternal line, which helps them lay eggs that mimic the appearance of the host's eggs. Meanwhile, male cuckoos mate with females from all different host lines, ensuring genetic diversity.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Host Defenses Section -->
+            <div class="section" id="section-12">
+                <h2 class="section-title">Host Defenses against Parasites</h2>
+                <div class="content-card">
+                    <p>Hosts have developed many defenses against parasites, which can be behavioral or part of their immune system.</p>
+                    <h3>Immune System Defenses</h3>
+                    <p>All organisms possess an immune system with two main components:</p>
+                    <ul>
+                        <li><strong>Innate Immunity:</strong> These are the body's natural defenses that are present from birth. They act as a general, non-specific barrier against a wide range of parasites. Examples include the skin and mucous membranes that prevent microscopic parasites from entering the body. Cellular defenses, like <span class="highlight">macrophages</span>, are also part of innate immunity and can engulf and destroy invading bacteria. In insects, this can be seen in their ability to encapsulate and kill parasitoid eggs. Innate responses are consistent and don't change with repeated exposure.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Acquired Immunity Section -->
+            <div class="section" id="section-13">
+                <h2 class="section-title">Acquired Immunity</h2>
+                <div class="content-card">
+                    <ul>
+                        <li><strong>Acquired Immunity:</strong> This type of immunity develops after a host has been exposed to a specific parasite. The body "remembers" the invader and can mount a stronger and faster response upon subsequent encounters. This is how vaccines work, and it's similar to the induced defenses seen in plants. In vertebrates, white blood cells, or <span class="highlight">leukocytes</span>, play a key role by engulfing and destroying parasites. When an area is infected, <span class="highlight">inflammation</span> often occurs, which increases blood flow and sends more immune cells to the site.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Behavioral Defenses Section -->
+            <div class="section" id="section-14">
+                <h2 class="section-title">Behavioral Defenses</h2>
+                <div class="content-card">
+                    <p>Animals also use specific behaviors to prevent or remove parasites.</p>
+                    <ul>
+                        <li><strong>Grooming:</strong> Many mammals groom themselves or others to get rid of ectoparasites like fleas and ticks.</li>
+                        <li><strong>Evasive Actions:</strong> Insects attacked by parasitoids may drop from a leaf to the ground to escape.</li>
+                        <li><strong>Social Immunity:</strong> Social insects like ants and termites, which live in close quarters, have a unique defense called <span class="highlight">social immunity</span>. They can transfer resistance to diseases to other members of the colony. This may happen through the sharing of oral secretions from an immunized individual to an unexposed one, helping the entire colony resist infection. These insects also groom each other to remove parasites.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Evolutionary Arms Race Section -->
+            <div class="section" id="section-15">
+                <h2 class="section-title">The Evolutionary Arms Race</h2>
+                <div class="content-card">
+                    <p>An ongoing evolutionary "arms race" exists between parasites and their hosts. Parasites typically have a faster generation time, giving them a potential advantage in evolving new ways to overcome host defenses. This means hosts are constantly adapting their defenses to keep up with the rapid evolution of the parasites that target them.</p>
+                </div>
+            </div>
+
+            <!-- Biological Control Section -->
+            <div class="section" id="section-16">
+                <h2 class="section-title">Biological Control of Pests by Parasites</h2>
+                <div class="content-card">
+                    <p>Biological control is the use of natural enemies, such as <span class="highlight">parasitoids</span> and <span class="highlight">predators</span>, to manage pests, especially those that threaten crops. This method is often seen as a beneficial alternative to chemical pesticides.</p>
+                    <h3>Key Attributes of a Successful Biocontrol Agent</h3>
+                    <p>Historically, early biological control efforts were often "hit-or-miss," involving the release of various agents in the hope that one would be effective. Later research by scientists like Carl Huffaker and Charles Kennett identified key characteristics of a good biological control agent:</p>
+                </div>
+            </div>
+
+            <!-- Biocontrol Attributes Section -->
+            <div class="section" id="section-17">
+                <h2 class="section-title">Biocontrol Agent Attributes</h2>
+                <div class="content-card">
+                    <ol>
+                        <li><strong>Adaptability:</strong> The agent should be able to thrive in its new environment.</li>
+                        <li><strong>High Searching Capacity:</strong> It needs to be effective at finding its hosts.</li>
+                        <li><strong>High Rate of Increase:</strong> The agent's population must grow quickly relative to the pest population.</li>
+                        <li><strong>Good Dispersal Ability:</strong> It needs to spread effectively throughout the infested area.</li>
+                        <li><strong>Minimal Time Lag:</strong> Its population should respond quickly to changes in the pest's population size.</li>
+                    </ol>
+                    <p>Later, Peter Stiling's research confirmed that the most crucial factor for success is a <span class="highlight">climatic match</span> between the agent's place of origin and the area where it's released. This is because a mismatch in climate is a leading cause of biological control failures.</p>
+                </div>
+            </div>
+
+            <!-- Biocontrol Risks Section -->
+            <div class="section" id="section-18">
+                <h2 class="section-title">Biocontrol Risks</h2>
+                <div class="content-card">
+                    <p>While often promoted as risk-free, biological control can have negative consequences for non-target species. Early "hit-or-miss" campaigns sometimes led to unintended harm. For example, entomologist Frank Howarth observed that parasitoid wasps introduced to control sugarcane pests in Hawaii also attacked and reduced the populations of native Hawaiian butterflies and moths. This highlighted the need for more focused, precise release efforts to ensure that the introduced agents only target the intended pests and not native species.</p>
+                </div>
+            </div>
+
+            <!-- Host-Parasite Models Section -->
+            <div class="section" id="section-19">
+                <h2 class="section-title">Host-Parasite Models</h2>
+                <div class="content-card">
+                    <p>Host-parasite models suggest many diseases need large host populations to spread. Since parasite-removal studies are difficult to perform, ecologists have also examined the strength of parasitism as a mortality factor by modeling host-parasite relationships.</p>
+                    <p>Models of the effect of parasites on host populations differ from predator-prey models, for two reasons.</p>
+                    <ol>
+                        <li><strong>Complex Life Cycles:</strong> Many parasites have complex life cycles involving intermediate hosts, making their transmission much more complicated to model. Modeling parasite transmission between the various types of hosts can be extremely complex, involving the densities of many hosts and parasites at several different stages.</li>
+                        <li><strong>Focus on Infected Hosts:</strong> Corresponding to the diseases, models of parasite population dynamics generally describe the parasite's population growth rate by the average number of new cases of a disease that arise from each infected host, rather than by the numbers of disease-causing organisms.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Model Equations Section -->
+            <div class="section" id="section-20">
+                <h2 class="section-title">Mathematical Models</h2>
+                <div class="content-card">
+                    <p>We can designate the number of infected as <span class="highlight">R<sub>p</sub></span>, wherein <span class="highlight">R</span> stands for <span class="highlight">net reproductive rate</span> and <span class="highlight">p for parasite</span>.</p>
+                    <ul>
+                        <li>The transmission threshold (A parasite's ability to spread), which must be exceeded if a disease is to spread, is given by <span class="highlight">R<sub>p</sub> > 1.</span></li>
+                        <li>If the value of <span class="highlight">R<sub>p</sub> < 1</span>, the disease perishes.</li>
+                    </ul>
+                    <p>For microparasites that are transmitted directly from host to host, R<sub>p</sub> is influenced by</p>
+                    <ul>
+                        <li><span class="highlight">N<sub>s</sub></span> the number of susceptible hosts in the population.</li>
+                        <li><span class="highlight">B</span> the transmission rate of the disease, a quantity correlated with frequency of host contact and infectiousness of the disease.</li>
+                        <li><span class="highlight">L</span> is the average period of time over which the infected host remains infectious.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Model Equation Section -->
+            <div class="section" id="section-21">
+                <h2 class="section-title">The Model Equation</h2>
+                <div class="content-card">
+                    <p>The value R<sub>p</sub> is related to these factors by the equation</p>
+                    <p><strong>R<sub>p</sub> = N<sub>s</sub>BL</strong></p>
+                    <p>Three generalizations can thus be made.</p>
+                    <ul>
+                        <li>As L, the period during which the host is infectious, upsurges, R<sub>p</sub> also increases. An efficient parasite therefore keeps its host alive for a long time. In the extreme, some hosts remain infectious even after they are dead. For example, fungal parasites leave resting spores on the dead host.</li>
+                        <li>If diseases are highly infectious, that is, B is large, R<sub>p</sub> increases.</li>
+                        <li>Large populations of susceptible hosts, N<sub>s</sub>, promote the spread of disease.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Threshold Density Section -->
+            <div class="section" id="section-22">
+                <h2 class="section-title">Critical Threshold Density</h2>
+                <div class="content-card">
+                    <p>By rearranging the equation the critical threshold density thus obtained is, N<sub>T</sub>, where R<sub>p</sub> = 1. N<sub>T</sub> is an estimate of the number of susceptible hosts needed to maintain the parasite population at a constant size:</p>
+                    <p><strong>N<sub>T</sub> = 1/BL</strong></p>
+                    <p>If B or L is large, N<sub>T</sub> is small.</p>
+                    <p>For example, if B = 0.1 and L = 0.01, then N<sub>T</sub> = 1/0.1 x 0.01 = 1/0.001 = 1,000.</p>
+                    <p>Conversely, if B or L is small, the disease can persist only in a large population of infected hosts.</p>
+                    <p>For example, if B = 0.1 and L = 0.0001, then N<sub>T</sub> = 100,000.</p>
+                </div>
+            </div>
+
+            <!-- Disease Cycles Section -->
+            <div class="section" id="section-23">
+                <h2 class="section-title">Disease Cycles and Control</h2>
+                <div class="content-card">
+                    <p>Many diseases of humans are likely to be evolutionarily recent, having spread from other animals. Global climate change may be changing the frequency of parasitism levels of hosts and, by implication, host densities.</p>
+                    <p>Similar to predator-prey dynamics, many diseases exhibit periodic cycles. For instance, measles and whooping cough in humans show predictable peaks. These cycles occur because an epidemic reduces the number of susceptible hosts (N<sub>s</sub>​), causing the disease to decline. However, as new births add more susceptible individuals to the population, the cycle begins anew. <span class="highlight">Vaccination</span> can effectively break these cycles by significantly reducing the number of susceptible hosts.</p>
+                    <p>When parasites are spread by a <span class="highlight">vector</span>, such as a mosquito, disease control efforts may focus on the vector rather than the host. For example, some farmers use insecticides to kill aphids that transmit viral diseases to crops.</p>
+                </div>
+            </div>
+
+            <!-- Quiz Section -->
+            <div class="section" id="section-24">
+                <h2 class="section-title">Test Your Knowledge</h2>
+                <div class="content-card">
+                    <p><strong>1. Which of the following is a key characteristic that distinguishes macroparasites from microparasites?</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. Macroparasites are always found inside the host's cells, while microparasites live outside.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">b. Macroparasites can be transmitted directly between hosts without an intermediate organism.</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">c. Macroparasites are typically visible to the naked eye and have a longer generation time.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">d. Macroparasites have a much faster reproduction rate than their hosts.</div>
+                </div>
+
+                <div class="content-card">
+                    <p><strong>2. Which of the following is an example of an endoparasite?</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. Ticks and fleas</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">b. Frigatebirds</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">c. Mistletoe</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">d. Tapeworms and pathogenic bacteria</div>
+                </div>
+
+                <div class="content-card">
+                    <p><strong>3. A flowering plant that can photosynthesize but still relies on a host for water is classified as a:</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. Microparasite</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">b. Hemiparasite</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">c. Holoparasite</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">d. Ectoparasite</div>
+                </div>
+            </div>
+
+            <!-- Quiz Section 2 -->
+            <div class="section" id="section-25">
+                <h2 class="section-title">Test Your Knowledge (Continued)</h2>
+                <div class="content-card">
+                    <p><strong>4. Which of the following describes the 'mafia hypothesis' as it relates to brood parasitism?</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. Host birds collectively defend their nests in large groups to prevent parasitism.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">b. Host birds choose nesting sites that are difficult for parasites to access.</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">c. Parasitic birds destroy the nests of hosts that have ejected their eggs, forcing them to rebuild.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">d. Parasitic birds lay eggs that mimic the appearance of the host's eggs to avoid detection.</div>
+                </div>
+
+                <div class="content-card">
+                    <p><strong>5. Which of the following is an example of an 'enslaver parasite'?</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. A leech feeding on the outside of a host.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">b. Fleas causing a dog to itch and scratch.</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">c. The pillbug infected with a thorny-headed worm.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">d. Mistletoe growing on a tree.</div>
+                </div>
+
+                <div class="content-card">
+                    <p><strong>6. According to the host-parasite model equation R<sub>p</sub>​=N<sub>s</sub>​BL, which of the following would lead to an increase in the parasite's reproductive rate (R<sub>p</sub>​)?</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. A decrease in the period the host remains infectious (L).</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">b. A decrease in the transmission rate (B).</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">c. An increase in the period the host remains infectious (L).</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">d. A decrease in the number of susceptible hosts (N<sub>s</sub>​).</div>
+                </div>
+            </div>
+
+            <!-- Quiz Section 3 -->
+            <div class="section" id="section-26">
+                <h2 class="section-title">Test Your Knowledge (Final)</h2>
+                <div class="content-card">
+                    <p><strong>7. What does a critical threshold density (N<sub>T</sub>​) of 1,000 mean for a disease?</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. The disease will perish if the number of susceptible hosts is 1,000.</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">b. The disease can only be maintained in a population with at least 1,000 susceptible hosts.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">c. The number of infected hosts will be at its peak at 1,000.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">d. A parasite's ability to spread will be at its maximum with 1,000 hosts.</div>
+                </div>
+
+                <div class="content-card">
+                    <p><strong>8. Which of the following describes social immunity as practiced by social insects like ants?</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. The queen of the colony possesses a stronger immune system than the workers.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">b. The insects use grooming to remove ticks and fleas from each other.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">c. Individual insects develop acquired immunity to a specific parasite.</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">d. The colony transfers disease resistance to unexposed individuals through shared secretions.</div>
+                </div>
+
+                <div class="content-card">
+                    <p><strong>9. What is a major risk associated with biological control, as highlighted by Frank Howarth's observations?</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. The introduced agent might not be able to adapt to its new environment.</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">b. The agent might attack and harm native, non-target species.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">c. The agent's population might not grow quickly enough to control the pest.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">d. The agent might become a pest itself and destroy crops.</div>
+                </div>
+
+                <div class="content-card">
+                    <p><strong>10. If the transmission rate (B) of a disease is large, what can be concluded about its reproductive rate (R<sub>p</sub>​)?</strong></p>
+                    <div class="quiz-option" onclick="selectOption(this, false)">a. The value of R<sub>p</sub>​ must be less than 1.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">b. The value of R<sub>p</sub>​ decreases.</div>
+                    <div class="quiz-option" onclick="selectOption(this, true)">c. The value of R<sub>p</sub>​ increases.</div>
+                    <div class="quiz-option" onclick="selectOption(this, false)">d. The value of R<sub>p</sub>​ is not affected by B.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSection(-1)">← Previous</button>
+            <div class="section-counter">
+                <span id="currentSection">1</span> / <span id="totalSections">27</span>
+            </div>
+            <button class="nav-btn" id="nextBtn" onclick="changeSection(1)">Next →</button>
+        </div>
+    </div>
+	
+	<footer class="site-footer">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.<br>Email: betabiosciences@gmail.com</p>
+    </footer>
+
+    <script>
+        let currentSectionIndex = 0;
+        const totalSections = 27;
+        
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progress = ((currentSectionIndex + 1) / totalSections) * 100;
+            progressFill.style.width = progress + '%';
+        }
+        
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const currentSection = document.getElementById('currentSection');
+            
+            prevBtn.disabled = currentSectionIndex === 0;
+            nextBtn.disabled = currentSectionIndex === totalSections - 1;
+            currentSection.textContent = currentSectionIndex + 1;
+        }
+        
+        function showSection(index) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show current section
+            const currentSection = document.getElementById(`section-${index}`);
+            if (currentSection) {
+                currentSection.classList.add('active');
+            }
+            
+            updateProgress();
+            updateNavigation();
+        }
+        
+        function changeSection(direction) {
+            const newIndex = currentSectionIndex + direction;
+            if (newIndex >= 0 && newIndex < totalSections) {
+                currentSectionIndex = newIndex;
+                showSection(currentSectionIndex);
+            }
+        }
+        
+        function selectOption(element, isCorrect) {
+            // Remove previous selections in this question
+            const siblings = element.parentNode.querySelectorAll('.quiz-option');
+            siblings.forEach(option => {
+                option.classList.remove('correct', 'incorrect');
+            });
+            
+            // Add appropriate class
+            if (isCorrect) {
+                element.classList.add('correct');
+            } else {
+                element.classList.add('incorrect');
+                // Show correct answer
+                siblings.forEach(option => {
+                    if (option.onclick.toString().includes('true')) {
+                        option.classList.add('correct');
+                    }
+                });
+            }
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                changeSection(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeSection(1);
+            }
+        });
+        
+        // Touch/swipe navigation for mobile
+        let startX = 0;
+        let endX = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].clientX;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            endX = e.changedTouches[0].clientX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const threshold = 50;
+            const diff = startX - endX;
+            
+            if (Math.abs(diff) > threshold) {
+                if (diff > 0) {
+                    // Swiped left - next section
+                    changeSection(1);
+                } else {
+                    // Swiped right - previous section
+                    changeSection(-1);
+                }
+            }
+        }
+        
+        // Initialize
+        document.getElementById('totalSections').textContent = totalSections;
+        updateProgress();
+        updateNavigation();
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
