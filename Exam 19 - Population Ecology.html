@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BetaBiosciences Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom styles for the quiz app */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Full viewport height */
+            margin: 0;
+            padding: 20px; /* Add some padding for smaller screens */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+            color: #333;
+        }
+
+        .quiz-container {
+            background-color: #ffffff; /* White background for the quiz card */
+            border-radius: 16px; /* More rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 32px; /* Increased padding */
+            max-width: 800px; /* Increased max width for more content */
+            width: 100%; /* Full width on smaller screens */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 24px; /* Space between sections */
+            position: relative; /* For absolute positioning of footer */
+        }
+
+        .hidden {
+            display: none !important; /* Use !important to override other display properties */
+        }
+
+        /* Login and Notice Page Styles */
+        .page-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px; /* Ensure pages have some height */
+        }
+
+        .input-field {
+            padding: 12px 16px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            width: 80%;
+            max-width: 300px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .action-button {
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #ffffff;
+            background-color: #4f46e5; /* Indigo */
+        }
+
+        .action-button:hover:not(:disabled) {
+            background-color: #4338ca; /* Darker indigo */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-button:disabled {
+            background-color: #9ca3af; /* Gray for disabled */
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Notice Page Specifics */
+        .notice-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ef4444; /* Red for important */
+            margin-bottom: 20px;
+        }
+
+        .notice-list {
+            list-style: none; /* Removed default numbering/bullets */
+            padding: 0;
+            margin: 0 0 30px 0;
+            text-align: left;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .notice-list li {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            position: relative; /* For custom bullets */
+            padding-left: 20px; /* Space for custom bullet */
+        }
+
+        .notice-list li::before {
+            content: "\2022"; /* Unicode for a bullet point */
+            color: #ef4444; /* Red bullet */
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+
+        .notice-list strong {
+            color: #ef4444; /* Red for bold parts */
+        }
+
+        /* Quiz Page Layout */
+        #quiz-page {
+            display: grid;
+            grid-template-columns: 1fr 200px; /* Main content and sidebar */
+            gap: 30px;
+            text-align: left;
+            min-height: 400px; /* Ensure sufficient height for the grid layout */
+        }
+
+        #quiz-main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #quiz-sidebar {
+            background-color: #f8fafc; /* Lightest gray for sidebar */
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Timer Styles */
+        #timer-display {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #22c55e; /* Green */
+            text-align: center;
+            width: 100%;
+            grid-column: 1 / -1; /* Span across both columns */
+        }
+
+        #timer-display.orange {
+            color: #f97316; /* Orange */
+        }
+
+        #timer-display.red {
+            color: #ef4444; /* Red */
+        }
+
+        .question-text {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: left; /* Align question text left */
+        }
+
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .option-button {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            padding: 14px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border: 2px solid transparent;
+            text-align: left; /* Align options left */
+        }
+
+        .option-button:hover {
+            background-color: #cbd5e0;
+        }
+
+        .option-button.selected {
+            background-color: #6366f1;
+            color: #ffffff;
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+        }
+
+        /* New styles for answer key options */
+        .option-button.correct-answer {
+            background-color: #22c55e; /* Green */
+            color: #ffffff;
+            border-color: #16a34a;
+            pointer-events: none; /* Disable clicks */
+        }
+
+        .option-button.incorrect-answer {
+            background-color: #ef4444; /* Red */
+            color: #ffffff;
+            border-color: #dc2626;
+            pointer-events: none; /* Disable clicks */
+        }
+
+        .option-button.disabled-for-answer-key {
+            pointer-events: none; /* Disable clicks */
+            opacity: 0.7; /* Slightly dim non-highlighted options */
+        }
+
+
+        .quiz-nav-buttons {
+            display: flex;
+            justify-content: flex-start; /* Align buttons to the left */
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .quiz-nav-button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+        }
+
+        .quiz-nav-button.save-next {
+            background-color: #10b981; /* Green */
+            color: #ffffff;
+        }
+        .quiz-nav-button.save-next:hover { background-color: #059669; }
+
+        .quiz-nav-button.clear {
+            background-color: #f59e0b; /* Amber */
+            color: #ffffff;
+        }
+        .quiz-nav-button.clear:hover { background-color: #d97706; }
+
+        .quiz-nav-button.next {
+            background-color: #3b82f6; /* Blue */
+            color: #ffffff;
+        }
+        .quiz-nav-button.next:hover { background-color: #2563eb; }
+
+        .quiz-nav-button.submit-quiz {
+            background-color: #ef4444; /* Red */
+            color: #ffffff;
+        }
+        .quiz-nav-button.submit-quiz:hover { background-color: #dc2626; }
+
+        /* Answer Key Navigation Buttons */
+        .answer-key-nav-buttons {
+            display: flex;
+            justify-content: space-between; /* Space out prev/next */
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .answer-key-nav-button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            background-color: #6366f1; /* Indigo */
+            color: #ffffff;
+        }
+        .answer-key-nav-button:hover:not(:disabled) {
+            background-color: #4f46e5;
+        }
+        .answer-key-nav-button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Specific style for the "Close Answer Key" button */
+        .answer-key-nav-button.close-answer-key {
+            background-color: #ef4444; /* Red */
+        }
+        .answer-key-nav-button.close-answer-key:hover:not(:disabled) {
+            background-color: #dc2626; /* Darker red */
+        }
+
+
+        /* Legend and Palette Styles */
+        .legend-box {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .legend-color-box.red-ball {
+            background-color: transparent; /* No background for 3D ball */
+            color: #ef4444; /* Red for the icon */
+            font-size: 1.2rem;
+            width: 20px; /* Fixed width */
+            height: 20px; /* Fixed height */
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .legend-color-box.grey {
+            background-color: #d1d5db; /* Grey */
+            width: 20px; /* Fixed width */
+            height: 20px; /* Fixed height */
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .legend-color-box.green {
+            background-color: #22c55e; /* Green */
+            width: 20px; /* Fixed width */
+            height: 20px; /* Fixed height */
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+
+        #question-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .palette-box {
+            background-color: #d1d5db; /* Grey (not visited) */
+            color: #333;
+            padding: 10px 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            aspect-ratio: 1 / 1; /* Make boxes square */
+        }
+
+        .palette-box:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .palette-box.unanswered {
+            background-color: #ef4444; /* Red */
+            color: #ffffff;
+        }
+
+        .palette-box.answered {
+            background-color: #22c55e; /* Green */
+            color: #ffffff;
+        }
+
+        /* Results Page Styles */
+        .results-container { /* This class is not used, but styles below target elements within #final-results-page */
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .results-detail {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .results-detail strong {
+            color: #4f46e5;
+        }
+
+        .telegram-link {
+            color: #4f46e5;
+            text-decoration: underline;
+            font-weight: 600;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        /* Admin Section Styles (Updated for internal positioning) */
+        .admin-section {
+            text-align: center;
+            width: 100%; /* Take full width of parent */
+            padding-top: 20px; /* Space from elements above it */
+            margin-top: 20px; /* Space from elements above it */
+            border-top: 1px solid #e2e8f0; /* Separator */
+            background-color: #f8fafc; /* Light background */
+            border-radius: 0 0 16px 16px; /* Match container bottom radius */
+            padding-bottom: 10px; /* Padding at the bottom */
+        }
+
+        .admin-section h3 {
+            font-size: 0.8rem; /* Smaller heading */
+            font-weight: 700;
+            margin-bottom: 10px; /* Smaller margin */
+            color: #4f46e5;
+        }
+
+        .admin-login-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px; /* Smaller gap */
+        }
+
+        /* Specific styles for admin input and button */
+        .admin-login-area input.input-field {
+            width: 80%; /* Take full width of its container */
+            max-width: 200px; /* Smaller max-width */
+            font-size: 0.85rem; /* Smaller font */
+            padding: 8px 10px; /* Smaller padding */
+            margin-bottom: 0; /* Remove bottom margin as gap handles spacing */
+        }
+
+        .admin-login-area button.action-button {
+            padding: 8px 16px; /* Smaller padding */
+            font-size: 0.85rem; /* Smaller font size */
+        }
+
+        .admin-login-message {
+            color: #ef4444;
+            font-weight: 500;
+            margin-top: 5px;
+            margin-bottom: 0;
+            font-size: 0.75rem;
+        }
+
+        /* Admin Results Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it's on top */
+        }
+
+        .modal-content {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            width: 800px; /* Slightly narrower than full admin page */
+            max-height: 90vh; /* Limit height for scrollability */
+            overflow-y: auto; /* Enable scrolling for content */
+            position: relative;
+            text-align: center;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 25px;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2.5rem;
+            color: #666;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .close-button:hover {
+            color: #333;
+        }
+
+        /* Styles for the table inside the modal */
+        .admin-results-table-wrapper {
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            overflow-x: auto; /* Ensure horizontal scroll on small screens */
+        }
+
+        .admin-results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .admin-results-table th,
+        .admin-results-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .admin-results-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .admin-results-table tbody tr:hover {
+            background-color: #f0f2f5;
+        }
+
+        .admin-results-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .loading-message, .error-message, .no-results-message {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .app-footer {
+            position: absolute;
+            bottom: 10px; /* Keep it slightly above the very bottom */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #9ca3af; /* Grey color */
+            user-select: none; /* Prevent selection for integrity check */
+            white-space: nowrap; /* Keep on one line */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #quiz-page {
+                grid-template-columns: 1fr; /* Stack main content and sidebar */
+            }
+            #quiz-sidebar {
+                order: -1; /* Move sidebar to top on small screens */
+                margin-bottom: 20px;
+            }
+            .quiz-container {
+                padding: 24px;
+                margin: 10px;
+            }
+            .question-text {
+                font-size: 1.5rem;
+            }
+            .option-button, .quiz-nav-button, .action-button {
+                font-size: 1rem;
+                padding: 12px 16px;
+            }
+            .quiz-nav-buttons {
+                flex-wrap: wrap; /* Allow buttons to wrap */
+                justify-content: center;
+            }
+            .quiz-nav-button {
+                flex-basis: 48%; /* Make buttons take roughly half width when wrapped */
+            }
+            .notice-title {
+                font-size: 1.75rem;
+            }
+            .notice-list li {
+                font-size: 1rem;
+            }
+            .admin-section {
+                position: static; /* Remove absolute positioning on small screens */
+                width: auto; /* Allow it to take full width */
+                margin-top: 30px; /* Add some top margin */
+                padding: 20px;
+                box-shadow: none; /* Remove shadow to blend better */
+                border-top: 1px solid #e2e8f0; /* Add border back */
+                border-radius: 0; /* Remove border radius */
+            }
+            .admin-login-area input.input-field {
+                max-width: 100%; /* Allow full width */
+            }
+            /* Responsive adjustments for modal */
+            .modal-content {
+                padding: 20px;
+                width: 95%; /* Adjust width for smaller screens */
+            }
+            .modal-title {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+            .admin-results-table th,
+            .admin-results-table td {
+                padding: 8px 10px;
+                font-size: 0.75rem; /* Smaller font in table for mobile */
+            }
+            .close-button {
+                font-size: 2rem;
+                top: 10px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-app" class="quiz-container">
+        <div id="login-page" class="page-content">
+            <h2 class="question-text">Welcome to the Quiz!</h2>
+            <p class="mb-4">Please enter your name to begin.</p>
+            <input type="text" id="student-name-input" class="input-field" placeholder="Your Name">
+            <button id="start-quiz-button" class="action-button" disabled>START</button>
+
+            <div class="admin-section">
+                <h3>Admin Login</h3>
+                <div class="admin-login-area">
+                    <input type="password" id="admin-passcode-input" class="input-field" placeholder="Enter Admin Passcode">
+                    <button id="admin-login-button" class="action-button">Login as Admin</button>
+                    <p id="admin-login-message" class="admin-login-message hidden"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="notice-page" class="page-content hidden">
+            <h2 class="notice-title">IMPORTANT NOTICE</h2>
+            <ul class="notice-list">
+                <li>Each question carries <strong>2 marks</strong>.</li>
+                <li>There will be <strong><span style="font-size: 1.2em;">NEGATIVE MARKING</span></strong> for incorrect answers.</li>
+                <li>Penalty for incorrect answer is <strong>0.5 marks (25%)</strong>.</li>
+                <li>Remember to click <span class="text-red-500 font-bold">Save & Next</span> to confirm your answer.</li>
+            </ul>
+            <button id="continue-quiz-button" class="action-button">Continue</button>
+        </div>
+
+        <div id="quiz-page" class="hidden">
+            <div id="timer-display">05:00</div>
+            <div id="quiz-main-content">
+                <img id="question-image" class="question-image hidden" alt="Question Image">
+                <h2 id="question-text" class="question-text"></h2>
+                <div id="options-container" class="options-container">
+                    </div>
+                <div class="quiz-nav-buttons">
+                    <button id="save-next-button" class="quiz-nav-button save-next">Save & Next</button>
+                    <button id="clear-button" class="quiz-nav-button clear">Clear</button>
+                    <button id="next-button" class="quiz-nav-button next">Next</button>
+                </div>
+                <div class="answer-key-nav-buttons hidden">
+                    <button id="prev-answer-key-button" class="answer-key-nav-button">Previous</button>
+                    <button id="next-answer-key-button" class="answer-key-nav-button">Next</button>
+                </div>
+            </div>
+            <div id="quiz-sidebar">
+                <div class="legend-box">
+                    <h3 class="font-bold text-lg mb-3">Legend</h3>
+                    <div class="legend-item">
+                        <div class="legend-color-box red-ball"><i class="fas fa-circle"></i></div>
+                        <span>Unanswered Questions</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color-box grey"></div>
+                        <span>Not Visited Questions</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color-box green"></div>
+                        <span>Answered Questions</span>
+                    </div>
+                </div>
+                <div id="question-palette">
+                    </div>
+            </div>
+        </div>
+
+        <div id="final-results-page" class="page-content hidden">
+            <h2 class="question-text">Quiz Results for <span id="student-name-display"></span></h2>
+            <p class="results-detail">Questions Attempted: <strong id="attempted-display">0</strong></p>
+            <p class="results-detail">Correct Answers: <strong id="correct-display">0</strong></p>
+            <p class="results-detail">Incorrect Answers: <strong id="incorrect-display">0</strong></p>
+            <p class="results-detail text-2xl mt-4">Total Score: <strong id="final-score-display">0</strong></p>
+            <p class="results-detail">Maximum Marks: <strong id="max-marks-display">0</strong></p>
+            <button id="show-answer-key-button" class="action-button mt-4">Answer Key</button>
+        </div>
+
+        <div id="admin-results-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <button id="close-admin-modal" class="close-button">&times;</button>
+                <h2 class="modal-title">All Quiz Results</h2>
+                <div id="admin-results-display-area" class="admin-results-table-wrapper">
+                    <p class="loading-message">Loading results...</p>
+                    </div>
+            </div>
+        </div>
+
+        <div id="app-footer" class="app-footer">betabiosciences@gmail.com</div>
+    </div>
+
+    <script type="module">
+        // Firebase imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, query, getDocs, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Initialization ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQMXeU6OJw2e5A-tPQFeoi8MO8ZZfY0WQ",
+            authDomain: "beta-quizapp.firebaseapp.com",
+            projectId: "beta-quizapp",
+            storageBucket: "beta-quizapp.firebasestorage.app",
+            messagingSenderId: "709439478022",
+            appId: "1:709439478022:web:595f257edbade7d458a687",
+            measurementId: "G-5WF35EM4YB"
+        };
+
+        const projectIdForFirestorePath = firebaseConfig.projectId;
+
+        let app, db, auth, userId;
+        let isAuthReady = false;
+
+        async function initFirebase() {
+            try {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        console.log("Firebase Auth Ready. User ID:", userId);
+                        isAuthReady = true;
+                    } else {
+                        try {
+                            await signInAnonymously(auth);
+                        } catch (error) {
+                            console.error("Firebase Anonymous Auth failed:", error);
+                            adminLoginMessage.textContent = "Firebase authentication failed. Cannot load results.";
+                            adminLoginMessage.classList.remove('hidden');
+                            adminLoginMessage.style.color = '#ef4444';
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                adminLoginMessage.textContent = "Firebase initialization failed. Cannot load results.";
+                adminLoginMessage.classList.remove('hidden');
+                adminLoginMessage.style.color = '#ef4444';
+            }
+        }
+        initFirebase();
+
+        // --- Quiz Data ---
+        const quizData = [
+            {
+        question: "Which of these equations represents zero population growth?",
+        options: [
+            "A. Birth rate - Death rate = 0",
+            "B. Birth rate - Death rate > 0",
+            "C. Birth rate + Death rate < 0",
+            "D. Birth rate + Death rate = 0"
+        ],
+        correctAnswer: "A. Birth rate - Death rate = 0"
+    },
+    {
+        question: "Life-history characteristics not associated with r-selected organisms include",
+        options: [
+            "A. rapid reproductive rates, short generation times, and large body size",
+            "B. repeated reproduction, few progenies, and large body size",
+            "C. inhabiting early successional state communities, rapid maturation rates, and numerous large offsprings",
+            "D. inhabiting climax communities, many small offspring and short life span."
+        ],
+        correctAnswer: "B. repeated reproduction, few progenies, and large body size"
+    },
+    {
+        question: "A population of rabbits experiences an increase over time. Which of these statements about that population is true?",
+        options: [
+            "A. The population may face increased competition due to resource depletion.",
+            "B. The population may face decreased competition due to resource depletion.",
+            "C. The population may experience exponential growth due to resource depletion.",
+            "D. The population may experience straight-line growth due to resource depletion."
+        ],
+        correctAnswer: "A. The population may face increased competition due to resource depletion."
+    },
+    {
+        question: "A population is correctly defined as having which of the following characteristics? 1. inhabiting the same general area 2. belonging to the same species 3. possessing a constant and uniform density and dispersion",
+        options: [
+            "A. 1 only",
+            "B. 2 only",
+            "C. 1 and 2 only",
+            "D. 2 and 3 only"
+        ],
+        correctAnswer: "C. 1 and 2 only"
+    },
+    {
+        question: "An ecologist recorded 12 white-tailed deer, Odocoileus virginianus, per square mile in one woodlot and 20 per square mile in another woodlot. What was the ecologist comparing?",
+        options: [
+            "A. density",
+            "B. dispersion",
+            "C. carrying capacity",
+            "D. cohorts"
+        ],
+        correctAnswer: "A. density"
+    },
+    {
+        question: "During the spring, you are studying the mice that live in a field near your home. The population density is high, but you realize that you rarely observe any reproductive female mice. This most likely indicates",
+        options: [
+            "A. that there is selective predation on female mice.",
+            "B. that female mice die before reproducing.",
+            "C. that this habitat is a good place for mice to reproduce.",
+            "D. that you are observing immigrant mice"
+        ],
+        correctAnswer: "D. that you are observing immigrant mice"
+    },
+    {
+        question: "Which of the following groups would be most likely to exhibit uniform dispersion?",
+        options: [
+            "A. red squirrels, who actively defend territories.",
+            "B. cattails, which grow primarily at edges of lakes and streams",
+            "C. dwarf mistletoes, which parasitize particular species of forest tree",
+            "D. moths, in a city at night"
+        ],
+        correctAnswer: "A. red squirrels, who actively defend territories."
+    },
+    {
+        question: "To construct a reproductive table for a sexual species, one needs to",
+        options: [
+            "A. assess sperm viability for the males in the population.",
+            "B. keep track of all of the offspring of a cohort.",
+            "C. keep track of the females in a cohort",
+            "D. keep track of all of the offspring of the females in a cohort."
+        ],
+        correctAnswer: "D. keep track of all of the offspring of the females in a cohort."
+    },
+    {
+        question: "Which of the following examples would most accurately measure the density of the population being studied?",
+        options: [
+            "A. counting the number of prairie dog burrows per hectare",
+            "B. counting the number of times a 1 kilometer transect is intersected by tracks of red squirrels after a snowfall",
+            "C. counting the number of coyote droppings per hectare",
+            "D. counting the number of zebra from airplane census observations"
+        ],
+        correctAnswer: "D. counting the number of zebra from airplane census observations"
+    },
+    {
+        question: "Which of the following assumptions have to be made regarding the capture-recapture estimate of population size? 1. Marked and unmarked individuals have the same probability of being trapped. 2. The marked individuals have thoroughly mixed with the population after being marked. 3. No individuals have entered or left the population by immigration or emigration, and no individuals have been added by birth or eliminated by death during the course of the estimate.",
+        options: [
+            "A. 1 only",
+            "B. 2 only",
+            "C. 1 and 2 only",
+            "D. 1, 2 and 3"
+        ],
+        correctAnswer: "D. 1, 2 and 3"
+    },
+    {
+        question: "Long-term studies of Belding's ground squirrels show that immigrants move nearly 2 km from where they are born and become 1%-8% of the males and 0.7%-6% of the females in other populations. On an evolutionary scale, why is this significant?",
+        options: [
+            "A. These immigrants make up for the deaths of individuals, keeping the other populations' size stable.",
+            "B. Young reproductive males tend to stay in their home population and are not driven out by other territorial males.",
+            "C. These immigrants provide a source of genetic diversity for the other populations.",
+            "D. Those individuals that emigrate to these new populations are looking for less crowded conditions with more resources."
+        ],
+        correctAnswer: "C. These immigrants provide a source of genetic diversity for the other populations."
+    },
+    {
+        question: "Which of the following sets of measurements is the most useful when studying populations?",
+        options: [
+            "A. density, dispersion, and demographics of a population",
+            "B. gene frequency over time and the ratio of reproductive to non-reproductive individuals",
+            "C. annual precipitation averages and mean annual temperatures",
+            "D. minimum and maximum amounts of precipitation and annual temperature extremes"
+        ],
+        correctAnswer: "A. density, dispersion, and demographics of a population"
+    },
+    {
+        question: "Which of the following scenarios would provide the most legitimate data on population density?",
+        options: [
+            "A. Count the number of nests of a particular species of songbird and multiply this by a factor that extrapolates these data to actual animals.",
+            "B. Count the number of pine trees in several randomly selected 10 m x 10 m plots and extrapolate this number to the fraction of the study area these plots represent.",
+            "C. Use the mark-and-recapture method to estimate the size of the population.",
+            "D. Calculate the difference between all of the immigrants and emigrants to see if the population is growing or shrinking."
+        ],
+        correctAnswer: "B. Count the number of pine trees in several randomly selected 10 m x 10 m plots and extrapolate this number to the fraction of the study area these plots represent."
+    },
+    {
+        question: "Which of the following is the best example of uniform distribution?",
+        options: [
+            "A. bees collecting pollen in a wildflower meadow",
+            "B. snails in an intertidal zone at low tide",
+            "C. territorial songbirds in a mature forest during mating season.",
+            "D. mushrooms growing on the floor of an old growth forest"
+        ],
+        correctAnswer: "C. territorial songbirds in a mature forest during mating season."
+    },
+    {
+        question: "Which of the following choices would most likely promote random distribution?",
+        options: [
+            "A. territorial species",
+            "B. species that secrete chemicals to attract or inhibit other individuals",
+            "C. flocking and schooling behaviors",
+            "D. homogeneous chemical and physical factors in the environment"
+        ],
+        correctAnswer: "D. homogeneous chemical and physical factors in the environment"
+    },
+    {
+        question: "Which of the following best defines a cohort?",
+        options: [
+            "A. a group of individuals that inhabits a small isolated region within the range for the species",
+            "B. all of the individuals that are annually added to a population by birth and immigration",
+            "C. the reproductive males and females within the population",
+            "D. a group of the individuals from the same age group, from birth until they are all dead."
+        ],
+        correctAnswer: "D. a group of the individuals from the same age group, from birth until they are all dead."
+    },
+    {
+        question: "Why do some invertebrates, such as lobsters, show a \"stair-step\" survivorship curve?",
+        options: [
+            "A. Many invertebrates mate and produce offspring on multiyear cycles.",
+            "B. Within a species of invertebrates, younger individuals have a higher survivorship than older individuals.",
+            "C. Many invertebrates molt in order to grow, and they are vulnerable to predation during their \"soft shell\" stage.",
+            "D. Many invertebrate species have population cycles that go up and down according to the frequency of sunspots."
+        ],
+        correctAnswer: "C. Many invertebrates molt in order to grow, and they are vulnerable to predation during their \"soft shell\" stage."
+    },
+    {
+        question: "Which of the following is the most important assumption for the capture-recapture method to estimate the size of wildlife populations?",
+        options: [
+            "A. All females in the population have the same litter size.",
+            "B. More individuals emigrate from, as opposed to immigrate into, a population.",
+            "C. Over 50% of the marked individuals need to be trapped during the recapture phase.",
+            "D. Marked individuals have the same probability of being recaptured as unmarked individuals during the recapture phase"
+        ],
+        correctAnswer: "D. Marked individuals have the same probability of being recaptured as unmarked individuals during the recapture phase"
+    },
+    {
+        question: "A population of ground squirrels has an annual per capita birth rate of 0.06 and an annual per capita death rate of 0.02. Calculate an estimate of the number of individuals added to (or lost from) a population of 1,000 individuals in one year.",
+        options: [
+            "A. 120 individuals added.",
+            "B. 40 individuals added.",
+            "C. 20 individuals added",
+            "D. 400 individuals added"
+        ],
+        correctAnswer: "B. 40 individuals added."
+    },
+    {
+        question: "Exponential growth of a population is represented by dN/dt =",
+        options: [
+            "A. rN/K",
+            "B. rN.",
+            "C. rN(K+N)",
+            "D. rN((K-N)/K)"
+        ],
+        correctAnswer: "B. rN."
+    },
+    {
+        question: "Starting from a single individual, what is the size of a population of bacteria that reproduce by binary fission every 20 minutes at the end of a 2-hour time period? (Assume unlimited resources and no mortality.)",
+        options: [
+            "A. 64",
+            "B. 18",
+            "C. 128",
+            "D. 512."
+        ],
+        correctAnswer: "A. 64"
+    },
+    {
+        question: "Which of the following is the equation for zero population growth (ZPG)?",
+        options: [
+            "A. R = b - m.",
+            "B. dN/dt = rN",
+            "C. dN/dt = r_max N (K-N)/K",
+            "D. dN/dt = r_max N"
+        ],
+        correctAnswer: "A. R = b - m."
+    },
+    {
+        question: "In 2017, the population of Jodhpur was approximately 4,25,000 people. If the birth rate was 14 births for every 1,000 people, approximately how many births occurred in Jodhpur in 2017?",
+        options: [
+            "A. 6,000",
+            "B. 42,375",
+            "C. 60,000,",
+            "D. 140,000"
+        ],
+        correctAnswer: "A. 6,000"
+    },
+    {
+        question: "Consider two forests: one is an undisturbed old-growth forest, while the other has recently been logged. In which forest are species likely to experience exponential growth, and why?",
+        options: [
+            "A. Old growth, because of stable conditions that would favor exponential growth of all species in the forest.",
+            "B. Old growth, because each of the species is well established and can produce many offspring.",
+            "C. Logged, because the disturbed forest affords more resources for increased specific populations to grow",
+            "D. Logged, because the various populations are stimulated to a higher reproductive potential."
+        ],
+        correctAnswer: "C. Logged, because the disturbed forest affords more resources for increased specific populations to grow"
+    },
+    {
+        question: "Logistic growth of a population is represented by dN/dt =",
+        options: [
+            "A. rN/K",
+            "B. rN",
+            "C. rN(K+N)",
+            "D. rN[(K-N)/K)]"
+        ],
+        correctAnswer: "D. rN[(K-N)/K)]"
+    },
+    {
+        question: "As N approaches K for a certain population, which of the following is predicted by the logistic equation?",
+        options: [
+            "A. The growth rate will not change.",
+            "B. The growth rate will approach zero.",
+            "C. The population will show an Allee effect.",
+            "D. The population will increase exponentially."
+        ],
+        correctAnswer: "B. The growth rate will approach zero."
+    },
+    {
+        question: "In models of logistic population growth,",
+        options: [
+            "A. the population growth rate slows dramatically as N approaches K.",
+            "B. new individuals are added to the population most rapidly at the beginning of the population's growth.",
+            "C. new individuals are added to the population as N approaches K.",
+            "D. only density-dependent factors affect the rate of population growth."
+        ],
+        correctAnswer: "A. the population growth rate slows dramatically as N approaches K."
+    },
+    {
+        question: "The Allee effect is used to describe a population that",
+        options: [
+            "A. has become so small that it will have difficulty surviving and reproducing.",
+            "B. has become so large that it will have difficulty surviving and reproducing.",
+            "C. is viable and stable at its carrying capacity.",
+            "D. has exceeded its carrying capacity."
+        ],
+        correctAnswer: "A. has become so small that it will have difficulty surviving and reproducing."
+    },
+    {
+        question: "Carrying capacity is",
+        options: [
+            "A. seldom reached by marine producers and consumers because of the vast resources of the ocean.",
+            "B. the maximum population size that a particular environment can support.",
+            "C. fixed for most species over most of their range most of the time.",
+            "D. determined by density and dispersion data."
+        ],
+        correctAnswer: "B. the maximum population size that a particular environment can support."
+    },
+    {
+        question: "Which of the following causes populations to shift most quickly from an exponential to a logistic population growth?",
+        options: [
+            "A. increased birth rate",
+            "B. removal of predators",
+            "C. decreased death rate",
+            "D. competition for resources"
+        ],
+        correctAnswer: "D. competition for resources"
+    },
+    {
+        question: "Which of the following statements about the evolution of life histories is correct?",
+        options: [
+            "A. Stable environments with limited resources favor r-selected populations.",
+            "B. K-selected populations are most often found in environments where density-independent factors are important regulators of population size.",
+            "C. Most populations have both r- and K-selected characteristics that vary under different environmental conditions.",
+            "D. The reproductive efforts of r-selected populations are directed at producing just a few offspring with good competitive abilities."
+        ],
+        correctAnswer: "C. Most populations have both r- and K-selected characteristics that vary under different environmental conditions."
+    },
+    {
+        question: "Natural selection involves energetic trade-offs between",
+        options: [
+            "A. choosing how many offspring to produce over the course of a lifetime and how long to live.",
+            "B. producing large numbers of gametes when employing internal fertilization versus fewer numbers of gametes when employing external fertilization.",
+            "C. the emigration of individuals when they are no longer reproductively capable or committing suicide.",
+            "D. high survival rates of offspring and the cost of parental care."
+        ],
+        correctAnswer: "D. high survival rates of offspring and the cost of parental care."
+    },
+    {
+        question: "The three basic variables that make up the life history of an organism are",
+        options: [
+            "A. life expectancy, birth rate, and death rate.",
+            "B. number of reproductive females in the population, age structure of the population, and life expectancy.",
+            "C. age when reproduction begins, how often reproduction occurs, and how many offspring are produced per reproductive episode.",
+            "D. how often reproduction occurs, life expectancy of females in the population, and number of offspring per reproductive episode."
+        ],
+        correctAnswer: "C. age when reproduction begins, how often reproduction occurs, and how many offspring are produced per reproductive episode."
+    },
+    {
+        question: "Pacific salmon and annual plants are excellent examples of",
+        options: [
+            "A. cohort disintegration.",
+            "B. dispersion.",
+            "C. iteroparous reproduction.",
+            "D. semelparous reproduction."
+        ],
+        correctAnswer: "D. semelparous reproduction."
+    },
+    {
+        question: "Which of the following pairs of reproductive strategies is consistent with energetic trade-off and reproductive success?",
+        options: [
+            "A. Pioneer species of plants produce many very small, highly airborne seeds, whereas large elephants that are very good parents produce many offspring.",
+            "B. Female rabbits that suffer high predation rates may produce several litters per breeding season, and coconuts produce few fruits, but most survive when they encounter proper growing conditions.",
+            "C. Species that have to broadcast to distant habitats tend to produce seeds with heavy protective seed coats, and animals that are caring parents produce fewer offspring with higher infant mortality.",
+            "D. Free-living insects lay thousands of eggs and provide no parental care, whereas flowers take good care of their seeds until they are ready to germinate."
+        ],
+        correctAnswer: "B. Female rabbits that suffer high predation rates may produce several litters per breeding season, and coconuts produce few fruits, but most survive when they encounter proper growing conditions."
+    },
+    {
+        question: "Which of the following is characteristic of K-selected populations?",
+        options: [
+            "A. offspring with good chances of survival",
+            "B. many offspring per reproductive episode",
+            "C. small offspring",
+            "D. a high intrinsic rate of increase"
+        ],
+        correctAnswer: "A. offspring with good chances of survival"
+    },
+    {
+        question: "Which variables define the ecological life history of a species?",
+        options: [
+            "A. the age at which reproduction begins, frequency of reproduction, and the number of offspring for each reproductive episode",
+            "B. the ratio of females to males, the length of the breeding season, and the number of offspring for each reproductive episode",
+            "C. the number of offspring produced over a lifetime by a breeding pair and the survivability of the offspring",
+            "D. timing breeding sessions with optimal environmental conditions and the number of offspring produced during each breeding session"
+        ],
+        correctAnswer: "A. the age at which reproduction begins, frequency of reproduction, and the number of offspring for each reproductive episode"
+    },
+    {
+        question: "Which pattern of reproduction is correctly paired with a species?",
+        options: [
+            "A. iteroparity: Mosquito",
+            "B. iteroparity: elephant",
+            "C. semelparity: oak tree",
+            "D. semelparity: rabbit"
+        ],
+        correctAnswer: "B. iteroparity: elephant"
+    },
+    {
+        question: "Often the growth cycle of one population has an effect on the cycle of another. As moose populations increase, for example, wolf populations also increase. Thus, if we are considering the logistic equation for the wolf population, dN/dt = rN (K-N)/K Which of the factors accounts for the effect on the moose population?",
+        options: [
+            "A. r",
+            "B. N",
+            "C. rN",
+            "D. K"
+        ],
+        correctAnswer: "D. K"
+    },
+    {
+        question: "Which of the following is most likely to contribute to density-dependent regulation of populations?",
+        options: [
+            "A. the removal of toxic waste by decomposers",
+            "B. intraspecific competition for nutrients",
+            "C. earthquakes",
+            "D. floods"
+        ],
+        correctAnswer: "B. intraspecific competition for nutrients"
+    },
+    {
+        question: "Why do populations grow more slowly as they approach their carrying capacity?",
+        options: [
+            "A. Density-dependent factors lead to fewer births and increased mortality.",
+            "B. Density-independent factors lead to fewer births and increased mortality.",
+            "C. Hormonal changes promote higher death rates in crowded populations.",
+            "D. Individuals voluntarily stop mating so that overcrowding does not occur."
+        ],
+        correctAnswer: "A. Density-dependent factors lead to fewer births and increased mortality."
+    },
+    {
+        question: "A population of white-footed mice becomes severely overpopulated in a habitat that has been disturbed by human activity. Sometimes intrinsic factors cause the population to increase in mortality and lower reproduction rates to occur in reaction to the stress of overpopulation. Which of the following is an example of intrinsic population control?",
+        options: [
+            "A. Owl populations frequent the area more often because of increased hunting success.",
+            "B. Females undergo hormonal changes that delay sexual maturation and many individuals suffer depressed immune systems and die due to the stress of overpopulation.",
+            "C. Clumped dispersion of the population leads to increased spread of disease and parasites, resulting in a population crash.",
+            "D. All of the resources (food and shelter) are used up by overpopulation and much of the population dies of exposure and/or starvation."
+        ],
+        correctAnswer: "B. Females undergo hormonal changes that delay sexual maturation and many individuals suffer depressed immune systems and die due to the stress of overpopulation."
+    },
+    {
+        question: "Why is territoriality an adaptive behavior for songbirds maintaining populations at or near their carrying capacity?",
+        options: [
+            "A. Songbirds expend a tremendous amount of energy defending territories so that they spend less time feeding their young and fledging mortality increases.",
+            "B. Only the fittest males defend territories and they attract the fittest females so the best genes are conveyed to the next generation.",
+            "C. Songbird males defend territories commensurate with the size from which they can derive adequate resources for themselves, their mate, and their chicks.",
+            "D. Many individuals are killed in the agonistic behaviors that go along with territorial defenses."
+        ],
+        correctAnswer: "C. Songbird males defend territories commensurate with the size from which they can derive adequate resources for themselves, their mate, and their chicks."
+    },
+    {
+        question: "Which of the following could be a density-independent factor limiting human population growth?",
+        options: [
+            "A. social pressure for birth control",
+            "B. earthquakes",
+            "C. plagues",
+            "D. famines"
+        ],
+        correctAnswer: "B. earthquakes"
+    },
+    {
+        question: "Which of the following was the most significant limiting factor in human population growth in the 20th century?",
+        options: [
+            "A. famine",
+            "B. non-HIV disease",
+            "C. HIV",
+            "D. clean water"
+        ],
+        correctAnswer: "B. non-HIV disease"
+    },
+    {
+        question: "The maximum possible rate of increase of population of a given species under ideal conditions would depend upon its",
+        options: [
+            "A. biotic potential",
+            "B. potential natality",
+            "C. carrying capacity",
+            "D. biomass"
+        ],
+        correctAnswer: "A. biotic potential"
+    },
+    {
+        question: "In a population growing according to the logistic growth model",
+        options: [
+            "A. individuals reproduce according to their physiological capacity",
+            "B. the per capita rate of increase approaches zero as the population nears the carrying capacity",
+            "C. the number of births is always more than the number of deaths",
+            "D. the birth-to-death ratio is NOT influenced by the carrying capacity."
+        ],
+        correctAnswer: "B. the per capita rate of increase approaches zero as the population nears the carrying capacity"
+    },
+    {
+        question: "N and No represent the number of viable cells at time 't' during sterilization and at the start of sterilization (t = 0), respectively. Assuming that cell death follows first order kinetics and that k is the death rate constant, which of the following relationship(s) is/are correct?",
+        options: [
+            "A. N = N₀ e^kt",
+            "B. -ln(N/N₀) = kt",
+            "C. N = N₀ kt²",
+            "D. N - N₀ = kt"
+        ],
+        correctAnswer: "B. -ln(N/N₀) = kt"
+    },
+    {
+        question: "In an equilibrium population, thousands of eggs and hundreds of tadpoles are produced by single pair of frogs. On average, about how many offspring per pair will live to reproduce in the next season?",
+        options: [
+            "A. 0",
+            "B. 2",
+            "C. 10 to 20",
+            "D. above 100"
+        ],
+        correctAnswer: "B. 2"
+            }
+        ];
+
+        // --- Quiz Configuration ---
+        const questionMarks = 2;
+        const negativeMarkingValue = 0.5;
+        const quizDuration = 30 * 60;
+        const currentQuizVersion = "Population_Ecology_v5.0"; // Updated quiz version
+
+        // --- HTML Element References ---
+        const loginPage = document.getElementById('login-page');
+        const studentNameInput = document.getElementById('student-name-input');
+        const startQuizButton = document.getElementById('start-quiz-button');
+
+        const noticePage = document.getElementById('notice-page');
+        const continueQuizButton = document.getElementById('continue-quiz-button');
+
+        const quizPage = document.getElementById('quiz-page');
+        const timerDisplay = document.getElementById('timer-display');
+        const questionImage = document.getElementById('question-image');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const saveNextButton = document.getElementById('save-next-button');
+        const clearButton = document.getElementById('clear-button');
+        const nextButton = document.getElementById('next-button');
+        const quizNavButtons = document.querySelector('.quiz-nav-buttons');
+        const questionPalette = document.getElementById('question-palette');
+        const quizSidebar = document.getElementById('quiz-sidebar');
+
+        const finalResultsPage = document.getElementById('final-results-page');
+        const studentNameDisplay = document.getElementById('student-name-display');
+        const attemptedDisplay = document.getElementById('attempted-display');
+        const correctDisplay = document.getElementById('correct-display');
+        const incorrectDisplay = document.getElementById('incorrect-display');
+        const finalScoreDisplay = document.getElementById('final-score-display');
+        const maxMarksDisplay = document.getElementById('max-marks-display');
+        const showAnswerKeyButton = document.getElementById('show-answer-key-button');
+
+        const adminPasscodeInput = document.getElementById('admin-passcode-input');
+        const adminLoginButton = document.getElementById('admin-login-button');
+        const adminLoginMessage = document.getElementById('admin-login-message');
+
+        const adminResultsModal = document.getElementById('admin-results-modal');
+        const adminResultsDisplayArea = document.getElementById('admin-results-display-area');
+        const closeAdminModalButton = document.getElementById('close-admin-modal');
+
+        const appFooter = document.getElementById('app-footer');
+
+        // New Answer Key Navigation Buttons
+        const answerKeyNavButtons = document.querySelector('.answer-key-nav-buttons');
+        const prevAnswerKeyButton = document.getElementById('prev-answer-key-button');
+        const nextAnswerKeyButton = document.getElementById('next-answer-key-button');
+
+
+        // --- Quiz State Variables ---
+        let studentName = '';
+        let currentQuestionIndex = 0;
+        // 0: Not visited, 1: Visited but not answered (red), 2: Answered (green)
+        let questionStatus = Array(quizData.length).fill(0);
+        let savedAnswers = Array(quizData.length).fill(null);
+        let timeLeft = quizDuration;
+        let timerInterval;
+        let quizSubmitted = false;
+        let isAnswerKeyMode = false;
+
+        window.selectedAnswer = null;
+
+        // --- Integrity Check ---
+        const expectedFooterText = "betabiosciences@gmail.com";
+        function checkFooterIntegrity() {
+            if (appFooter && appFooter.textContent !== expectedFooterText) {
+                console.error("Integrity check failed: Footer text modified!");
+                clearInterval(timerInterval);
+                [startQuizButton, continueQuizButton, saveNextButton, clearButton, nextButton, adminLoginButton, showAnswerKeyButton, prevAnswerKeyButton, nextAnswerKeyButton].forEach(btn => {
+                    if (btn) btn.disabled = true;
+                });
+                const body = document.querySelector('body');
+                const alertDiv = document.createElement('div');
+                alertDiv.style.position = 'fixed';
+                alertDiv.style.top = '20px';
+                alertDiv.style.left = '50%';
+                alertDiv.style.transform = 'translateX(-50%)';
+                alertDiv.style.backgroundColor = 'red';
+                alertDiv.style.color = 'white';
+                alertDiv.style.padding = '15px';
+                alertDiv.style.borderRadius = '8px';
+                alertDiv.style.zIndex = '2000';
+                alertDiv.textContent = "Quiz functionality has been disabled due to an integrity check failure. Please do not modify the footer text.";
+                body.appendChild(alertDiv);
+                setTimeout(() => alertDiv.remove(), 5000);
+                return false;
+            }
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(checkFooterIntegrity, 100);
+        });
+
+
+        // --- Page Navigation Functions ---
+        function showPage(pageElement) {
+            [loginPage, noticePage, quizPage, finalResultsPage].forEach(page => {
+                if (page) page.classList.add('hidden');
+            });
+            if (pageElement) pageElement.classList.remove('hidden');
+        }
+
+        function showModal(modalElement) {
+            if (modalElement) modalElement.classList.remove('hidden');
+        }
+
+        function hideModal(modalElement) {
+            if (modalElement) modalElement.classList.add('hidden');
+        }
+
+
+        // --- Login Page Logic ---
+        studentNameInput.addEventListener('input', () => {
+            startQuizButton.disabled = studentNameInput.value.trim() === '';
+        });
+
+        startQuizButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            studentName = studentNameInput.value.trim();
+            if (studentName) {
+                showPage(noticePage);
+            }
+        });
+
+        // --- Notice Page Logic ---
+        continueQuizButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            showPage(quizPage);
+            startTimer();
+            loadQuestion(currentQuestionIndex);
+            renderQuestionPalette();
+            quizNavButtons.classList.remove('hidden');
+            answerKeyNavButtons.classList.add('hidden');
+            timerDisplay.classList.remove('hidden');
+            quizSidebar.classList.remove('hidden');
+        });
+
+        // --- Timer Logic ---
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (!checkFooterIntegrity()) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+                timeLeft--;
+                updateTimerDisplay();
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuizAutomatically();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            timerDisplay.classList.remove('orange', 'red', 'green');
+            if (timeLeft <= 60) {
+                timerDisplay.classList.add('red');
+            } else if (timeLeft <= 180) {
+                timerDisplay.classList.add('orange');
+            } else {
+                timerDisplay.classList.add('green');
+            }
+        }
+
+        function submitQuizAutomatically() {
+            if (!quizSubmitted) {
+                const body = document.querySelector('body');
+                const alertDiv = document.createElement('div');
+                alertDiv.style.position = 'fixed';
+                alertDiv.style.top = '20px';
+                alertDiv.style.left = '50%';
+                alertDiv.style.transform = 'translateX(-50%)';
+                alertDiv.style.backgroundColor = '#f59e0b';
+                alertDiv.style.color = 'white';
+                alertDiv.style.padding = '15px';
+                alertDiv.style.borderRadius = '8px';
+                alertDiv.style.zIndex = '2000';
+                alertDiv.textContent = "Time's up! Your quiz has been automatically submitted.";
+                body.appendChild(alertDiv);
+                setTimeout(() => alertDiv.remove(), 3000);
+                submitQuiz();
+            }
+        }
+
+        // --- Quiz Page Logic ---
+        function loadQuestion(index) {
+            if (!checkFooterIntegrity()) return;
+            currentQuestionIndex = index;
+            optionsContainer.innerHTML = '';
+            window.selectedAnswer = savedAnswers[currentQuestionIndex]; // Load previously selected answer
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionText.textContent = `Q${index + 1}: ${currentQuestion.question}`;
+
+            questionImage.classList.add('hidden');
+            questionImage.src = '';
+
+
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button');
+
+                if (isAnswerKeyMode) {
+                    const cleanedOption = option.replace(/^[A-D]\)\s*/, '');
+                    const cleanedCorrectAnswer = currentQuestion.correctAnswer.replace(/^[A-D]\)\s*/, '');
+                    const cleanedStudentAnswer = savedAnswers[currentQuestionIndex] ? savedAnswers[currentQuestionIndex].replace(/^[A-D]\)\s*/, '') : null;
+
+                    if (cleanedOption === cleanedCorrectAnswer) {
+                        button.classList.add('correct-answer');
+                    }
+                    if (cleanedStudentAnswer === cleanedOption && cleanedOption !== cleanedCorrectAnswer) {
+                        button.classList.add('incorrect-answer');
+                    }
+                    button.classList.add('disabled-for-answer-key');
+                } else {
+                    if (savedAnswers[currentQuestionIndex] === option) {
+                        button.classList.add('selected');
+                    }
+                    button.addEventListener('click', () => selectAnswer(button, option));
+                }
+                optionsContainer.appendChild(button);
+            });
+
+            if (!isAnswerKeyMode) {
+                // IMPORTANT FIX: Mark as visited (red) if not already answered
+                if (questionStatus[currentQuestionIndex] === 0) {
+                    questionStatus[currentQuestionIndex] = 1; // Mark as visited but unanswered (red)
+                }
+                updateQuestionPalette();
+
+                if (currentQuestionIndex === quizData.length - 1) {
+                    nextButton.textContent = 'Submit Quiz';
+                    nextButton.classList.add('submit-quiz');
+                    nextButton.classList.remove('next');
+                } else {
+                    nextButton.textContent = 'Next';
+                    nextButton.classList.remove('submit-quiz');
+                    nextButton.classList.add('next');
+                }
+            } else {
+                prevAnswerKeyButton.disabled = (currentQuestionIndex === 0);
+                nextAnswerKeyButton.classList.add('answer-key-nav-button');
+                if (currentQuestionIndex === quizData.length - 1) {
+                    nextAnswerKeyButton.textContent = 'Close Answer Key';
+                    nextAnswerKeyButton.classList.add('close-answer-key');
+                } else {
+                    nextAnswerKeyButton.textContent = 'Next';
+                    nextAnswerKeyButton.classList.remove('close-answer-key');
+                }
+            }
+        }
+
+        function selectAnswer(button, optionText) {
+            if (!checkFooterIntegrity()) return;
+            document.querySelectorAll('.option-button.selected').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            button.classList.add('selected');
+            window.selectedAnswer = optionText;
+        }
+
+        saveNextButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            if (window.selectedAnswer !== null) {
+                savedAnswers[currentQuestionIndex] = window.selectedAnswer;
+                questionStatus[currentQuestionIndex] = 2; // Mark as answered (green)
+            } else {
+                // If Save & Next is clicked without selecting an answer, it remains 'visited but unanswered' or 'not visited'
+                // For 'Save & Next', we assume intent to save (even if null) and move on.
+                // If it was already green (answered), it stays green. If red, it stays red. If grey, it becomes red.
+                 if (questionStatus[currentQuestionIndex] === 0) { // If not visited
+                     questionStatus[currentQuestionIndex] = 1; // Mark as visited but unanswered (red)
+                 }
+            }
+            moveToNextQuestion();
+        });
+
+        clearButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            window.selectedAnswer = null;
+            savedAnswers[currentQuestionIndex] = null;
+            document.querySelectorAll('.option-button.selected').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            questionStatus[currentQuestionIndex] = 1; // Mark as visited but unanswered (red)
+            updateQuestionPalette();
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+
+            // If "Next" is clicked:
+            // 1. If an answer is selected, mark as answered (green).
+            // 2. If no answer is selected but the question was previously green (answered), it remains green.
+            // 3. If no answer is selected and it was grey (not visited) or red (visited but not answered), it becomes red.
+            if (window.selectedAnswer !== null) {
+                 savedAnswers[currentQuestionIndex] = window.selectedAnswer;
+                 questionStatus[currentQuestionIndex] = 2; // Mark as answered (green)
+            } else {
+                 if (questionStatus[currentQuestionIndex] === 0 || questionStatus[currentQuestionIndex] === 1) {
+                     questionStatus[currentQuestionIndex] = 1; // Mark as visited but unanswered (red)
+                 }
+            }
+
+            if (currentQuestionIndex === quizData.length - 1) {
+                submitQuiz();
+            } else {
+                moveToNextQuestion();
+            }
+        });
+
+        function moveToNextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                loadQuestion(currentQuestionIndex + 1);
+            } else {
+                console.log("Already on the last question. Consider submitting.");
+            }
+        }
+
+        function renderQuestionPalette() {
+            questionPalette.innerHTML = '';
+            quizData.forEach((_, index) => {
+                const box = document.createElement('div');
+                box.classList.add('palette-box');
+                box.textContent = index + 1;
+                box.addEventListener('click', () => loadQuestion(index));
+                questionPalette.appendChild(box);
+            });
+            updateQuestionPalette();
+        }
+
+        function updateQuestionPalette() {
+            const paletteBoxes = questionPalette.children;
+            if (paletteBoxes.length !== quizData.length) {
+                console.warn("Palette boxes count mismatch with quiz data. Re-rendering palette.");
+                renderQuestionPalette();
+                return;
+            }
+            questionStatus.forEach((status, index) => {
+                const box = paletteBoxes[index];
+                if (box) {
+                    box.classList.remove('unanswered', 'answered', 'grey'); // Remove all states first
+                    if (status === 1) { // Visited but not answered (red)
+                        box.classList.add('unanswered');
+                    } else if (status === 2) { // Answered (green)
+                        box.classList.add('answered');
+                    } else { // Not visited (grey)
+                        box.classList.add('grey');
+                    }
+                }
+            });
+        }
+
+        // --- Final Submission and Results Logic ---
+        async function submitQuiz() {
+            if (!checkFooterIntegrity()) return;
+            if (quizSubmitted) return;
+            quizSubmitted = true;
+            clearInterval(timerInterval);
+
+            let correctAnswersCount = 0;
+            let incorrectAnswersCount = 0;
+            let attemptedQuestionsCount = 0;
+            let finalScore = 0;
+
+            quizData.forEach((question, index) => {
+                const studentAnswer = savedAnswers[index];
+                if (studentAnswer !== null) {
+                    attemptedQuestionsCount++;
+                    const cleanedStudentAnswer = studentAnswer.replace(/^[A-D]\)\s*/, '');
+                    const cleanedCorrectAnswer = question.correctAnswer.replace(/^[A-D]\)\s*/, '');
+
+                    if (cleanedStudentAnswer === cleanedCorrectAnswer) {
+                        correctAnswersCount++;
+                        finalScore += questionMarks;
+                    } else {
+                        incorrectAnswersCount++;
+                        finalScore -= negativeMarkingValue;
+                    }
+                }
+            });
+
+            studentNameDisplay.textContent = studentName;
+            attemptedDisplay.textContent = attemptedQuestionsCount;
+            correctDisplay.textContent = correctAnswersCount;
+            incorrectDisplay.textContent = incorrectAnswersCount;
+            finalScoreDisplay.textContent = finalScore.toFixed(1);
+
+            const maxPossibleMarks = quizData.length * questionMarks;
+            maxMarksDisplay.textContent = maxPossibleMarks;
+
+            showPage(finalResultsPage);
+
+            if (isAuthReady && db && userId) {
+                try {
+                    const resultsCollectionRef = collection(db, `quizzes/${projectIdForFirestorePath}/results`);
+                    const submissionId = `${userId}_${Date.now()}`;
+                    await setDoc(doc(resultsCollectionRef, submissionId), {
+                        studentName: studentName,
+                        score: parseFloat(finalScore.toFixed(1)),
+                        attemptedQuestions: attemptedQuestionsCount,
+                        correctAnswers: correctAnswersCount,
+                        incorrectAnswers: incorrectAnswersCount,
+                        maxMarks: maxPossibleMarks,
+                        timestamp: serverTimestamp(),
+                        userId: userId,
+                        quizVersion: currentQuizVersion
+                    });
+                    console.log("Quiz results saved to Firestore!");
+                } catch (e) {
+                    console.error("Error adding document to Firestore: ", e);
+                    const resultsPage = document.getElementById('final-results-page');
+                    let saveErrorMsg = document.getElementById('saveErrorMsg');
+                    if (!saveErrorMsg) {
+                        saveErrorMsg = document.createElement('p');
+                        saveErrorMsg.id = 'saveErrorMsg';
+                        saveErrorMsg.style.color = 'red';
+                        saveErrorMsg.style.marginTop = '10px';
+                        resultsPage.insertBefore(saveErrorMsg, document.querySelector('.telegram-link'));
+                    }
+                    saveErrorMsg.textContent = "Note: Could not save results to the server. Please ensure you are connected to the internet.";
+                }
+            } else {
+                console.warn("Firestore not ready or user not authenticated. Results not saved.");
+                const resultsPage = document.getElementById('final-results-page');
+                let saveErrorMsg = document.getElementById('saveErrorMsg');
+                if (!saveErrorMsg) {
+                    saveErrorMsg = document.createElement('p');
+                    saveErrorMsg.id = 'saveErrorMsg';
+                    saveErrorMsg.style.color = 'red';
+                    saveErrorMsg.style.marginTop = '10px';
+                    resultsPage.insertBefore(saveErrorMsg, document.querySelector('.telegram-link'));
+                }
+                saveErrorMsg.textContent = "Note: Could not save results to the server. Please ensure you are connected to the internet.";
+            }
+        }
+
+        // --- Answer Key Logic ---
+        showAnswerKeyButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            isAnswerKeyMode = true;
+            currentQuestionIndex = 0;
+            showPage(quizPage);
+            loadQuestion(currentQuestionIndex);
+
+            timerDisplay.classList.add('hidden');
+            quizNavButtons.classList.add('hidden');
+            quizSidebar.classList.add('hidden');
+
+            answerKeyNavButtons.classList.remove('hidden');
+        });
+
+        prevAnswerKeyButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            if (currentQuestionIndex > 0) {
+                loadQuestion(currentQuestionIndex - 1);
+            }
+        });
+
+        nextAnswerKeyButton.addEventListener('click', () => {
+            if (!checkFooterIntegrity()) return;
+            if (currentQuestionIndex < quizData.length - 1) {
+                loadQuestion(currentQuestionIndex + 1);
+            } else {
+                closeAnswerKey();
+            }
+        });
+
+        function closeAnswerKey() {
+            isAnswerKeyMode = false;
+            showPage(finalResultsPage);
+            answerKeyNavButtons.classList.add('hidden');
+            timerDisplay.classList.add('hidden');
+            quizNavButtons.classList.add('hidden');
+            quizSidebar.classList.add('hidden');
+        }
+
+
+        // --- Admin Login Logic (Scrambled Passcode) ---
+        const obfuscatedPasscodeBytes = [106, 123, 114, 124, 75, 64, 63, 64, 65];
+        const baseOffset = 7;
+
+        function getAdminPasscode() {
+            let decryptedPasscode = '';
+            for (let i = 0; i < obfuscatedPasscodeBytes.length; i++) {
+                decryptedPasscode += String.fromCharCode(obfuscatedPasscodeBytes[i] - baseOffset - i);
+            }
+            return decryptedPasscode;
+        }
+
+        adminLoginButton.addEventListener('click', async () => {
+            if (!checkFooterIntegrity()) return;
+            const enteredPasscode = adminPasscodeInput.value;
+            adminLoginMessage.classList.add('hidden');
+
+            if (enteredPasscode === getAdminPasscode()) {
+                adminLoginMessage.textContent = "Loading admin results...";
+                adminLoginMessage.classList.remove('hidden');
+                adminLoginMessage.style.color = '#22c55e';
+
+                await fetchAllQuizResults();
+                adminResultsModal.classList.remove('hidden');
+                adminLoginMessage.classList.add('hidden');
+            } else {
+                adminLoginMessage.textContent = "Incorrect passcode.";
+                adminLoginMessage.classList.remove('hidden');
+                adminLoginMessage.style.color = '#ef4444';
+            }
+        });
+
+        closeAdminModalButton.addEventListener('click', () => {
+            adminResultsModal.classList.add('hidden');
+        });
+
+        // --- Fetch and Display All Results for Admin Modal ---
+        async function fetchAllQuizResults() {
+            adminResultsDisplayArea.innerHTML = '<p class="loading-message">Loading results...</p>';
+            if (!isAuthReady || !db) {
+                adminResultsDisplayArea.innerHTML = '<p class="error-message">Firebase not ready. Please check configuration and authentication.</p>';
+                console.warn("Firestore not ready for admin results fetch.");
+                return;
+            }
+
+            try {
+                const resultsCollectionRef = collection(db, `quizzes/${projectIdForFirestorePath}/results`);
+                const q = query(resultsCollectionRef, where("quizVersion", "==", currentQuizVersion));
+                const querySnapshot = await getDocs(q);
+                const allResults = [];
+                querySnapshot.forEach((doc) => {
+                    allResults.push({ id: doc.id, ...doc.data() });
+                });
+
+                allResults.sort((a, b) => {
+                    const timeA = a.timestamp ? a.timestamp.toMillis() : 0;
+                    const timeB = b.timestamp ? b.timestamp.toMillis() : 0;
+                    return timeB - timeA;
+                });
+
+                displayAdminResults(allResults);
+            } catch (e) {
+                console.error("Error fetching all quiz results: ", e);
+                adminResultsDisplayArea.innerHTML = `<p class="error-message">Error fetching results: ${e.message}. Check console for details.</p>`;
+            }
+        }
+
+        function displayAdminResults(results) {
+            if (results.length === 0) {
+                adminResultsDisplayArea.innerHTML = '<p class="no-results-message">No quiz results found yet.</p>';
+                return;
+            }
+
+            let tableHtml = `
+                <div class="admin-results-table-wrapper">
+                    <table class="admin-results-table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Score</th>
+                                <th>Max Marks</th>
+                                <th>Attempted</th>
+                                <th>Correct</th>
+                                <th>Incorrect</th>
+                                <th>Date</th>
+                                <th>User ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            results.forEach(result => {
+                const date = result.timestamp ? new Date(result.timestamp.toDate()).toLocaleString() : 'N/A';
+                tableHtml += `
+                    <tr>
+                        <td>${result.studentName || 'N/A'}</td>
+                        <td>${result.score !== undefined ? result.score.toFixed(1) : 'N/A'}</td>
+                        <td>${result.maxMarks !== undefined ? result.maxMarks : (quizData.length * questionMarks)}</td>
+                        <td>${result.attemptedQuestions !== undefined ? result.attemptedQuestions : 'N/A'}</td>
+                        <td>${result.correctAnswers !== undefined ? result.correctAnswers : 'N/A'}</td>
+                        <td>${result.incorrectAnswers !== undefined ? result.incorrectAnswers : 'N/A'}</td>
+                        <td>${date}</td>
+                        <td>${result.userId || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            adminResultsDisplayArea.innerHTML = tableHtml;
+        }
+
+        // Initial page load
+        document.addEventListener('DOMContentLoaded', () => {
+            showPage(loginPage);
+        });
+    </script>
+</body>
+</html>
