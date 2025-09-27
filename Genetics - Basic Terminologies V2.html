@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genetics - Basic Terminologies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #e0e6ed;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            max-width: 100vw;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #5865f2, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0,212,255,0.5);
+        }
+
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .section {
+            display: none;
+            padding: 2rem 1.5rem;
+            height: 100%;
+            overflow-y: auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            color: #00d4ff;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 0 20px rgba(0,212,255,0.3);
+            border-bottom: 2px solid rgba(0,212,255,0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        .section h3 {
+            font-size: 1.3rem;
+            color: #ff6b6b;
+            margin: 1.5rem 0 1rem 0;
+            text-shadow: 0 0 15px rgba(255,107,107,0.3);
+        }
+
+        .section p, .section li {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+
+        .section ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .section li {
+            margin-bottom: 0.5rem;
+        }
+
+        .section img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 1rem auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .quiz-container {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        .question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #00d4ff;
+        }
+
+        .option {
+            background: linear-gradient(135deg, rgba(88,101,242,0.2), rgba(88,101,242,0.1));
+            border: 1px solid rgba(88,101,242,0.3);
+            border-radius: 10px;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .option:hover {
+            background: linear-gradient(135deg, rgba(88,101,242,0.4), rgba(88,101,242,0.2));
+            border-color: rgba(88,101,242,0.5);
+            transform: translateX(5px);
+        }
+
+        .option.correct-answer {
+            /* This class is only used to identify correct answers in HTML, not for styling */
+        }
+
+        .option.selected.correct {
+            background: linear-gradient(135deg, rgba(0,255,127,0.3), rgba(0,255,127,0.1));
+            border-color: rgba(0,255,127,0.5);
+            color: #00ff7f;
+        }
+
+        .option.selected.incorrect {
+            background: linear-gradient(135deg, rgba(255,107,107,0.3), rgba(255,107,107,0.1));
+            border-color: rgba(255,107,107,0.5);
+            color: #ff6b6b;
+        }
+
+        .option.revealed-correct {
+            background: linear-gradient(135deg, rgba(0,255,127,0.3), rgba(0,255,127,0.1));
+            border-color: rgba(0,255,127,0.5);
+            color: #00ff7f;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            backdrop-filter: blur(5px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, rgba(88,101,242,0.3), rgba(88,101,242,0.1));
+            color: #00d4ff;
+            font-weight: 600;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.3));
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #5865f2, #7289da);
+            border: none;
+            border-radius: 25px;
+            padding: 0.8rem 1.5rem;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(88,101,242,0.3);
+            min-width: 80px;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(88,101,242,0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 10px rgba(88,101,242,0.2);
+        }
+
+        .page-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #00d4ff;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #00d4ff;
+            box-shadow: 0 0 10px rgba(0,212,255,0.5);
+        }
+
+        .footer {
+            background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5));
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+
+        .footer-logo {
+            width: 140px;
+            height: auto;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+
+        .footer-text {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 1.5rem 1rem;
+            }
+
+            .section h2 {
+                font-size: 1.3rem;
+            }
+
+            .section h3 {
+                font-size: 1.1rem;
+            }
+
+            .section p, .section li {
+                font-size: 0.95rem;
+            }
+
+            .nav-btn {
+                padding: 0.7rem 1rem;
+                font-size: 0.8rem;
+                min-width: 70px;
+            }
+
+            .navigation {
+                padding: 0.8rem;
+            }
+
+            .footer {
+                padding: 1rem;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #5865f2, #00d4ff);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #7289da, #00d4ff);
+        }
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>GENETICS - BASIC TERMINOLOGIES</h1>
+        </header>
+
+        <div class="content-area">
+            <!-- Section 1: Basic Terms -->
+            <div class="section active">
+                <h2>Fundamental Concepts</h2>
+                
+                <h3>Genome</h3>
+                <p>A complete set of chromosomal genes, inherited from parent or entire genotype of a cell or individual.</p>
+
+                <h3>Gene (Mendel's factor)</h3>
+                <p>The fundamental physical and functional unit of heredity, carries information from one generation to the next; a segment of DNA, composed of a transcribed region and a regulatory sequence, that makes possible transcription. Danish geneticist Wilhelm Johannsen first used it. Gene is a segment of a DNA molecule that codes for the synthesis of a single polypeptide; it is as an inherited factor that determines a characteristic.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Genetics%20basic%20terminology%20fig%201.jpg" alt="Gene illustration">
+
+                <h3>Character or characteristics</h3>
+                <p>A <strong>Character</strong> (or <strong>Characteristic</strong>) is a <strong>heritable attribute or feature</strong> of an organism that is selected for investigation and study in genetics. These attributes are often general categories that can have distinct forms. For example, <strong>plant height</strong> is a character, and the specific forms it takes—tall or dwarf—are the corresponding traits. Similarly, <strong>human skin color</strong> is a character, while various shades are the resulting phenotypes. Characters serve as the basis for tracking and analyzing the patterns of inheritance across generations.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Genetics%20basic%20terminology%20fig%202.jpg" alt="Character illustration">
+
+                <h3>Chromosome</h3>
+                <p>Condensed chromatic structure in the cell nucleus that carry genes encoded by DNA.</p>
+            </div>
+
+            <!-- Section 2: Alleles and Loci -->
+            <div class="section">
+                <h2>Alleles and Chromosomal Organization</h2>
+                
+                <h3>Allele (Allelomorph)</h3>
+                <p>An alternative form of a gene that occurs at the same locus on homologous chromosomes. Alleles are genes controlling the same characteristics like hair colour but producing different effects (black/red) and occupying corresponding positions on homologous chromosome. e.g., R and r are alleles for seed shape . Thus, there is a specific place—a locus—on a chromosome in pea plants where the shape of seeds is determined. This locus might be occupied by an allele for round seeds (R) or one for wrinkled seeds (r).</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Genetics%20basic%20terminology%20fig%203.jpg" alt="Allele illustration">
+
+                <h3>Locus</h3>
+                <p>The <strong>Locus</strong> (plural: <strong>Loci</strong>) is the specific, fixed <strong>position or physical location</strong> on a chromosome occupied by a particular <strong>gene</strong> or one of its alternative forms, called an <strong>allele</strong>. Since genes are arranged linearly along a chromosome, the locus provides a unique address for a gene. In a pair of homologous chromosomes, the loci for the same gene are located at the corresponding positions. For instance, the gene controlling human eye color always resides at the same locus on chromosome 15, though different individuals may have different alleles (e.g., for blue or brown color) occupying that spot.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Genetics%20basic%20terminology%20fig%204.jpg" alt="Locus illustration">
+
+                <h3>Homologous chromosomes</h3>
+                <p><strong>Homologous Chromosomes</strong> are a pair of chromosomes that are <strong>identical in size, shape, and gene sequence</strong>, with one member of the pair inherited from the <strong>male parent</strong> (paternal homolog) and the other from the <strong>female parent</strong> (maternal homolog). They are the chromosomes that pair up during meiosis. While they contain genes for the same traits at the same <strong>loci</strong> (positions), they may carry different <strong>alleles</strong> (versions) of those genes. For instance, both homologs will carry the gene for eye color, but one might carry the allele for brown eyes, and the other for blue eyes. The pairing of homologous chromosomes is characteristic of all diploid organisms, ensuring that two complete sets of genetic information are present in every somatic cell.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Genetics%20basic%20terminology%20fig%205.jpg" alt="Homologous chromosomes illustration">
+            </div>
+
+            <!-- Section 3: Zygosity -->
+            <div class="section">
+                <h2>Genetic Composition</h2>
+                
+                <h3>Hybrid</h3>
+                <p>A <strong>Hybrid</strong> is an individual organism produced from a cross, or mating, between two parents of <strong>differing genotypes</strong>. The term most commonly refers to an individual that is <strong>heterozygous</strong> for one or more genes being studied, meaning it possesses two different alleles at a particular locus (e.g., Aa). For instance, crossing a pure-breeding tall pea plant (TT) with a pure-breeding dwarf pea plant (tt) results in F1​ progeny that are all hybrids (Tt). More broadly, the term can also describe the offspring of a cross between two different species (like a mule, which is the hybrid of a horse and a donkey).</p>
+
+                <h3>Homozygous and Heterozygous</h3>
+                <p>The terms <strong>Homozygous</strong> and <strong>Heterozygous</strong> describe the genetic makeup, or <strong>genotype</strong>, of an individual with respect to a specific gene. Since most complex organisms are <strong>diploid</strong>, they possess two alleles for every gene, one inherited from each parent.</p>
+
+                <h4>Homozygous</h4>
+                <p>An individual is <strong>Homozygous</strong> for a trait when they possess <strong>two identical alleles</strong> for that gene at the corresponding loci on homologous chromosomes.</p>
+                <ul>
+                    <li><strong>Homozygous Dominant:</strong> The genotype includes two copies of the dominant allele (e.g., <strong>TT</strong> for tallness). The individual will express the dominant phenotype.</li>
+                    <li><strong>Homozygous Recessive:</strong> The genotype includes two copies of the recessive allele (e.g., <strong>tt</strong> for dwarfness). The individual will express the recessive phenotype, as no dominant allele is present to mask it.</li>
+                </ul>
+
+                <h4>Heterozygous</h4>
+                <p>An individual is <strong>Heterozygous</strong> for a trait when they possess <strong>two different alleles</strong> for that gene (e.g., <strong>Tt</strong>).</p>
+                <ul>
+                    <li>The genotype consists of one dominant allele and one recessive allele.</li>
+                    <li>The individual will typically express the <strong>dominant phenotype</strong>, as the presence of the dominant allele masks the expression of the recessive one.</li>
+                    <li>A heterozygous individual is also referred to as a <strong>hybrid</strong> or a <strong>carrier</strong> (in the case of recessive genetic disorders).</li>
+                </ul>
+                
+                <img src="https://betabiosciences.github.io//Other-Units/Genetics%20basic%20terminology%20fig%206.jpg" alt="Genetic Composition illustration">
+            </div>
+
+            <!-- Section 4: Dominance -->
+            <div class="section">
+                <h2>Dominance and Expression</h2>
+                
+                <h3>Dominant and Recessive Alleles</h3>
+                <p>The terms <strong>Dominant</strong> and <strong>Recessive Alleles</strong> describe how different versions of a gene interact to determine an organism's observable trait, or <strong>phenotype</strong>.</p>
+
+                <h4>Dominant Allele</h4>
+                <p>A <strong>Dominant Allele</strong> is one that <strong>masks or hides the expression</strong> of a recessive allele when both are present in a heterozygous individual. It exerts its effect regardless of the second allele it is paired with. A dominant allele is conventionally represented by an <strong>uppercase letter</strong> (e.g., <strong>R</strong> for round seeds).</p>
+                <ul>
+                    <li>If an organism has at least one dominant allele (i.e., the genotype is <strong>homozygous dominant (RR)</strong> or <strong>heterozygous (Rr)</strong>), the dominant phenotype will be expressed.</li>
+                </ul>
+
+                <h4>Recessive Allele</h4>
+                <p>A <strong>Recessive Allele</strong> is one whose expression is <strong>masked</strong> by a dominant allele in the heterozygous state. It is only able to exert its effect—that is, the recessive phenotype is expressed—when the individual is <strong>homozygous recessive</strong>, meaning they possess two copies of the recessive allele. A recessive allele is conventionally represented by a <strong>lowercase letter</strong> (e.g., <strong>r</strong> for wrinkled seeds).</p>
+                <ul>
+                    <li>If an organism has a heterozygous genotype (Rr), the recessive allele (r) is present but is not expressed phenotypically.</li>
+                    <li>The recessive phenotype appears only in the <strong>homozygous recessive</strong> genotype (rr).</li>
+                </ul>
+
+                <h3>Phenotype</h3>
+                <p>The <strong>Phenotype</strong> is the <strong>observable appearance or manifestation of a genetic trait</strong> in an organism. It encompasses all detectable characteristics, whether they are physical (like having <strong>round seeds</strong> or a specific <strong>hair color</strong>), physiological (such as the ability to metabolize a certain sugar), biochemical (e.g., the structure of a protein), or behavioral. Unlike the genotype, which is the organism's set of genes, the phenotype is the expression of those genes, and its final form is the result of the interaction between the individual's <strong>genotype</strong> and the <strong>environment</strong>. For example, while a person's genes may code for a maximum height (genotype), their actual adult height (phenotype) can be influenced by environmental factors like nutrition.</p>
+
+                <h3>Genotype</h3>
+                <p>The <strong>Genotype</strong> is the specific combination of <strong>alleles</strong> an individual possesses for a particular gene, which fundamentally determines one of its characteristics or traits. It represents the inherited genetic constitution, acting as the blueprint for an organism's potential phenotypes. For example, for the trait of plant height, the possible genotypes are <strong>Homozygous Dominant (TT)</strong>, <strong>Heterozygous (Tt)</strong>, or <strong>Homozygous Recessive (tt)</strong>. Critically, the <strong>genotype is inherited</strong> from parents to offspring, whereas the resulting <strong>phenotype</strong> (the observable trait) is a manifestation that can be further influenced by environmental factors.</p>
+            </div>
+
+            <!-- Section 5: Advanced Concepts -->
+            <div class="section">
+                <h2>Advanced Genetic Concepts</h2>
+                
+                <h3>Crossing Over</h3>
+                <p><strong>Crossing Over</strong> is a pivotal event in genetics defined as the <strong>exchange of genetic material</strong> between the <strong>non-sister chromatids</strong> of <strong>homologous chromosomes</strong>. This physical exchange occurs during <strong>Prophase I of meiosis</strong>, when homologous chromosomes pair up in a structure called a bivalent, and a cross-shaped structure known as a <strong>chiasma</strong> forms. The primary importance of crossing over is that it breaks the physical linkage between alleles that were originally on the same chromosome, leading to the <strong>recombination</strong> of genes. This process shuffles the parental alleles into new combinations on the chromatids, significantly increasing the <strong>genetic variation</strong> in the resulting gametes and, subsequently, the offspring.</p>
+
+                <h3>Wild type Vs Mutant Alleles</h3>
+                <p>The contrast between <strong>Wild-Type Alleles</strong> and <strong>Mutant Alleles</strong> is fundamental to understanding genetic variation and disease.</p>
+
+                <h4>Wild-Type Allele</h4>
+                <p>A <strong>Wild-Type Allele</strong> is the allele most prevalent in a natural population, often defined as being present at a frequency greater than 1%. These alleles are typically considered the <strong>"normal" or standard</strong> form of the gene. They are crucial because they usually encode a protein that is produced in the correct amount and functions properly, thereby conferring a normal or common phenotype. In genetic notation, the wild-type allele is often denoted with a superscript plus sign (e.g., w+).</p>
+
+                <h4>Mutant Allele</h4>
+                <p>A <strong>Mutant Allele</strong> is any allele that has been altered from the wild-type by a <strong>mutation</strong> and is usually present at a frequency of <strong>less than 1%</strong> in a population. These alleles generally result in a change in the quantity or function of the encoded protein (e.g., a non-functional, reduced-function, or over-active protein). Mutant alleles are often responsible for genetic diseases or abnormal phenotypes and are <strong>most frequently inherited in a recessive fashion</strong>, meaning a single copy of the wild-type allele is usually sufficient to mask the effect of the mutant allele.</p>
+            </div>
+
+            <!-- Section 6: Generations -->
+            <div class="section">
+                <h2>Breeding Systems</h2>
+                
+                <h3>Filial Generation</h3>
+                <p>The <strong>Filial Generation</strong> refers to the successive generations of <strong>offspring</strong> produced from a controlled genetic cross, a term derived from the Latin for "son" or "daughter." These generations are the core units of study in genetics, particularly in the foundational principles established by Gregor Mendel. The process begins with the <strong>Parental (P) Generation</strong>, which consists of the initial two individuals, typically chosen because they are <strong>true-breeding</strong> (homozygous) for opposing forms of a characteristic, such as dominant and recessive traits. When the P generation is crossed, their progeny form the <strong>First Filial (F1​) Generation</strong>. The F1​ generation is genetically uniform; in a simple monohybrid cross, all F1​ individuals are <strong>heterozygous</strong> and express only the dominant trait (e.g., all purple-flowered pea plants, Pp, from a PP×pp cross). The analysis continues with the <strong>Second Filial (F2​) Generation</strong>, which is produced by interbreeding (or self-pollinating) the F1​ individuals. The F2​ generation is of critical importance because it is where the traits hidden in the F1​ reappear, revealing the classical Mendelian ratios, such as the <strong>3:1 phenotypic ratio</strong> and <strong>1:2:1 genotypic ratio</strong>, which mathematically demonstrate the underlying rules of heredity and allele segregation.</p>
+
+                <h3>Pure line (pure breeding Line)</h3>
+                <p>The concept of a <strong>Pure Line</strong> (also called a <strong>pure-breeding line</strong> or <strong>true-breeding strain</strong>) describes a group of individuals that are <strong>homozygous for all genes being considered</strong>. This state of complete or near-complete homozygosity is typically achieved through multiple generations of <strong>self-pollination</strong> (in plants) or close <strong>inbreeding</strong> (in animals). Because they possess two identical alleles for each gene (e.g., AA or aa), a pure line is genetically <strong>uniform</strong> and will always "breed true," meaning they produce offspring with the exact same phenotype as the parents when crossed among themselves. Any minor variation observed in the traits of a pure line is non-heritable and purely the result of environmental influences. Gregor Mendel relied on these pure lines for his P (Parental) generation to ensure the precise starting genotypes necessary for observing the predictable patterns of inheritance.</p>
+            </div>
+
+            <!-- Section 7: Crossing Types -->
+            <div class="section">
+                <h2>Types of Genetic Crosses</h2>
+                
+                <h3>Back cross</h3>
+                <p>A <strong>Backcross</strong> is a genetic procedure where a hybrid individual, typically the <strong>F1​ generation</strong> offspring resulting from an initial cross, is mated back to <strong>one of its two original parental lines</strong>. The primary purpose of a backcross is to efficiently <strong>transfer a specific, desirable gene</strong> (such as one for disease resistance) from a <strong>Donor Parent</strong> into the genetic background of a superior, well-established <strong>Recurrent Parent</strong>. When the process is repeated over several generations (e.g., BC1​, BC2​, BC3​), it rapidly increases the proportion of the offspring's genome that is identical to the Recurrent Parent, while ensuring the retention of the single, target gene. A specific application of this concept is the <strong>Test Cross</strong>, a backcross where the F1​ individual with a dominant phenotype is crossed exclusively with the <strong>homozygous recessive parent</strong> to determine the F1​'s exact genotype (either homozygous dominant or heterozygous).</p>
+
+                <h3>Test cross</h3>
+                <p>A <strong>Test Cross</strong> is a critical tool in Mendelian genetics used to determine the <strong>unknown genotype</strong> of an individual that displays a <strong>dominant phenotype</strong>. It involves mating this unknown individual (which could be homozygous dominant, AA, or heterozygous, Aa) with a partner that is <strong>homozygous recessive</strong> (aa). The homozygous recessive parent is used because it can only contribute a recessive allele (a), serving as a "tester" to reveal the unknown parent's second allele. The results are conclusive: if <em>all</em> offspring display the dominant phenotype, the unknown parent is AA; however, if <strong>50% of the offspring display the recessive phenotype</strong>, the unknown parent is definitively <strong>heterozygous</strong> (Aa), as it possessed and passed on the recessive allele to its progeny.</p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Unknown Genotype</th>
+                                <th>Test Cross</th>
+                                <th>Offspring Genotypes</th>
+                                <th>Offspring Phenotypes</th>
+                                <th>Conclusion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Homozygous Dominant (AA)</td>
+                                <td>AA×aa</td>
+                                <td>All Aa</td>
+                                <td><strong>All Dominant</strong> (100%)</td>
+                                <td>The unknown parent is <strong>homozygous</strong> (AA).</td>
+                            </tr>
+                            <tr>
+                                <td>Heterozygous (Aa)</td>
+                                <td>Aa×aa</td>
+                                <td>1Aa:1aa</td>
+                                <td><strong>1 Dominant : 1 Recessive</strong> (50% each)</td>
+                                <td>The unknown parent is <strong>heterozygous</strong> (Aa).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Reciprocal Cross</h3>
+                <p>A cross between two sets, in one case, a male exhibiting the trait of interest is mated with a female that does not exhibit that trait, and in the other set, a female exhibiting the trait is crossed with a male lacking that trait. Its purpose is to observe the effect of parental sex on the inheritance of a trait. In autosomal inheritance transmission of trait is not affected by parental sex while reciprocal crosses given variable results in case of sex-inked inheritance, cytoplasmic inheritance and genomic imprinting.</p>
+
+                <p>It involves two breeding experiments:</p>
+                <ol>
+                    <li><strong>Cross 1 (Standard):</strong> A male exhibiting the trait of interest is crossed with a female that does not exhibit the trait.</li>
+                    <li><strong>Cross 2 (Reciprocal):</strong> The sexes are reversed—a female exhibiting the trait is crossed with a male that lacks the trait.</li>
+                </ol>
+
+                <p>The results of these two crosses are then compared to ascertain the genetic mechanism governing the trait:</p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Inheritance Pattern</th>
+                                <th>F1​ Offspring Results from Reciprocal Crosses</th>
+                                <th>Conclusion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Autosomal Inheritance</td>
+                                <td>The F1​ offspring phenotypes and ratios are <strong>identical</strong> in both the standard and reciprocal crosses.</td>
+                                <td>The gene is on a non-sex chromosome (autosome), and transmission is not affected by parental sex.</td>
+                            </tr>
+                            <tr>
+                                <td>Non-Autosomal Inheritance</td>
+                                <td>The F1​ offspring phenotypes and/or ratios are <strong>different</strong> between the two reciprocal crosses.</td>
+                                <td>The trait is likely governed by <strong>Sex-Linked Inheritance</strong> (e.g., X-linked), <strong>Cytoplasmic Inheritance</strong> (maternal effect), or <strong>Genomic Imprinting</strong>.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Section 8: Quiz -->
+            <div class="section">
+                <h2>Test Your Knowledge</h2>
+                
+                <div class="quiz-container">
+                    <div class="question">1. What term is used to describe the complete set of chromosomal genes, representing the entire genetic constitution of a cell or individual?</div>
+                    <div class="option">a. Allele</div>
+                    <div class="option">b. Chromosome</div>
+                    <div class="option correct-answer">c. Genome</div>
+                    <div class="option">d. Locus</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">2. Which term, introduced by Wilhelm Johannsen, is defined as the fundamental physical and functional segment of DNA that codes for the synthesis of a single polypeptide?</div>
+                    <div class="option">a. Locus</div>
+                    <div class="option">b. Allele (Allelomorph)</div>
+                    <div class="option correct-answer">c. Gene (Mendel's factor)</div>
+                    <div class="option">d. Chromosome</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">3. What is the condensed chromatin structure in the cell nucleus that carries genes encoded by DNA?</div>
+                    <div class="option correct-answer">a. Chromosome</div>
+                    <div class="option">b. Centromere</div>
+                    <div class="option">c. Locus</div>
+                    <div class="option">d. Genome</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">4. Which concept represents the general heritable attribute selected for investigation (e.g., plant height), as opposed to the specific form it takes (e.g., tallness)?</div>
+                    <div class="option">a. Phenotype</div>
+                    <div class="option">b. Allele</div>
+                    <div class="option correct-answer">c. Character</div>
+                    <div class="option">d. Genotype</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">5. What is the term for an alternative form of a gene that occurs at the same locus on homologous chromosomes, such as R versus r for seed shape?</div>
+                    <div class="option correct-answer">a. Allele (Allelomorph)</div>
+                    <div class="option">b. Trait</div>
+                    <div class="option">c. Locus</div>
+                    <div class="option">d. Hybrid</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">6. What term refers to the specific, fixed physical position on a chromosome that is occupied by a particular gene?</div>
+                    <div class="option">a. Gene</div>
+                    <div class="option">b. Chiasma</div>
+                    <div class="option">c. Allele</div>
+                    <div class="option correct-answer">d. Locus</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">7. Which term describes a pair of chromosomes that are identical in size, shape, and gene sequence, with one inherited from each parent?</div>
+                    <div class="option">a. Sister chromatids</div>
+                    <div class="option">b. Heterologous chromosomes</div>
+                    <div class="option correct-answer">c. Homologous chromosomes</div>
+                    <div class="option">d. Diploid chromosomes</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">8. What is the term for an individual produced from a cross between two parents of differing genotypes, typically heterozygous for one or more genes?</div>
+                    <div class="option">a. Homozygous</div>
+                    <div class="option correct-answer">b. Hybrid</div>
+                    <div class="option">c. Pure line</div>
+                    <div class="option">d. Mutant</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">9. Which term describes an individual that possesses two identical alleles for a particular gene at the corresponding loci on homologous chromosomes?</div>
+                    <div class="option">a. Heterozygous</div>
+                    <div class="option">b. Hybrid</div>
+                    <div class="option correct-answer">c. Homozygous</div>
+                    <div class="option">d. Hemizygous</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">10. What is the term for an individual that possesses two different alleles for a particular gene (e.g., Tt)?</div>
+                    <div class="option">a. Homozygous</div>
+                    <div class="option correct-answer">b. Heterozygous</div>
+                    <div class="option">c. Pure line</div>
+                    <div class="option">d. Hemizygous</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">11. Which type of allele masks or hides the expression of a recessive allele when both are present in a heterozygous individual?</div>
+                    <div class="option correct-answer">a. Dominant allele</div>
+                    <div class="option">b. Recessive allele</div>
+                    <div class="option">c. Mutant allele</div>
+                    <div class="option">d. Wild-type allele</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">12. What is the term for an allele whose expression is masked by a dominant allele and is only expressed in the homozygous recessive state?</div>
+                    <div class="option">a. Dominant allele</div>
+                    <div class="option correct-answer">b. Recessive allele</div>
+                    <div class="option">c. Mutant allele</div>
+                    <div class="option">d. Wild-type allele</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">13. Which term refers to the observable appearance or manifestation of a genetic trait in an organism, influenced by both genotype and environment?</div>
+                    <div class="option">a. Genotype</div>
+                    <div class="option correct-answer">b. Phenotype</div>
+                    <div class="option">c. Character</div>
+                    <div class="option">d. Trait</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">14. What term describes the specific combination of alleles an individual possesses for a particular gene, representing the inherited genetic constitution?</div>
+                    <div class="option correct-answer">a. Genotype</div>
+                    <div class="option">b. Phenotype</div>
+                    <div class="option">c. Character</div>
+                    <div class="option">d. Trait</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">15. What is the term for the exchange of genetic material between non-sister chromatids of homologous chromosomes during Prophase I of meiosis?</div>
+                    <div class="option">a. Mutation</div>
+                    <div class="option">b. Segregation</div>
+                    <div class="option correct-answer">c. Crossing over</div>
+                    <div class="option">d. Independent assortment</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">16. Which term refers to the allele most prevalent in a natural population, typically encoding a properly functioning protein?</div>
+                    <div class="option">a. Mutant allele</div>
+                    <div class="option correct-answer">b. Wild-type allele</div>
+                    <div class="option">c. Recessive allele</div>
+                    <div class="option">d. Dominant allele</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">17. What is the term for an allele that has been altered from the wild-type by a mutation and is usually present at a frequency of less than 1%?</div>
+                    <div class="option correct-answer">a. Mutant allele</div>
+                    <div class="option">b. Wild-type allele</div>
+                    <div class="option">c. Recessive allele</div>
+                    <div class="option">d. Dominant allele</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">18. Which term refers to the offspring generation produced from a controlled genetic cross, such as the F1 or F2 generation?</div>
+                    <div class="option">a. Parental generation</div>
+                    <div class="option">b. Pure line</div>
+                    <div class="option correct-answer">c. Filial generation</div>
+                    <div class="option">d. Hybrid generation</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">19. What term describes a group of individuals that are homozygous for all genes being considered and will always "breed true"?</div>
+                    <div class="option">a. Hybrid</div>
+                    <div class="option">b. Heterozygous</div>
+                    <div class="option correct-answer">c. Pure line (pure-breeding line)</div>
+                    <div class="option">d. Filial generation</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">20. What genetic procedure involves mating a hybrid individual (F1 generation) back to one of its original parental lines to transfer a specific gene?</div>
+                    <div class="option">a. Test cross</div>
+                    <div class="option">b. Reciprocal cross</div>
+                    <div class="option correct-answer">c. Back cross</div>
+                    <div class="option">d. Hybrid cross</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">21. Which cross is specifically used to determine the unknown genotype of an individual with a dominant phenotype by mating it with a homozygous recessive individual?</div>
+                    <div class="option correct-answer">a. Test cross</div>
+                    <div class="option">b. Back cross</div>
+                    <div class="option">c. Reciprocal cross</div>
+                    <div class="option">d. Hybrid cross</div>
+                </div>
+
+                <div class="quiz-container">
+                    <div class="question">22. What type of cross involves two breeding experiments where the sexes of the parents exhibiting the trait of interest are reversed to observe the effect of parental sex on inheritance?</div>
+                    <div class="option">a. Test cross</div>
+                    <div class="option">b. Back cross</div>
+                    <div class="option correct-answer">c. Reciprocal cross</div>
+                    <div class="option">d. Hybrid cross</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button id="prevBtn" class="nav-btn" disabled>Previous</button>
+            <div class="page-indicator">
+                <span id="pageNum">1</span> of <span id="totalPages">8</span>
+                <div class="dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </div>
+            <button id="nextBtn" class="nav-btn">Next</button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+        <div class="footer-text">© 2025 BETA Biosciences. All rights reserved. Email: betabiosciences@gmail.com</div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const pageNum = document.getElementById('pageNum');
+            const totalPages = document.getElementById('totalPages');
+            const dots = document.querySelectorAll('.dot');
+            let currentPage = 0;
+            totalPages.textContent = sections.length;
+
+            // Quiz functionality
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove any existing selections in this question
+                    const questionContainer = this.closest('.quiz-container');
+                    const allOptions = questionContainer.querySelectorAll('.option');
+                    allOptions.forEach(opt => {
+                        opt.classList.remove('selected', 'correct', 'incorrect', 'revealed-correct');
+                    });
+
+                    // Mark this option as selected
+                    this.classList.add('selected');
+
+                    // Check if this is the correct answer
+                    if (this.classList.contains('correct-answer')) {
+                        this.classList.add('correct');
+                    } else {
+                        this.classList.add('incorrect');
+                        // Also highlight the correct answer
+                        const correctOption = questionContainer.querySelector('.option.correct-answer');
+                        if (correctOption) {
+                            correctOption.classList.add('revealed-correct');
+                        }
+                    }
+                });
+            });
+
+            function updateNavigation() {
+                // Update buttons
+                prevBtn.disabled = currentPage === 0;
+                nextBtn.disabled = currentPage === sections.length - 1;
+
+                // Update page number
+                pageNum.textContent = currentPage + 1;
+
+                // Update dots
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('active', index === currentPage);
+                });
+
+                // Show/hide sections
+                sections.forEach((section, index) => {
+                    section.classList.toggle('active', index === currentPage);
+                });
+            }
+
+            prevBtn.addEventListener('click', function() {
+                if (currentPage > 0) {
+                    currentPage--;
+                    updateNavigation();
+                }
+            });
+
+            nextBtn.addEventListener('click', function() {
+                if (currentPage < sections.length - 1) {
+                    currentPage++;
+                    updateNavigation();
+                }
+            });
+
+            // Initialize navigation
+            updateNavigation();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
