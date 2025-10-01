@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Species Diversity</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+        color: #e0e0e0;
+        min-height: 100vh;
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    header {
+        text-align: center;
+        padding: 20px 0;
+        background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+        border-radius: 15px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        font-size: 1.8em;
+        background: linear-gradient(135deg, #00d4ff 0%, #00ff88 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 15px 0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #00d4ff 0%, #00ff88 100%);
+        transition: width 0.3s ease;
+        box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+
+    .content-section {
+        flex: 1;
+        background: rgba(22, 33, 62, 0.6);
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 20px;
+        animation: fadeIn 0.5s ease;
+        overflow-y: auto;
+        max-height: calc(100vh - 280px);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .content-section h2 {
+        color: #00ff88;
+        margin-bottom: 20px;
+        font-size: 1.5em;
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+    }
+
+    .content-section h3 {
+        color: #00d4ff;
+        margin: 20px 0 15px 0;
+        font-size: 1.2em;
+    }
+
+    .content-section p, .content-section li {
+        line-height: 1.8;
+        margin-bottom: 15px;
+        color: #d0d0d0;
+    }
+
+    .content-section ul, .content-section ol {
+        margin-left: 20px;
+        margin-bottom: 15px;
+    }
+
+    .content-section li {
+        margin-bottom: 10px;
+    }
+
+    .content-section strong {
+        color: #00ff88;
+        font-weight: 600;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+        background: rgba(0, 212, 255, 0.2);
+        color: #00d4ff;
+        font-weight: 600;
+    }
+
+    tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .navigation {
+        display: flex;
+        gap: 15px;
+        justify-content: space-between;
+        margin-top: auto;
+    }
+
+    button {
+        flex: 1;
+        padding: 15px 25px;
+        font-size: 1em;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    button:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    button:active:before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .btn-prev {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+    }
+
+    .btn-prev:hover:not(:disabled) {
+        box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6);
+        transform: translateY(-2px);
+    }
+
+    .btn-next {
+        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+        color: #0a0a0a;
+        box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+    }
+
+    .btn-next:hover:not(:disabled) {
+        box-shadow: 0 6px 20px rgba(0, 255, 136, 0.6);
+        transform: translateY(-2px);
+    }
+
+    button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .section-indicator {
+        text-align: center;
+        color: #00d4ff;
+        font-size: 0.9em;
+        margin: 10px 0;
+        font-weight: 600;
+    }
+
+    /* Quiz-specific styles */
+    .quiz-question {
+        margin-bottom: 25px;
+        padding: 15px;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+        border-left: 4px solid #00d4ff;
+    }
+
+    .quiz-options {
+        list-style-type: none;
+        margin-left: 0;
+    }
+
+    .quiz-option {
+        padding: 12px 15px;
+        margin: 8px 0;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .quiz-option:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+        transform: translateX(5px);
+    }
+
+    .quiz-option.selected {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: #00d4ff;
+    }
+
+    .quiz-option.correct {
+        background-color: rgba(0, 255, 136, 0.2);
+        border-color: rgba(0, 255, 136, 0.5);
+    }
+
+    .quiz-option.incorrect {
+        background-color: rgba(255, 0, 0, 0.2);
+        border-color: rgba(255, 0, 0, 0.5);
+    }
+
+    .quiz-feedback {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        font-weight: 600;
+    }
+
+    .quiz-feedback.correct {
+        background-color: rgba(0, 255, 136, 0.1);
+        color: #00ff88;
+        border-left: 3px solid #00ff88;
+    }
+
+    .quiz-feedback.incorrect {
+        background-color: rgba(255, 0, 0, 0.1);
+        color: #ff6b6b;
+        border-left: 3px solid #ff6b6b;
+    }
+
+    .quiz-score {
+        text-align: center;
+        margin: 20px 0;
+        padding: 15px;
+        background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+        border-radius: 10px;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+
+    .quiz-controls {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    .quiz-controls button {
+        flex: 1;
+    }
+
+    /* Image styles */
+    .content-section img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 20px auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Footer styles */
+    footer {
+        background: linear-gradient(135deg, #16213e 0%, #0f3460 100%);
+        padding: 20px;
+        text-align: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        margin-top: 20px;
+    }
+
+    .footer-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .footer-logo {
+        width: 65px;
+        height: auto;
+        filter: brightness(0) invert(1);
+        opacity: 0.8;
+    }
+
+    .footer-text {
+        color: #e0e0e0;
+        font-size: 0.9em;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+
+        h1 {
+            font-size: 1.5em;
+        }
+
+        .content-section {
+            padding: 20px;
+            max-height: calc(100vh - 260px);
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 0.9em;
+        }
+
+        table {
+            font-size: 0.85em;
+        }
+
+        th, td {
+            padding: 8px;
+        }
+        
+        .footer-logo {
+            width: 120px;
+        }
+        
+        .footer-text {
+            font-size: 0.8em;
+        }
+
+        .quiz-option {
+            padding: 10px 12px;
+            font-size: 0.9em;
+        }
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #00d4ff 0%, #00ff88 100%);
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+    }
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>SPECIES DIVERSITY</h1>
+<div class="section-indicator" id="sectionIndicator">Section 1 of 21</div>
+<div class="progress-bar">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+</header>
+<div class="content-section" id="contentSection"></div>
+<div class="navigation">
+<button class="btn-prev" id="prevBtn" onclick="navigate(-1)">← Previous</button>
+<button class="btn-next" id="nextBtn" onclick="navigate(1)">Next →</button>
+</div>
+</div>
+
+<footer>
+<div class="footer-content">
+<img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+<p class="footer-text">© 2025 BETA Biosciences. All rights reserved.<br>Email: betabiosciences@gmail.com</p>
+</div>
+</footer>
+
+<script>
+    const sections = [
+        {
+            title: "Introduction to Communities",
+            content: `
+                <h2>SPECIES DIVERSITY</h2>
+                <p>A <strong>community</strong> is a group of different populations living together in the same place at the same time. These communities range in scale from a small pond to a massive tropical rainforest. On the largest scale, these are called <strong>biomes</strong>, such as tropical rainforests, temperate deciduous forests, or temperate grasslands. Ecologists study the environmental factors that define the boundaries of these biomes.</p>
+                <p>Biodiversity research investigates why some areas are <strong>species-rich</strong> (have many species), while others are <strong>species-poor</strong> (have few species). A connection has been discovered between a community's <strong>species richness</strong> and its ability to function, such as efficiently using soil nutrients or producing biomass. It is hypothesized that, for any given habitat, communities with more species are more stable and function better than those with fewer species, making them more resistant to disturbances like invasive species. This change in species composition over time, especially after a disturbance like a fire or a flood, is a process ecologists call <strong>succession</strong>.
+            `
+        },
+        {
+            title: "Nature of Community",
+            content: `
+                <h2>Nature Of Community</h2>
+                <p>Ecologists have long argued about the nature and structure of communities. This debate has centered on two main viewpoints: the organismic model and the individualistic model.</p>
+                <h3>The Organismic vs. Individualistic Models</h3>
+                <p>Early on, some ecologists, led by American botanist <strong>Frederic Clements</strong>, saw a community as a <strong>"superorganism,"</strong> similar to how a body is more than just a collection of organs. This <strong>organismic model</strong> viewed communities as distinct, predictable associations of species with sharp boundaries. Clements argued that while communities could change in response to disturbances, they would always return to their original, stable state. In this view, competition between species drove these changes.</p>
+                <p>However, botanist <strong>Henry Allan Gleason</strong> challenged Clements's ideas with his <strong>individualistic model</strong>. He saw a community as a collection of species that coexist simply because they have similar physiological needs. Gleason believed that distinct, structured communities don't really exist. Instead, species are distributed independently along an environmental gradient, meaning communities don't necessarily have sharp boundaries and are much less predictable than Clements suggested.
+            `
+        },
+        {
+            title: "Whittaker's Research - Part 1",
+            content: `
+                <h2>Whittaker's Research and Conclusions</h2>
+                <p>By the 1950s, <strong>Robert Whittaker</strong> tested these competing theories. He proposed <strong>four hypotheses</strong> to explain how species are distributed along an environmental gradient, such as a mountain slope. His work aimed to find out if species form distinct groups with sharp boundaries (Clements's view) or if they are distributed independently (Gleason's view).</p>
+                <p>Whittaker proposed that four hypotheses could explain the distribution patterns of plants and animals on an environmental gradient such as the moisture gradient on an uninterrupted slope of a mountain.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig1.jpg" alt="Whittaker's Four Hypotheses">
+            `
+        },
+        {
+            title: "Whittaker's Four Hypotheses",
+            content: `
+                <h2>Whittaker's Four Hypotheses</h2>
+                <ol>
+                    <li>Competing species, including dominant plants, exclude one another along sharp boundaries. Other species evolve toward a close, perhaps mutually beneficial association with the dominant species. Communities thus develop along the gradient, each zone containing its own group of interacting species giving way at a sharp boundary to another assemblage of species. This corresponds to Clements's organismic model.</li>
+                    <li>Competing species exclude one another along sharp boundaries but do not become organized into groups of species with parallel distributions.</li>
+                    <li>Competition does not usually result in sharp boundar ies between species. However, the adaptation of species to similar physical variables will result in the appearance of groups of species with similar distributions.</li>
+                    <li>Competition does not usually produce sharp boundaries between species, and the adaptation of species to similar physical variables does not produce well-defi ned groups of species with similar distributions. The centers and boundaries of species populations are scattered along the environmental gradient. This corresponds to Gleason's individualistic model.</li>
+                </ol>
+            `
+        },
+        {
+            title: "Whittaker's Findings",
+            content: `
+                <h2>Whittaker's Research Results</h2>
+                <p>To test these possibilities, Whittaker (1970) examined the vegetation on various mountain ranges in the western U.S. He sampled plant populations along an elevation gradient from the tops of the mountains to the bases and collected data on physical variables, such as soil moisture. The results supported the <strong>fourth hypothesis</strong>, that competition does not produce sharp boundaries between species and that adaptation to physical variables does not result in defi ned groups of species.</p>
+                <p>Whittaker concluded that his observations agreed with Gleason's predictions that 1. Each species is distributed in its own way, according to its genetic, physiological, and life cycle characteristics</p>
+                <p>2. The broad overlap and scattered centers of species populations along a gradient implies that most communities grade into each other continuously rather than form distinct, clearly separated groups.</p>
+                <p>Whittaker's findings showed that the composition of species in a given location is largely determined by physical factors like temperature, water, light, and soil conditions. While communities at the top of a mountain may differ greatly from those at the bottom—and some abrupt changes do occur due to sudden shifts in the abiotic environment (e.g., soil type)—the overall pattern is one of continuous change rather than distinct, separate zones. Whittaker's work cemented the view that the individualistic model better explains the nature of communities.</p>
+            `
+        },
+        {
+            title: "Indices Used to Estimate Species Biodiversity",
+            content: `
+                <h2>Indices Used to Estimate Species Biodiversity</h2>
+                <p>The simplest measure of biodiversity is <strong>species richness, which is a count of the number of species</strong>. Although many analyses of community diversity are performed this way, one major problem is that this approach does not take species frequency of occurrence or relative abundance into account.</p>
+                <p>For example, imagine two hypothetical communities, A and B, both with two species and 100 individuals.</p>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Community A</th>
+                        <th>Community B</th>
+                    </tr>
+                    <tr>
+                        <td>Number of Individuals of Species 1</td>
+                        <td>99</td>
+                        <td>50</td>
+                    </tr>
+                    <tr>
+                        <td>Number of Individuals of Species 2</td>
+                        <td>1</td>
+                        <td>50</td>
+                    </tr>
+                </table>
+                <p>The <strong>species richness</strong> of community B equals that of community A, because they both contain two species. However, <strong>community B is considered more diverse</strong> because the distribution of individuals between species is more even. One would be much more likely to encounter both species in community B than in community A, where one species dominates.</p>
+            `
+        },
+        {
+            title: "Species Richness and Sample Size",
+            content: `
+                <h2>Species Richness and Sample Size</h2>
+                <p>Species richness, a simple count of species, is heavily influenced by <strong>sample size</strong>; a larger sample will likely yield more species.</p>
+                <p>Let's illustrate with an example of two hypothetical forests:</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig2.jpg" alt="Species Richness Example">
+                <ul>
+                    <li><strong>Community 1</strong>: In a sample of 100 trees, you find 10 species, with 10 individuals for each species. This represents an <strong>equitable</strong> distribution.</li>
+                    <li><strong>Community 2</strong>: In another sample of 100 trees, you also find 10 species, but the distribution is <strong>less equitable</strong>. One species is dominant, while the others are much less frequent.</li>
+                </ul>
+                <p>Despite having the same species richness (10 species), Community 1 is considered <strong>more diverse</strong> because of its more even distribution of individuals among species.</p>
+                <p>Therefore, a complete measure of biodiversity requires indices that combine both <strong>species richness</strong> (the number of species) and <strong>species evenness</strong> (the distribution of individuals). These indices fall into two main categories: <strong>dominance indices</strong> and <strong>information statistic indices</strong>.</p>
+            `
+        },
+        {
+            title: "Berger-Parker Index",
+            content: `
+                <h2>A. Dominance Indices</h2>
+                <p>Dominance indices are weighted toward the abundance of the commonest or dominant species.</p>
+                <h3>1. Berger-Parker index (Berger and Parker, 1970)</h3>
+                <p>The simplest dominance index is the Berger-Parker index.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig3.jpg" alt="Berger-Parker Formula">
+                <p>where</p>
+                <p><strong>Nmax</strong> = The number of individuals in the most abundant species</p>
+                <p><strong>N</strong> = The total number of all individuals in all species.</p>
+                <p>Communities are considered diverse when no single species is dominant. The <strong>Berger-Parker index (D<sub>BP</sub>)</strong> measures dominance, with a higher value indicating greater dominance and, therefore, lower diversity.</p>
+                <p>Let's look at the two communities mentioned earlier:</p>
+                <ul>
+                    <li><strong>Community 1</strong>: The most common species has 10 out of 100 individuals.
+                        <ul><li>D<sub>BP</sub>=10/100=0.1 (low dominance, high diversity)</li></ul>
+                    </li>
+                    <li><strong>Community 2</strong>: The most common species has 55 out of 100 individuals.
+                        <ul><li>D<sub>BP</sub>=55/100=0.55 (high dominance, low diversity)</li></ul>
+                    </li>
+                </ul>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig4.jpg" alt="Berger-Parker Example">
+            `
+        },
+        {
+            title: "Berger-Parker Complement Index",
+            content: `
+                <h2>Berger-Parker Complement Index</h2>
+                <p>A study by Tancredi Caruso and colleagues (2007) on soil mite diversity in Italy showed that pristine soils had lower D<sub>BP</sub> values than soils disturbed by pollution or agriculture. This indicates that soil disturbance encourages a few species to dominate.</p>
+                <p>Because a lower D<sub>BP</sub> value corresponds to higher diversity, which can be counterintuitive, the <strong>Berger-Parker complement index (D<sub>BPC</sub>)</strong> was created. This index is calculated by subtracting the DBP value from 1 (D<sub>BPC</sub>=1−D<sub>BP</sub>). This means that a more diverse community will have a higher D<sub>BPC</sub> value, which is easier to interpret.</p>
+                <p>Using our example:</p>
+                <ul>
+                    <li><strong>Community 1</strong>: D<sub>BPC</sub>=1−0.1=0.9</li>
+                    <li><strong>Community 2</strong>: D<sub>BPC</sub>=1−0.55=0.45</li>
+                </ul>
+                <p>As demonstrated, Community 1, which is more diverse, has a higher D<sub>BPC</sub> value. Research by Jane Hill and colleagues on tropical butterflies further supports this, showing that unlogged forests had a higher D<sub>BPC</sub> (0.844) than logged forests (0.560). A major advantage of the D<sub>BPC</sub> is its simplicity; it's very easy to calculate, with values ranging from 0 to 1.</p>
+            `
+        },
+        {
+            title: "Simpson's Diversity Index",
+            content: `
+                <h2>2. Simpson's Diversity Index (Edward Simpson 1949)</h2>
+                <p>Simpson's Diversity Index gives the probability of any two individuals drawn at random from a community belonging to different species. For example, the probability that two trees picked at random from a tropical forest will be the same species would be low because there are many differ ent tree species in any given tropical forest. In a boreal forest in Canada, where there are only one or two species of tree in the forest, the chances of both individuals being of the same species would be relatively high. We calculate Simpson's diversity index, DS, using the following formula:</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig5.jpg" alt="Simpson's Diversity Index Formula">
+                <p>where p<sub>i</sub> is the proportion of individuals in the i<sup>th</sup> species.</p>
+                <p>For example, let's imagine a community of five tree species with 100 individuals of species 1 in an area where there are 200 individual trees. For species 1, the number of individuals, n = 100, and the number of individuals of all tree species in the forest, N = 200. The proportion of species 1 in the community is then 0.5<sup>2</sup> = 0.25.</p>
+            `
+        },
+        {
+            title: "Simpson's Index Example",
+            content: `
+                <h2>Simpson's Diversity Index - Worked Example</h2>
+                <p>A worked example with the community of five tree species follows</p>
+                <table>
+                    <tr>
+                        <th>Tree Species</th>
+                        <th>Number of Individuals</th>
+                        <th>p<sub>i</sub></th>
+                        <th>p<sub>i</sub><sup>2</sup></th>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>100</td>
+                        <td>0.5</td>
+                        <td>0.25</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>50</td>
+                        <td>0.25</td>
+                        <td>0.0625</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>30</td>
+                        <td>0.15</td>
+                        <td>0.0225</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>19</td>
+                        <td>0.095</td>
+                        <td>0.009025</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>1</td>
+                        <td>0.005</td>
+                        <td>0.000025</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total</strong></td>
+                        <td>200</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><strong>D<sub>s</sub></strong></td>
+                        <td></td>
+                        <td></td>
+                        <td>0.34405</td>
+                    </tr>
+                </table>
+            `
+        },
+        {
+            title: "Gini-Simpson Index",
+            content: `
+                <h2>Gini-Simpson Index</h2>
+                <p>The Simpson's diversity index (D<sub>S</sub>) is negatively correlated with species diversity, meaning that a lower D<sub>S</sub> value indicates higher diversity. To make the index more intuitive, it's often expressed as the Gini-Simpson index (D<sub>GS</sub>), where D<sub>GS</sub>=1−D<sub>S</sub>. This transformation means that higher values of DGS</p>
+                <p>(which range from 0 to 1) correspond to greater diversity.</p>
+                <p>However, the Gini-Simpson index has a significant drawback: it is heavily influenced by the most common species and is not very sensitive to rare ones. For example, a rare species with a single individual makes a negligible contribution to the overall index value (e.g., 0.007% in a given case). Consequently, the index has limited use in <strong>conservation biology</strong>, where the focus is often on protecting rare species.</p>
+                <p>On the other hand, the Gini-Simpson index has an advantage over the <strong>Berger-Parker index</strong>. While the Berger-Parker index only considers the single most abundant species, the Gini-Simpson index incorporates data from a broader range of species in the community, making it a more comprehensive and arguably more accurate measure of diversity.</p>
+            `
+        },
+        {
+            title: "Gini-Simpson Index Study",
+            content: `
+                <h2>Gini-Simpson Index - Field Study</h2>
+                <p>C. V. Chittibabu and N. Parthasarathy (2000) examined tree diversity in disturbed and human-impacted tropical forest in the eastern Ghats, India. They examined diversity using the Simpson index on a series of 2-ha sites and the results are converted here to the Gini-Simpson index. Tree diversity was greatest at site PS, an undisturbed site, but declined at more-disturbed sites where tree harvest, cattle grazing, and firewood collection were permitted. At the most-disturbed sites, cultivation of horticultural crops such as pineapple, banana, and others, together with soil excavation for cement factories, reduced tree diversity further and sites came to be dominated by a few tree species which could withstand these disturbances.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig6.jpg" alt="Gini-Simpson Field Study">
+            `
+        },
+        {
+            title: "Information Statistic Indices",
+            content: `
+                <h2>B. Information Statistic Indices</h2>
+                <p>Information statistic indices measure diversity in a way that's like measuring the information in a coded message. The core idea is that the <strong>uncertainty</strong> of what the next item will be—whether it's a letter in a message or a species in a community—is directly related to its diversity.</p>
+                <p>For example, a message of <strong>"bbbbb"</strong> has low uncertainty because you're almost certain the next letter will be a "b." This is similar to a community with low diversity. In contrast, a message of <strong>"bhwzj"</strong> has high uncertainty because you can't predict the next letter. This corresponds to a highly diverse community.</p>
+                <p>Therefore, a <strong>higher index value</strong> signifies <strong>greater uncertainty</strong>, which in turn indicates <strong>higher diversity</strong>. In a diverse community, you have a hard time predicting which species you'll encounter next.</p>
+            `
+        },
+        {
+            title: "Shannon Index",
+            content: `
+                <h2>1. Shannon index (H<sub>S</sub>)</h2>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig7.jpg" alt="Shannon Index Formula">
+                <p>The Shannon index, H<sub>S</sub>, is given by</p>
+                <p>where p<sub>i</sub> is the proportion of individuals found in the i<sup>th</sup> species, ln is the natural logarithm, and ∑ is a summation sign.</p>
+                <p>For example, for a species in which there are 50 individuals out of a total of 100 in the community, p<sub>i</sub> is 50/100, or 0.5. The natural log of 0.5 is -0.693. For this species, p<sub>i</sub> ln p<sub>i</sub> is then 0.5 × -0.693 = -0.347.</p>
+                <p>For a hypothetical community with 5 species and 100 total individuals, the Shannon diversity index could be calculated as follows:</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig8.jpg" alt="Shannon Index Example">
+                <p>In this example, even the rarest species, species 5, contributes some value to the index. If a community had many such rare species, their contributions would accumulate. This makes the Shannon diversity index very valuable to conservation biologists, who often study rare species and their importance to the community. Remember too that the negative sign in front of the summation changes the summed value to a positive number, so the index actually becomes 1.201, not -1.201. A positive number is more appealing than an index with a negative number. Values of the Shannon diversity index for real communities often fall between 1.5 and 3.5, with the higher the value, the greater the diversity.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig9.jpg" alt="Shannon Index Values">
+            `
+        },
+        {
+            title: "Shannon Index Study",
+            content: `
+                <h2>Shannon Index - Field Study</h2>
+                <p>For example, Lisando Heil and colleagues (2007) documented Shannon diversity index values of between 0.5 and 1.2 for bird communities in the Andes. In addition, they noted that the presence of tourists in the high Andes scared many birds away, reducing diversity. Diversity of birds close to trails used by humans was much lower than diversity away from the trails.</p>
+            `
+        },
+        {
+            title: "Brillouin Index - Part 1",
+            content: `
+                <h2>2. Brillouin index (H<sub>B</sub>)</h2>
+                <p>A second information statistic index, also designed to incorporate species abundance, is the <strong>Brillouin index</strong> <strong>(HB).</strong> The Brillouin index is calculated as:</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig10.jpg" alt="Brillouin Index Formula">
+                <p>where N is the total number of individuals and n<sub>i</sub> the number of individuals in the i<sup>th</sup> species. N! is a factorial which means that if N = 5 then N! = 5 × 4 × 3 × 2 × 1 = 120 and if ni = 4 then ni! = 4 × 3 × 2 × 1 = 24. A worked example using a simple community follows:</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20diversity%20fig11.jpg" alt="Brillouin Index Example">
+            `
+        },
+        {
+            title: "Brillouin Index - Part 2",
+            content: `
+                <h2>Brillouin Index - Continued</h2>
+                <p>In this example, the Brillouin index is 1.201. Like the Shannon index, the Brillouin index is sensitive to rare species. The Brillouin index is used when the data represent the entire community, and all individuals have been counted. The Shannon index is used when the data are from a sample of the community, and the total number of species is unknown. The Brillouin index is often used for collections, such as museum specimens, where the entire collection has been counted.</p>
+                <p>For example, a study of the diversity of moths in a forest in the Czech Republic used the Brillouin index because the researchers were able to collect all the moths in the study area. The Brillouin index was 3.3 for the entire community of moths. The Shannon index is more commonly used in field studies because it is rare that a researcher can count all the individuals in a community.</p>
+            `
+        },
+        {
+            title: "Species Diversity Quiz - Part 1",
+            content: `
+                <h2>Species Diversity Quiz - Part 1</h2>
+                <p>Test your understanding of species diversity concepts with this comprehensive quiz. Select the best answer for each question.</p>
+                
+                <div class="quiz-question">
+                    <h3>1. Which model, championed by Frederic Clements, viewed a community as a "superorganism" with predictable associations and sharp boundaries?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 1)">A. The Individualistic Model</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 1)">B. The Organismic Model</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 1)">C. The Successional Model</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 1)">D. The Weighted Index Model</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback1"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>2. Robert Whittaker's research on vegetation along elevation gradients supported which conclusion about species distribution?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 2)">A. Species are distributed independently along an environmental gradient, with communities grading into each other continuously.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 2)">B. Species are randomly scattered without any relationship to physical variables.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 2)">C. The adaptation of species to similar physical variables results in well-defined species groups.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 2)">D. Species form distinct groups with sharp boundaries, supporting Clements's model.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback2"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>3. The primary problem with using only species richness as a measure of biodiversity is that it does not account for:</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 3)">A. The total number of individuals in the community.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 3)">B. The total area of the habitat sampled.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 3)">C. The phylogenetic relationships between species.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 3)">D. Species frequency of occurrence or relative abundance (evenness).</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback3"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>4. What is the key characteristic of dominance indices like the Berger-Parker index?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 4)">A. They require the use of factorials in their calculation, making them computationally complex.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 4)">B. They assign greater weight to rare species in the community.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 4)">C. They are designed to measure the uncertainty in finding the next species.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 4)">D. They are weighted toward the abundance of the most common or dominant species.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback4"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>5. If the Berger-Parker index (D<sub>BP</sub>) for Community 1 is 0.1 and for Community 2 is 0.55, which community has higher diversity and why?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 5)">A. The diversity is the same, as they must have the same species richness.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 5)">B. Community 2, because a higher D<sub>BP</sub> indicates greater diversity.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 5)">C. Community 1, because a lower D<sub>BP</sub> indicates lower dominance and higher diversity.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 5)">D. Community 2, because it has a more equitable distribution of individuals among species.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback5"></div>
+                </div>
+                
+                <div class="quiz-controls">
+                    <button class="btn-next" onclick="navigateToQuizPart2()">Next Quiz Questions →</button>
+                </div>
+            `
+        },
+        {
+            title: "Species Diversity Quiz - Part 2",
+            content: `
+                <h2>Species Diversity Quiz - Part 2</h2>
+                <p>Continue testing your knowledge with these additional questions.</p>
+                
+                <div class="quiz-question">
+                    <h3>6. The Berger-Parker complement index (D<sub>BPC</sub>) is calculated as 1−D<sub>BP</sub>. What is the main advantage of using this complement index?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 6)">A. It becomes insensitive to the most abundant species.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 6)">B. It incorporates data from a broader array of species in the community.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 6)">C. A higher value corresponds to a more diverse community, which is more intuitive to interpret.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 6)">D. It can be used to compare diversity across different habitat types.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback6"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>7. What is the interpretation of a Simpson's Diversity Index (D<sub>S</sub>) value of 0.34405?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 7)">A. The probability that two randomly selected individuals will belong to different species is 0.34405.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 7)">B. The community has an effective number of 0.34405 species.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 7)">C. The index is negatively correlated with species diversity.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 7)">D. The probability that two randomly selected individuals will belong to the same species is 0.34405.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback7"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>8. Why is the Gini-Simpson index (D<sub>GS</sub>=1−D<sub>S</sub>) considered to be of limited value in conservation biology if there are many rare species?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 8)">A. It uses information from a broader array of species than the Berger-Parker index.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 8)">B. It requires the use of natural logarithms, which are computationally complex for field biologists.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 8)">C. Its values range from 0 to 1, making comparisons difficult.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 8)">D. It is heavily weighted toward the most abundant species, so the addition of many rare species scarcely changes the index.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback8"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>9. The rationale behind Information Statistic Indices is analogous to measuring the:</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 9)">A. Number of different symbols used in a code.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 9)">B. Uncertainty of the next letter in a coded message.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 9)">C. Total length of a message in letters.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 9)">D. Frequency of the most common letter in a coded message.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback9"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>10. Compared to dominance indices, the Shannon index (H<sub>S</sub>) is considered more valuable to conservation biologists because:</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 10)">A. Even the rarest species contributes some value to the index, allowing their contributions to accumulate.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 10)">B. Its value is not influenced by sample size.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 10)">C. It is simpler to calculate than all other indices.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 10)">D. It incorporates the natural logarithm (ln) function.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback10"></div>
+                </div>
+                
+                <div class="quiz-controls">
+                    <button class="btn-prev" onclick="navigateToQuizPart1()">← Previous Questions</button>
+                    <button class="btn-next" onclick="navigateToQuizPart3()">Next Quiz Questions →</button>
+                </div>
+            `
+        },
+        {
+            title: "Species Diversity Quiz - Part 3",
+            content: `
+                <h2>Species Diversity Quiz - Part 3</h2>
+                <p>Final set of questions to test your comprehensive understanding.</p>
+                
+                <div class="quiz-question">
+                    <h3>11. What is the primary difference between the Brillouin index (H<sub>B</sub>) and the Shannon index (H<sub>S</sub>)?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 11)">A. The Brillouin index is a dominance index, while the Shannon index is an information statistic index.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 11)">B. The Brillouin index changes as overall individual abundance changes, while the Shannon index does not, provided proportional abundance is constant.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 11)">C. The Shannon index uses factorials, while the Brillouin index uses the natural logarithm (ln).</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 11)">D. The Shannon index is less sensitive to rare species than the Brillouin index.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback11"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>12. A community has an actual Shannon index (H<sub>S</sub>) of 0.325 and a maximum possible Shannon index (H<sub>max</sub>) of 0.693. What is the Pielou's Evenness Index (E)?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 12)">A. 1.000</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 12)">B. 0.693</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 12)">C. 0.469</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 12)">D. 0.531</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback12"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>13. Which measure is conceptually appealing because it converts the value of a diversity index into an intuitively understandable species equivalent?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 13)">A. The Pielou's Evenness Index (E)</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 13)">B. The Berger-Parker complement index (D<sub>BPC</sub>)</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 13)">C. The Gini-Simpson index (D<sub>GS</sub>)</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 13)">D. The Effective Number of Species (D<sub>E</sub>)</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback13"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>14. In the effective number of species concept, if one species dominates a community even slightly, which index's transformation gives a <strong>lower</strong> effective number of species?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 14)">A. The Shannon effective number of species (D<sub>E</sub> from H<sub>S</sub>)</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 14)">B. The Gini-Simpson effective number of species (D<sub>E</sub> from D<sub>GS</sub>)</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 14)">C. The Berger-Parker effective number of species (D<sub>E</sub> from D<sub>BP</sub>)</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 14)">D. They both always give the same value for any community.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback14"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>15. Which type of diversity index is defined as an ordinal index?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 15)">A. An index that is based on the uncertainty in a coded message.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 15)">B. A dominance index weighted toward the most abundant species.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 15)">C. An index that attempts to rank or order species in importance using a weighting factor.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 15)">D. An index that treats all species as equals in the calculation.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback15"></div>
+                </div>
+                
+                <div class="quiz-controls">
+                    <button class="btn-prev" onclick="navigateToQuizPart2()">← Previous Questions</button>
+                    <button class="btn-next" onclick="navigateToQuizPart4()">Next Quiz Questions →</button>
+                </div>
+            `
+        },
+        {
+            title: "Species Diversity Quiz - Part 4",
+            content: `
+                <h2>Species Diversity Quiz - Part 4</h2>
+                <p>Final questions covering regional diversity concepts.</p>
+                
+                <div class="quiz-question">
+                    <h3>16. The total number of species in an entire region encompassing multiple sites is known as:</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 16)">A. Gamma (γ) diversity</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 16)">B. Alpha (α) diversity</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 16)">C. Beta (β) diversity</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 16)">D. Pielou's Evenness index (E)</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback16"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>17. In the formula α diversity × β diversity = γ diversity, what does beta (β) diversity represent?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 17)">A. The difference in species composition or species turnover between sites.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 17)">B. The average number of individuals per species in the region.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 17)">C. The overall species richness of the entire region.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 17)">D. The local species richness of a single site.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback17"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>18. A region has an average local richness (α diversity) of 3 species per site and a total richness (γ diversity) of 6 species. What is the region's β diversity (species turnover)?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 18)">A. 3</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 18)">B. 18</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 18)">C. 2</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 18)">D. 1</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback18"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>19. Eric Pianka's lizard study demonstrated that the difference in total species richness (γ diversity) between Australia and Southern Africa is a combination of which two factors?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 19)">A. The Berger-Parker index and the Shannon index.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 19)">B. The genetic mutation rate and the average lifespan of the species.</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 19)">C. The difference in diversity between identical habitats (α diversity) and the number of different habitats (β diversity).</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 19)">D. The total area of the continent and the average body size of the lizards.</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback19"></div>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>20. A mountain region has an overall total species richness (γ diversity) of 20 species. If the β diversity (species turnover) is 4, what is the average local species richness (α diversity) per site in the region?</h3>
+                    <ul class="quiz-options">
+                        <li class="quiz-option" onclick="selectAnswer(this, 20)">A. 24 species</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 20)">B. 4 species</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 20)">C. 80 species</li>
+                        <li class="quiz-option" onclick="selectAnswer(this, 20)">D. 5 species</li>
+                    </ul>
+                    <div class="quiz-feedback" id="feedback20"></div>
+                </div>
+                
+                <div class="quiz-score" id="quizScore"></div>
+                
+                <div class="quiz-controls">
+                    <button class="btn-prev" onclick="navigateToQuizPart3()">← Previous Questions</button>
+                    <button class="btn-next" onclick="calculateScore()">Calculate Score</button>
+                </div>
+            `
+        }
+    ];
+
+    let currentSection = 0;
+    const contentSection = document.getElementById('contentSection');
+    const sectionIndicator = document.getElementById('sectionIndicator');
+    const progressFill = document.getElementById('progressFill');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // Store user answers
+    const userAnswers = {};
+
+    function updateContent() {
+        contentSection.innerHTML = sections[currentSection].content;
+        sectionIndicator.textContent = `Section ${currentSection + 1} of ${sections.length}`;
+        progressFill.style.width = `${((currentSection + 1) / sections.length) * 100}%`;
+        
+        prevBtn.disabled = currentSection === 0;
+        nextBtn.disabled = currentSection === sections.length - 1;
+        
+        // Restore user selections if they exist
+        restoreSelections();
+    }
+
+    function navigate(direction) {
+        currentSection += direction;
+        if (currentSection < 0) currentSection = 0;
+        if (currentSection >= sections.length) currentSection = sections.length - 1;
+        updateContent();
+    }
+
+    function navigateToQuizPart1() {
+        currentSection = 18; // Quiz Part 1
+        updateContent();
+    }
+
+    function navigateToQuizPart2() {
+        currentSection = 19; // Quiz Part 2
+        updateContent();
+    }
+
+    function navigateToQuizPart3() {
+        currentSection = 20; // Quiz Part 3
+        updateContent();
+    }
+
+    function navigateToQuizPart4() {
+        currentSection = 21; // Quiz Part 4
+        updateContent();
+    }
+
+    function selectAnswer(element, questionNumber) {
+        const options = element.parentElement.querySelectorAll('.quiz-option');
+        options.forEach(opt => {
+            opt.classList.remove('selected', 'correct', 'incorrect');
+        });
+        
+        element.classList.add('selected');
+        
+        // Store the user's answer
+        const selectedIndex = Array.from(options).indexOf(element);
+        userAnswers[questionNumber] = selectedIndex;
+        
+        const feedback = document.getElementById(`feedback${questionNumber}`);
+        
+        // Define correct answers (0-indexed)
+        const correctAnswers = {
+            1: 1,  // B - The Organismic Model
+            2: 0,  // A - Species are distributed independently...
+            3: 3,  // D - Species frequency of occurrence...
+            4: 3,  // D - They are weighted toward the abundance...
+            5: 2,  // C - Community 1, because a lower DBP...
+            6: 2,  // C - A higher value corresponds to a more diverse community...
+            7: 3,  // D - The probability that two randomly selected individuals...
+            8: 3,  // D - It is heavily weighted toward the most abundant species...
+            9: 1,  // B - Uncertainty of the next letter in a coded message
+            10: 0, // A - Even the rarest species contributes some value...
+            11: 1, // B - The Brillouin index changes as overall individual abundance changes...
+            12: 2, // C - 0.469
+            13: 3, // D - The Effective Number of Species (DE)
+            14: 1, // B - The Gini-Simpson effective number of species...
+            15: 2, // C - An index that attempts to rank or order species...
+            16: 0, // A - Gamma (γ) diversity
+            17: 0, // A - The difference in species composition...
+            18: 2, // C - 2
+            19: 2, // C - The difference in diversity between identical habitats...
+            20: 3  // D - 5 species
+        };
+        
+        // Check if selected answer is correct
+        if (selectedIndex === correctAnswers[questionNumber]) {
+            element.classList.add('correct');
+            feedback.textContent = "Correct! Well done.";
+            feedback.className = "quiz-feedback correct";
+        } else {
+            element.classList.add('incorrect');
+            feedback.textContent = "Incorrect. Try again.";
+            feedback.className = "quiz-feedback incorrect";
+            
+            // Highlight the correct answer
+            options[correctAnswers[questionNumber]].classList.add('correct');
+        }
+    }
+
+    function restoreSelections() {
+        // Restore user selections and feedback for quiz questions
+        for (let questionNumber = 1; questionNumber <= 20; questionNumber++) {
+            if (userAnswers[questionNumber] !== undefined) {
+                const options = document.querySelectorAll(`#feedback${questionNumber}`).length > 0 ? 
+                    document.querySelector(`#feedback${questionNumber}`).parentElement.querySelectorAll('.quiz-option') : [];
+                
+                if (options.length > 0 && userAnswers[questionNumber] < options.length) {
+                    const selectedOption = options[userAnswers[questionNumber]];
+                    selectAnswer(selectedOption, questionNumber);
+                }
+            }
+        }
+    }
+
+    function calculateScore() {
+        const correctAnswers = {
+            1: 1, 2: 0, 3: 3, 4: 3, 5: 2,
+            6: 2, 7: 3, 8: 3, 9: 1, 10: 0,
+            11: 1, 12: 2, 13: 3, 14: 1, 15: 2,
+            16: 0, 17: 0, 18: 2, 19: 2, 20: 3
+        };
+        
+        let score = 0;
+        for (let i = 1; i <= 20; i++) {
+            if (userAnswers[i] === correctAnswers[i]) {
+                score++;
+            }
+        }
+        
+        const percentage = (score / 20) * 100;
+        const quizScore = document.getElementById('quizScore');
+        quizScore.innerHTML = `
+            <h3>Quiz Results</h3>
+            <p>You scored ${score} out of 20 (${percentage}%)</p>
+            <p>${percentage >= 80 ? 'Excellent! You have a strong understanding of species diversity concepts.' : 
+                percentage >= 60 ? 'Good job! You have a solid foundation but could review some concepts.' : 
+                'Keep studying! Review the material and try again.'}</p>
+        `;
+    }
+
+    // Initialize the page
+    updateContent();
+</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
