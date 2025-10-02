@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mendelian Genetics</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #f0f0f0;
+            --accent-color: #4a9eff;
+            --secondary-color: #7b68ee;
+            --highlight-color: #ffd700;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            --glossy-gradient: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--glossy-gradient);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin: 25px 0 15px;
+            color: var(--secondary-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            margin: 20px 0 10px;
+            color: var(--highlight-color);
+        }
+        
+        .section {
+            display: none;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+            background: var(--glossy-gradient), var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        p, li {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            background-color: rgba(74, 158, 255, 0.2);
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            position: sticky;
+            bottom: 20px;
+            background: rgba(30, 30, 30, 0.9);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            backdrop-filter: blur(10px);
+        }
+        
+        button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--accent-color);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .section-counter {
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+        }
+        
+        .quiz-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .quiz-option.correct {
+            background: rgba(0, 200, 0, 0.2);
+            border-color: rgba(0, 200, 0, 0.5);
+        }
+        
+        .quiz-option.incorrect {
+            background: rgba(200, 0, 0, 0.2);
+            border-color: rgba(200, 0, 0, 0.5);
+        }
+        
+        .mark {
+            color: var(--highlight-color);
+            font-weight: bold;
+        }
+        
+        strong {
+            color: var(--accent-color);
+        }
+        
+        em {
+            color: var(--secondary-color);
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 1rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            line-height: 1.5;
+        }
+
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            h3 {
+                font-size: 1.1rem;
+            }
+            
+            .section {
+                padding: 20px 15px;
+            }
+            
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MENDELIAN GENETICS</h1>
+            <div class="section-counter">Section <span id="current-section">1</span> of <span id="total-sections">20</span></div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+        </header>
+        
+        <main>
+            <!-- Section 1: Introduction -->
+            <section id="section-1" class="section active">
+                <h2>Introduction</h2>
+                <p>The process of <strong>heredity</strong>, or how <strong>characters are passed from one generation to the next</strong>, along with the <strong>elementary principles involved</strong>, is a question we can answer today thanks to the pioneering work of <strong>Gregor Mendel</strong>.</p>
+                <p>After becoming a priest, Mendel was sent from his monastery in Brno, Czech Republic, to the <strong>University of Vienna</strong> to study <strong>biology, physics, and mathematics</strong>. Returning to the Brno monastery to teach in <strong>1853</strong>, he began his experiments. He used a <strong>small plot of land</strong> at the monastery to conduct his plant-crossing experiments. Over a period of <strong>seven years</strong>, Mendel performed crosses involving <strong>thousands of plants</strong>.</p>
+                <p>Mendel chose the <strong>common pea plant (Pisum sativum)</strong> for his studies to establish the fundamental principles of inheritance. However, his work was largely ignored by the scientific community, which mistakenly believed in a <strong>blending theory of inheritance</strong>. This incorrect theory proposed that parental traits would mix together, resulting in an <strong>intermediate physical appearance</strong> in the offspring.</p>
+                <p>This "blending" idea <em>seemed</em> correct because of a phenomenon now known as <strong>continuous variation</strong>.</p>
+            </section>
+            
+            <!-- Section 2: Continuous vs. Discontinuous Variation -->
+            <section id="section-2" class="section">
+                <h2>Continuous vs. Discontinuous Variation</h2>
+                <ul>
+                    <li><strong>Continuous Variation:</strong> Results from the action of <strong>many genes</strong> (polygenic inheritance) determining a characteristic, like <strong>human height</strong>. Offspring appear to be a "<strong>blend</strong>" of their parents' traits, which lent false support to the blending theory.</li>
+                    <li><strong>Discontinuous Variation:</strong> This is the type of variation Mendel studied. It involves traits that are inherited in <strong>distinct, separate classes</strong>, such as <strong>violet versus white flowers</strong>, with no intermediate forms. Working with these distinct classes allowed Mendel to uncover the true principles of inheritance, which contradicted the blending model.</li>
+                </ul>
+                <p>Mendel's central belief was in <strong>particulate inheritance</strong>, proposing that <strong>heredity</strong> is the result of <strong>discrete, independent units</strong> (which he called "factors," now known as <strong>genes</strong>) within an individual's genome.</p>
+                <p>He proposed <strong>three foundational principles of inheritance</strong>:</p>
+                <ol>
+                    <li><strong>Concept of Dominance</strong></li>
+                    <li><strong>Law of Segregation</strong></li>
+                    <li><strong>Law of Independent Assortment</strong></li>
+                </ol>
+                <p>Mendel presented his theories in two public lectures in <strong>1865</strong> and a detailed written publication in <strong>1866</strong>. Despite this, his work was <strong>ignored</strong> by the scientific mainstream until <strong>1900</strong>.</p>
+            </section>
+            
+            <!-- Section 3: Rediscovery and Application -->
+            <section id="section-3" class="section">
+                <h2>Rediscovery and Application</h2>
+                <p>By the year 1900, the discovery of <strong>chromosomes</strong> led biologists to hypothesize that genes might be carried on these structures. When scientists finally read Mendel's work on particulate inheritance, they were able to make the crucial connection between <strong>genes</strong> (Mendel's factors) and <strong>chromosomes</strong>.</p>
+                <p>Mendel's principles of inheritance, though initially established through experiments with pea plants, were found to be universally applicable to <strong>most other organisms, including humans</strong>. This broad applicability was critical for <strong>clinicians</strong>, allowing them to understand the <strong>genetic basis of human diseases</strong>. For instance, within a few years of the rediscovery of Mendel's work in 1900, <strong>Archibald Garrod</strong> successfully applied Mendel's principles to decipher the genetic cause of <strong>inborn errors of metabolism</strong>, such as <strong>alkaptonuria</strong> and <strong>phenylketonuria (PKU)</strong>.</p>
+            </section>
+            
+            <!-- Section 4: Reason for Mendel's Success -->
+            <section id="section-4" class="section">
+                <h2>Reason for Mendel's Success</h2>
+                <p>Mendel's success in establishing the principles of inheritance was due to several critical factors:</p>
+                <h3>1. Excellent Experimental Subject: The Pea Plant</h3>
+                <p>Mendel chose the <strong>pea plant (Pisum sativum)</strong>, which provided many advantages:</p>
+                <ul>
+                    <li><strong>Easy Cultivation:</strong> They could be easily grown in small spaces, like the monastery garden and greenhouse he had available.</li>
+                    <li><strong>Rapid Generation Time:</strong> They grow relatively fast, completing an entire generation within one growing season.</li>
+                    <li><strong>Large Sample Size:</strong> Pea plants produce a <strong>large number of seeds (offspring)</strong>. A large progeny size is vital because it reduces the impact of chance, allowing for the drawing of meaningful, statistically sound results.</li>
+                </ul>
+                <h3>2. Availability of Pure-Bred Varieties</h3>
+                <p>Mendel had access to a <strong>large number of different pea varieties</strong>. Because peas naturally <strong>self-pollinate</strong>, these varieties were <strong>genetically pure</strong> (homozygous) for their traits, giving Mendel a defined and reliable starting point for his crosses.</p>
+                <h3>3. Wise Selection of Traits</h3>
+                <p>His choice of <strong>seven specific characteristics</strong> for study was crucial. Instead of traits that show a wide range of variation (<strong>continuous variation</strong>), he selected traits that exist in <strong>two distinct, easily distinguishable forms</strong> (<strong>discontinuous variation</strong>), such as tall vs. dwarf height, round vs. wrinkled seeds, and inflated vs. constricted pods.</p>
+                <h3>4. Rigorous Scientific Methodology and Data Analysis</h3>
+                <p>Mendel adopted a true <strong>scientific method</strong> to test his ideas, unlike previous investigators who merely described the results of crosses.</p>
+                <ul>
+                    <li>He <strong>formulated hypotheses</strong> based on initial observations, and then performed further crosses specifically to <strong>test these hypotheses</strong>.</li>
+                    <li>He kept <strong>meticulous records</strong> of the number of progeny showing each trait and <strong>calculated ratios</strong> of the different types.</li>
+                    <li>His <strong>attention to detail</strong>, ability to <strong>see patterns in the data</strong>, and his <strong>patience</strong> were exemplary; he conducted his experiments for <strong>over seven years</strong> before publishing.</li>
+                </ul>
+                <h3>5. Favorable Genetic Conditions</h3>
+                <p>The specific characters Mendel selected were located on <strong>different chromosomes</strong>. Furthermore, all seven pairs of contrasting traits he studied exhibited <strong>complete dominance</strong>, which simplified the resulting patterns of inheritance and made them easier to track and analyze.</p>
+            </section>
+            
+            <!-- Section 5: Mendel's Seven Traits -->
+            <section id="section-5" class="section">
+                <h2>Mendel's Seven Traits</h2>
+                <p>Mendel chose the common pea plant, <em>Pisum sativum</em>, for his studies and specifically focused on <strong>seven pairs of contrasting characteristics</strong>.</p>
+                <p>The specialty of these selected characteristics was that they exhibited <strong>discontinuous variation</strong>, meaning they occurred in two distinct, easily distinguishable forms with <strong>no intermediate blending</strong>. This feature was crucial for Mendel's success, as it allowed him to observe and quantify the separate units of inheritance. Furthermore, all seven pairs of contrasting traits he studied exhibited <strong>complete dominance</strong>, which greatly simplified the inheritance patterns he observed.</p>
+                <h3>Location of Mendel's Seven Traits on Pea Chromosomes</h3>
+                <p>Mendel was fortunate in his selection, as his seven traits were controlled by genes located on only <strong>four</strong> of the pea plant's seven chromosome pairs (2n=14). These genes were either on different chromosomes or were located far enough apart on the same chromosome to effectively assort independently.</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Trait (Character)</th>
+                            <th>Contrasting Forms (Phenotypes)</th>
+                            <th>Chromosome Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Seed Texture</td>
+                            <td>Round vs. Wrinkled</td>
+                            <td>Chromosome 7</td>
+                        </tr>
+                        <tr>
+                            <td>Seed Color</td>
+                            <td>Yellow vs. Green</td>
+                            <td>Chromosome 1</td>
+                        </tr>
+                        <tr>
+                            <td>Flower Color</td>
+                            <td>Violet vs. White</td>
+                            <td>Chromosome 1</td>
+                        </tr>
+                        <tr>
+                            <td>Pod Shape</td>
+                            <td>Inflated vs. Constricted</td>
+                            <td>Chromosome 4</td>
+                        </tr>
+                        <tr>
+                            <td>Pod Color</td>
+                            <td>Green vs. Yellow</td>
+                            <td>Chromosome 4</td>
+                        </tr>
+                        <tr>
+                            <td>Flower Position</td>
+                            <td>Axial vs. Terminal</td>
+                            <td>Chromosome 4</td>
+                        </tr>
+                        <tr>
+                            <td>Stem Length</td>
+                            <td>Tall vs. Dwarf</td>
+                            <td>Chromosome 4</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <ul>
+                    <li><strong>Independent Assortment:</strong> Traits located on <strong>different</strong> chromosomes (like Seed Color on Chr 1 and Pod Shape on Chr 4) assort independently.</li>
+                    <li><strong>Apparent Independent Assortment (Linkage):</strong> Even though four traits (Pod Shape, Pod Color, Flower Position, Stem Length) are located on <strong>Chromosome 4</strong>, they still generally appeared to assort independently in his early crosses. This is due to either the specific genes being physically far apart on the chromosome or the fact that Mendel did not study all possible dihybrid combinations involving linked genes.</li>
+                    <li><strong>Close Linkage:</strong> Later studies confirmed that the genes for <strong>Flower Color</strong> and <strong>Seed Color</strong> are located relatively close together on <strong>Chromosome 1</strong>, and the genes for <strong>Pod Shape</strong>, <strong>Pod Color</strong>, <strong>Flower Position</strong>, and <strong>Stem Length</strong> are all found on <strong>Chromosome 4</strong>.</li>
+                </ul>
+            </section>
+            
+            <!-- Section 6: Monohybrid Cross -->
+            <section id="section-6" class="section">
+                <h2>Monohybrid Cross</h2>
+                <p><strong>Monohybrid Cross-</strong> <strong>crosses between parents that differed in a single characteristic</strong></p>
+                <img src="https://betabiosciences.github.io//Other-Units/Mendelian%20genetics%20fig1.jpg" alt="Monohybrid Cross Diagram">
+                <h3>The Experiment and Observations</h3>
+                <ol>
+                    <li><strong>Initial Cross (P Generation):</strong> Mendel cross-fertilized a <strong>tall</strong> pea plant with a <strong>dwarf</strong> pea plant. To do this, he manually transferred pollen (male gametes) from one variety's anthers to the stigma (female part) of the other, ensuring a controlled cross.</li>
+                    <li><strong>First Filial Generation (F1​):</strong> The resulting hybrid seeds, when grown, produced the F1​ generation. All these plants were <strong>uniformly tall</strong>.
+                        <ul>
+                            <li>The result was the same regardless of which parent provided the pollen (reciprocal crosses: tall male × dwarf female, or dwarf male × tall female).</li>
+                            <li><strong>Key Observation:</strong> The <strong>dwarf characteristic seemed to disappear</strong> entirely.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Second Filial Generation (F2​):</strong> Mendel allowed the tall F1​ hybrid plants to <strong>self-fertilize</strong>.
+                        <ul>
+                            <li><strong>Key Observation:</strong> The dwarf characteristic <strong>reappeared</strong> in the progeny.</li>
+                            <li>The F2​ generation consisted of both tall and dwarf plants in a consistent ratio: approximately <strong>3:1</strong> (specifically, 787 tall to 277 dwarf among 1064 plants).</li>
+                        </ul>
+                    </li>
+                </ol>
+            </section>
+            
+            <!-- Section 7: Mendel's Inferences and Genetic Concepts -->
+            <section id="section-7" class="section">
+                <h2>Mendel's Inferences and Genetic Concepts</h2>
+                <p>Mendel's observations led him to propose the concept of <strong>particulate inheritance</strong> and two foundational principles:</p>
+                <h3>1. The Concept of Dominance</h3>
+                <ul>
+                    <li>Mendel inferred that the F1​ hybrids, though tall, must have carried a hidden genetic factor for dwarfness because they produced dwarf F2​ offspring.</li>
+                    <li>He concluded that the factor for <strong>tallness was dominant</strong> (expressed) and <strong>masked</strong> the factor for <strong>dwarfness, which was recessive</strong> (latent).</li>
+                </ul>
+                <h3>2. The Principles of Inheritance (Genes and Alleles)</h3>
+                <p>Mendel extended his findings to six other traits (seed texture, seed color, pod shape, etc.), consistently finding a <strong>3:1 ratio</strong> in the F2​ generation of all monohybrid crosses.</p>
+                <ul>
+                    <li><strong>Genes and Alleles:</strong> Mendel referred to his heritable factors as <strong>"factors."</strong> Today, they are called <strong>genes</strong> (coined by Wilhelm Johannsen in 1909), and their alternate dominant and recessive forms are called <strong>alleles</strong>.</li>
+                    <li><strong>Gene Pairs:</strong> Mendel concluded that genes come in <strong>pairs</strong> (two copies).
+                        <ul>
+                            <li>The true-breeding parental plants were <strong>diploid and homozygous</strong> (carrying two identical copies, e.g., DD or dd).</li>
+                            <li>Gametes (sperm and egg) are <strong>haploid</strong>, carrying only a single copy of the gene (D or d).</li>
+                            <li>The F1​ hybrid offspring are <strong>heterozygous</strong> (carrying two different alleles, Dd), inheriting one from each parent.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            
+            <!-- Section 8: Symbolic Representation and F2 Analysis -->
+            <section id="section-8" class="section">
+                <h2>Symbolic Representation and F2 Analysis</h2>
+                <p>Mendel pioneered the use of <strong>symbols</strong> to represent hereditary factors (alleles), enabling clear, mathematical analysis of crosses.</p>
+                <ul>
+                    <li><strong>Genotype vs. Phenotype:</strong>
+                        <ul>
+                            <li><strong>Genotype:</strong> The allelic constitution of an organism (DD, Dd, or dd).</li>
+                            <li><strong>Phenotype:</strong> The physical appearance or trait (Tall or Dwarf).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Symbol Use:</strong> The letter chosen typically relates to the recessive trait (e.g., <strong>d</strong> for dwarfness). The recessive allele is lowercase (<strong>d</strong>), and the dominant allele is uppercase (<strong>D</strong>).
+                        <ul>
+                            <li>P (Parental) Genotypes: <strong>DD</strong> (Tall, homozygous) × <strong>dd</strong> (Dwarf, homozygous).</li>
+                            <li>F1 Genotype: <strong>Dd</strong> (Tall, heterozygous).</li>
+                            <li>F1 Gametes: They produce D and d gametes in <strong>equal proportions</strong>.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <h3>F2 Segregation</h3>
+                <p>The self-fertilization of F1​ heterozygotes (Dd) leads to four equally probable zygote combinations: DD, Dd, dD, and dd.</p>
+                <ul>
+                    <li><strong>F2​ Genotype Ratio:</strong> 1 DD:2 Dd:1 dd</li>
+                    <li><strong>F2​ Phenotype Ratio:</strong> <strong>3 Tall</strong> (DD, Dd, dD) : <strong>1 Dwarf</strong> (dd)</li>
+                </ul>
+                <h3>F3​ Confirmation</h3>
+                <p>To confirm the genotypes, Mendel self-fertilized the F2​ plants:</p>
+                <ul>
+                    <li>All dwarf F2​ plants (dd) produced only dwarf offspring (proven homozygous).</li>
+                    <li>The tall F2​ plants produced two groups:
+                        <ul>
+                            <li>≈1/3 produced only tall offspring (proven to be DD <strong>homozygotes</strong>).</li>
+                            <li>≈2/3 produced a mix of tall and dwarf offspring (proven to be Dd <strong>heterozygotes</strong>). This 1:2 ratio among the tall plants exactly matched his prediction.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
+            
+            <!-- Section 9: Mendel's Two Key Principles -->
+            <section id="section-9" class="section">
+                <h2>Mendel's Two Key Principles</h2>
+                <p>Mendel's monohybrid analysis is summarized by two principles:</p>
+                <ol>
+                    <li><strong>The Principle of Dominance:</strong> The <strong>Principle of Dominance</strong> describes how two different versions of a gene, called <strong>alleles</strong>, interact when they coexist in a <strong>heterozygote</strong> (an individual with one dominant and one recessive allele, e.g., Dd). This principle states that the <strong>dominant allele</strong> will completely <strong>mask or conceal</strong> the physical expression of the <strong>recessive allele</strong>. This is fundamentally a statement about <strong>genetic function</strong> at the molecular level. Typically, the dominant allele provides instructions for a functional product (like a key enzyme or protein), and having just one copy of this functional allele is usually enough to produce the trait's full phenotype (e.g., tallness or violet flower color). Conversely, the recessive allele often produces a non-functional or absent product. Because the single dominant allele compensates fully, the heterozygote (Dd) displays the dominant phenotype, identical to a homozygote (DD), while the recessive trait only appears when two copies of the non-functional recessive allele are present (dd).</li>
+                    <li><strong>The Principle of Segregation:</strong> The <strong>Principle of Segregation</strong> is a core law of <strong>genetic transmission</strong> stating that the two different alleles a <strong>heterozygote</strong> possesses (e.g., D and d) must <strong>separate</strong> or <strong>segregate</strong> from each other when the organism forms gametes. This process ensures that <strong>each gamete receives only one allele</strong> (D or d) with equal probability, meaning the alleles are transmitted faithfully and discretely, rather than being blended. This principle is physically explained by <strong>meiosis</strong>, the cell division process for creating gametes, where the homologous chromosomes---on which the two alleles are located---physically <strong>separate</strong> during Anaphase I. Consequently, the two alleles are distributed into different gametes, allowing the hidden recessive trait to reappear in subsequent generations when two such recessive alleles reunite.</li>
+                </ol>
+                <p>On the basis of monohybrid cross, Mendel Formulated following laws</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Law</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Law of Unit Characters</td>
+                            <td>Every character of an organism is controlled by unit factors existing in pairs</td>
+                        </tr>
+                        <tr>
+                            <td>Law of Dominance</td>
+                            <td>In a heterozygote, one allele may conceal the presence of another.</td>
+                        </tr>
+                        <tr>
+                            <td>Law of Segregation (Law of Purity of Gametes)</td>
+                            <td>In a heterozygote, two different alleles segregate from each other during the formation of gametes.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <!-- Section 10: Dihybrid Crosses -->
+            <section id="section-10" class="section">
+                <h2>Dihybrid Crosses Reveals the Law of Independent Assortment</h2>
+                <p>Mendel's <strong>dihybrid cross</strong> experiments involved tracking the inheritance of <strong>two distinct traits</strong> simultaneously to see if they were inherited independently. The classic example involved seed color and seed texture.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Mendelian%20genetics%20fig2.jpg" alt="Dihybrid Cross Diagram">
+                <h3>The Experiment and Observations</h3>
+                <ol>
+                    <li><strong>Parental (P) Cross:</strong> Mendel crossed true-breeding plants producing <strong>yellow, round seeds</strong> with true-breeding plants producing <strong>green, wrinkled seeds</strong>.</li>
+                    <li><strong>First Filial (F1​) Generation:</strong> All F1​ seeds were <strong>yellow and round</strong>. This established that the alleles for <strong>yellow</strong> color (G) and <strong>round</strong> texture (W) were <strong>dominant</strong> over the alleles for green (g) and wrinkled (w). The F1​ genotype was <strong>Gg Ww</strong> (doubly heterozygous).</li>
+                    <li><strong>Second Filial (F2​) Generation:</strong> The F1​ hybrids (Gg Ww) were allowed to self-fertilize. Mendel classified and counted the F2​ seeds.
+                        <ul>
+                            <li><strong>Key Observation:</strong> The F2​ progeny displayed <strong>four phenotypic classes</strong> in a consistent ratio of approximately <strong>9:3:3:1</strong>:
+                                <ul>
+                                    <li><strong>9/16 Yellow, Round</strong> (Parental combination)</li>
+                                    <li><strong>3/16 Green, Round</strong> (New combination)</li>
+                                    <li><strong>3/16 Yellow, Wrinkled</strong> (New combination)</li>
+                                    <li><strong>1/16 Green, Wrinkled</strong> (Parental combination)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ol>
+                <p>The appearance of the two new combinations of traits demonstrated that the genes for color and texture were somehow shuffled independently.</p>
+            </section>
+            
+            <!-- Section 11: Analysis and Inferences (Symbolic Method) -->
+            <section id="section-11" class="section">
+                <h2>Analysis and Inferences (Symbolic Method)</h2>
+                <p>Mendel analyzed this two-factor cross using symbols:</p>
+                <ul>
+                    <li><strong>Color Gene Alleles:</strong> G (yellow, dominant) and g (green, recessive).</li>
+                    <li><strong>Texture Gene Alleles:</strong> W (round, dominant) and w (wrinkled, recessive).</li>
+                </ul>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Generation</th>
+                            <th>Genotype</th>
+                            <th>Phenotype</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>P</td>
+                            <td>GG WW×gg ww</td>
+                            <td>Yellow, Round × Green, Wrinkled</td>
+                        </tr>
+                        <tr>
+                            <td>F1​</td>
+                            <td>Gg Ww</td>
+                            <td>Yellow, Round</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>F1​ Gamete Formation</h3>
+                <p>Mendel realized that if the two genes segregated independently, the F1​ hybrid (Gg Ww) must produce <strong>four types of gametes</strong> in <strong>equal proportions (25% each)</strong>:</p>
+                <ol>
+                    <li><strong>G W</strong></li>
+                    <li><strong>G w</strong></li>
+                    <li><strong>g W</strong></li>
+                    <li><strong>g w</strong></li>
+                </ol>
+                <p>The fertilization of these gametes produced an array of 16 equally frequent zygotic genotypes, resulting in the predicted 9:3:3:1 phenotypic ratio, which closely matched the observed experimental data.</p>
+            </section>
+            
+            <!-- Section 12: Mendel's Third Key Principle -->
+            <section id="section-12" class="section">
+                <h2>Mendel's Third Key Principle</h2>
+                <p>The close agreement between the observed 9:3:3:1 ratio and the ratio predicted by this independent assortment model led to Mendel's third principle:</p>
+                <h3>The Principle of Independent Assortment</h3>
+                <p>The <strong>alleles of different genes</strong> (e.g., the G/g pair and the W/w pair) <strong>segregate, or assort, independently of each other</strong> during gamete formation. This is another rule of <strong>genetic transmission</strong>. It means that the inheritance of one trait (like seed color) does not influence the inheritance of another trait (like seed texture). The separation of the alleles for color is <strong>not linked</strong> to the separation of the alleles for texture. This principle is generally true, but it is physically explained by the <strong>independent behavior of different pairs of chromosomes</strong> during meiosis. However, it does not apply to all genes; genes that are located close together on the same chromosome are often <strong>linked</strong> and do not assort independently.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Mendelian%20genetics%20fig3.jpg" alt="Independent Assortment Diagram">
+            </section>
+            
+            <!-- Section 13: Physical Basis for Law of Segregation -->
+            <section id="section-13" class="section">
+                <h2>Physical Basis for Law of Segregation</h2>
+                <p>The principles of heredity established by Mendel, though derived solely from his breeding experiments, are rooted in the physical behavior of <strong>chromosomes</strong> during meiosis.</p>
+                <p>Prior to 1900, when Mendel's work was rediscovered, the physical nature and location of his "factors" (alleles) were unknown. Working independently in the early 1900s, <strong>Walter Sutton and Theodor Boveri</strong> proposed the <strong>Chromosomal Theory of Inheritance</strong>, concluding that <strong>genes are located on chromosomes</strong>.</p>
+                <p>They observed that the behavior of <strong>homologous chromosome pairs</strong> during meiosis---specifically, their segregation into gametes---perfectly mirrored the segregation of Mendelian factors. This similarity led them to propose that Mendelian factors (alleles) physically <strong>reside on homologous chromosomes</strong>, providing the physical basis for heredity.</p>
+                <p>In diploid organisms, cells contain <strong>homologous chromosomes</strong>---a pair of matching chromosomes, one inherited from the mother and one from the father. Similarly, diploid cells have <strong>two alleles</strong> at each gene locus, forming the genotype. The two alleles of a genotype are located at the <strong>same locus</strong> on this pair of homologous chromosomes.</p>
+                <p>The symbols used in genetics (T,t,TT,Tt) are simply shorthand for the specific <strong>DNA sequences (alleles)</strong> found on these chromosomes that code for a phenotype.</p>
+                <p>The separation of alleles is directly tied to the stages of meiosis:</p>
+                <ol>
+                    <li><strong>Replication:</strong> Before meiosis, during the S stage of the cell cycle, each chromosome replicates, producing two identical sister chromatids. This means the alleles are also replicated, with one copy on each chromatid.</li>
+                    <li><strong>Segregation in Meiosis I (No Crossing Over):</strong> If <strong>no crossing over</strong> occurs during Prophase I, the Mendelian factors (alleles) segregate during <strong>Anaphase I</strong>, when the <strong>homologous chromosomes separate</strong>. Each resulting cell gets one complete homologous chromosome, ensuring the separation of the two different alleles.</li>
+                    <li><strong>Segregation in Meiosis II (With Crossing Over):</strong> If <strong>crossing over</strong> occurs during Prophase I, the sister chromatids are no longer genetically identical. In this case, the final separation of different alleles takes place during <strong>Anaphase II</strong>, when the <strong>sister chromatids separate</strong>.</li>
+                </ol>
+                <p>Mendel's principles are therefore a direct consequence of the precise and predictable movements of chromosomes during gamete formation.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Mendelian%20genetics%20fig4.jpg" alt="Meiosis Diagram">
+            </section>
+            
+            <!-- Section 14: Physical Basis for Law of Independent Assortment -->
+            <section id="section-14" class="section">
+                <h2>Physical Basis for Law of Independent Assortment</h2>
+                <p>The principle of independent assortment, a key contributor to genetic variation, is physically rooted in <strong>Meiosis I</strong>.</p>
+                <p>The foundation for independent assortment lies in the random alignment of <strong>homologous pairs</strong> (tetrads) during <strong>metaphase I</strong> on the metaphase plate.</p>
+                <ul>
+                    <li>This <strong>random orientation</strong> means that the segregation of one homologous pair is <strong>independent</strong> of all other pairs.</li>
+                    <li>Consequently, when the homologous chromosomes separate during <strong>anaphase I</strong>, each resulting gamete can receive any combination of the <strong>paternal and maternal chromosomes</strong> (and the alleles they carry).</li>
+                    <li>This independent segregation of chromosomes leads to a vast array of potential gametes. The number of different gamete types produced solely by independent assortment is 2<sup>n</sup>, where 'n' is the number of pairs of chromosomes. For instance, humans have 23 pairs, so an individual can produce 2<sup>23</sup> distinct types of gametes due to this mechanism alone, making independent assortment a major source of <strong>variation</strong> among offspring.</li>
+                </ul>
+                <p>A crucial requirement for the principle of independent assortment to hold true is that it applies only to genes located on <strong>different chromosomes</strong>.</p>
+                <ul>
+                    <li>Chromosomes house hundreds or thousands of genes arranged linearly.</li>
+                    <li>If genes are located on the <strong>same chromosome</strong>, they will generally <strong>travel together</strong> during anaphase I, ending up in the same pole and the same gamete.</li>
+                    <li>Genes on the same chromosome therefore <strong>do not assort independently</strong> and exhibit <strong>linkage</strong>. This coupling will persist unless <strong>crossing over</strong> occurs between the genes during Meiosis I. If two linked genes are situated very far apart on the chromosome, crossing over may happen so frequently (in virtually every meiotic division) that they essentially appear to assort independently.</li>
+                </ul>
+            </section>
+            
+            <!-- Section 15: The Dihybrid Test Cross -->
+            <section id="section-15" class="section">
+                <h2>The Dihybrid Test Cross</h2>
+                <p>A <strong>dihybrid test cross</strong> involves mating an <strong>F1​ individual that is heterozygous</strong> for two traits (Rr Yy) with an individual that is <strong>homozygous recessive</strong> for both traits (rr yy). This cross is essential because the homozygous recessive parent only contributes recessive alleles (ry) to its gametes, ensuring that the phenotype of the offspring directly reflects the allele combination contributed by the F1​ parent.</p>
+                <img src="https://betabiosciences.github.io//Other-Units/Mendelian%20genetics%20fig5.jpg" alt="Independent Assortment Diagram">
+                <p>To determine the types and proportions of offspring phenotypes in the Rr Yy×rr yy cross, we can treat it as two independent single-locus crosses and apply the <strong>multiplication rule</strong> (based on the law of independent assortment).</p>
+                <ol>
+                    <li><strong>First Locus (Seed Shape): Rr×rr</strong>
+                        <ul>
+                            <li>These cross yields a 1/2 probability of offspring being <strong>Round</strong> (Rr) and a 1/2 probability of being <strong>Wrinkled</strong> (rr).</li>
+                        </ul>
+                    </li>
+                    <li><strong>Second Locus (Seed Color): Yy×yy</strong>
+                        <ul>
+                            <li>These cross yields a 1/2 probability of offspring being <strong>Yellow</strong> (Yy) and a 1/2 probability of being <strong>Green</strong> (yy).</li>
+                        </ul>
+                    </li>
+                </ol>
+                <p>To find the combined probability of two independent events occurring (e.g., getting Round <em>and</em> Yellow), we multiply the individual probabilities:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Offspring Phenotype</th>
+                            <th>Genotype</th>
+                            <th>Calculation (Multiplication Rule)</th>
+                            <th>Proportion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Round, Yellow</td>
+                            <td>Rr Yy</td>
+                            <td>P(Round)×P(Yellow)=1/2×1/2</td>
+                            <td>1/4</td>
+                        </tr>
+                        <tr>
+                            <td>Round, Green</td>
+                            <td>Rr yy</td>
+                            <td>P(Round)×P(Green)=1/2×1/2</td>
+                            <td>1/4</td>
+                        </tr>
+                        <tr>
+                            <td>Wrinkled, Yellow</td>
+                            <td>rr Yy</td>
+                            <td>P(Wrinkled)×P(Yellow)=1/2×1/2</td>
+                            <td>1/4</td>
+                        </tr>
+                        <tr>
+                            <td>Wrinkled, Green</td>
+                            <td>rr yy</td>
+                            <td>P(Wrinkled)×P(Green)=1/2×1/2</td>
+                            <td>1/4</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>The results show that the offspring will display four combinations of traits in equal proportions, specifically a 1:1:1:1 ratio of Round Yellow : Round Green : Wrinkled Yellow : Wrinkled Green.</p>
+            </section>
+            
+            <!-- Section 16: F2 Ratios for Standard Mendelian Crosses -->
+            <section id="section-16" class="section">
+                <h2>F2​ Ratios for Standard Mendelian Crosses</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>F1​ Genotype</th>
+                            <th>Phenotypic Ratio (F2​)</th>
+                            <th>Genotypic Ratio (F2​)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Monohybrid (n=1)</td>
+                            <td>Aa</td>
+                            <td>3:1 (Dominant : Recessive)</td>
+                            <td>1AA:2Aa:1aa</td>
+                        </tr>
+                        <tr>
+                            <td>Dihybrid (n=2)</td>
+                            <td>AaBb</td>
+                            <td>9:3:3:1</td>
+                            <td>1AABB:2AABb:1AAbb:2AaBB:4AaBb:2Aabb:1aaBB:2aaBb:1aabb</td>
+                        </tr>
+                        <tr>
+                            <td>Trihybrid (n=3)</td>
+                            <td>AaBbCc</td>
+                            <td>27:9:9:9:3:3:3:1</td>
+                            <td>3<sup>3</sup>=27 total classes (Genotypes are difficult to list, but the formula applies)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>General Formulas for n Independent Genes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>General Formula</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Number of Different F2​ Phenotypes</td>
+                            <td>2<sup>n</sup></td>
+                        </tr>
+                        <tr>
+                            <td>Number of Different F2​ Genotypes</td>
+                            <td>3<sup>n</sup></td>
+                        </tr>
+                        <tr>
+                            <td>F2​ Phenotypic Ratio</td>
+                            <td>(3:1)<sup>n</sup></td>
+                        </tr>
+                        <tr>
+                            <td>F2​ Genotypic Ratio</td>
+                            <td>(1:2:1)<sup>n</sup></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            
+            <!-- Section 17: Test Your Knowledge -->
+            <section id="section-17" class="section">
+                <h2>Test Your Knowledge</h2>
+                <div class="quiz-question">
+                    <h3>1. The incorrect 'blending theory' of inheritance was supported by the appearance of offspring with intermediate physical traits, a phenomenon now known as:</h3>
+                    <button class="quiz-option" data-correct="false">a. Particulate inheritance</button>
+                    <button class="quiz-option" data-correct="false">b. Reciprocal crosses</button>
+                    <button class="quiz-option" data-correct="false">c. Discontinuous variation</button>
+                    <button class="quiz-option" data-correct="true">d. Continuous variation</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>2. Mendel's central belief that heredity is the result of discrete, independent units (which he called 'factors') within an individual's genome is known as the concept of:</h3>
+                    <button class="quiz-option" data-correct="false">a. Discontinuous variation</button>
+                    <button class="quiz-option" data-correct="false">b. The Law of Dominance</button>
+                    <button class="quiz-option" data-correct="true">c. Particulate inheritance</button>
+                    <button class="quiz-option" data-correct="false">d. The Chromosomal Theory</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>3. Which factor was critical to Mendel's success by minimizing the impact of chance and allowing him to draw meaningful, statistically sound results?</h3>
+                    <button class="quiz-option" data-correct="false">a. Conducting his experiments for only one growing season.</button>
+                    <button class="quiz-option" data-correct="true">b. The large number of seeds (offspring) produced by the pea plant.</button>
+                    <button class="quiz-option" data-correct="false">c. Using only hybrid varieties of the pea plant.</button>
+                    <button class="quiz-option" data-correct="false">d. Working only with traits that exhibited complete dominance.</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>4. In a monohybrid cross between a true-breeding tall plant (DD) and a true-breeding dwarf plant (dd), all plants in the F1​ generation were uniformly tall. This observation led directly to Mendel's proposal of the:</h3>
+                    <button class="quiz-option" data-correct="false">a. Law of Segregation</button>
+                    <button class="quiz-option" data-correct="false">b. Law of Independent Assortment</button>
+                    <button class="quiz-option" data-correct="true">c. Concept of Dominance</button>
+                    <button class="quiz-option" data-correct="false">d. Law of Unit Characters</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>5. When the heterozygous F1​ plants (Dd) from a monohybrid cross were allowed to self-fertilize, the F2​ generation exhibited a phenotypic ratio of:</h3>
+                    <button class="quiz-option" data-correct="false">a. 9:3:3:1</button>
+                    <button class="quiz-option" data-correct="false">b. 1:2:1</button>
+                    <button class="quiz-option" data-correct="false">c. 1:1</button>
+                    <button class="quiz-option" data-correct="true">d. 3:1</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>6. The Principle of Segregation (Law of Purity of Gametes) dictates that the two different alleles a heterozygote possesses (e.g., D and d) must:</h3>
+                    <button class="quiz-option" data-correct="false">a. Blend together to form a new, intermediate allele in the gamete.</button>
+                    <button class="quiz-option" data-correct="false">b. Remain joined during gamete formation, resulting in 2n gamete types.</button>
+                    <button class="quiz-option" data-correct="false">c. Assort independently of alleles for other traits located on the same chromosome.</button>
+                    <button class="quiz-option" data-correct="true">d. Separate from each other when the organism forms gametes, ensuring each gamete receives only one allele.</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>7. To confirm the F2​ genotypes, Mendel self-fertilized the F2​ tall plants. Among these tall plants, the ratio of those proven to be homozygous (DD) to those proven to be heterozygous (Dd) was:</h3>
+                    <button class="quiz-option" data-correct="false">a. 3:1</button>
+                    <button class="quiz-option" data-correct="false">b. 2:1</button>
+                    <button class="quiz-option" data-correct="false">c. 1:1</button>
+                    <button class="quiz-option" data-correct="true">d. 1:2</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>8. The physical basis for the Law of Segregation is directly tied to the separation of which structures during Anaphase I of meiosis?</h3>
+                    <button class="quiz-option" data-correct="false">a. Centromeres</button>
+                    <button class="quiz-option" data-correct="true">b. Homologous chromosomes</button>
+                    <button class="quiz-option" data-correct="false">c. Sister chromatids</button>
+                    <button class="quiz-option" data-correct="false">d. Spindle fibers</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>9. Mendel's dihybrid cross experiments involved tracking the inheritance of two traits simultaneously and led to the F2​ phenotypic ratio of:</h3>
+                    <button class="quiz-option" data-correct="false">a. 1:2:1</button>
+                    <button class="quiz-option" data-correct="false">b. 1:1:1:1</button>
+                    <button class="quiz-option" data-correct="true">c. 9:3:3:1</button>
+                    <button class="quiz-option" data-correct="false">d. 3:1</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>10. In the F2​ generation of a dihybrid cross, the appearance of non-parental combinations of traits (e.g., Yellow, Wrinkled and Green, Round) demonstrates that the genes for color and texture were shuffled, which provided evidence for the:</h3>
+                    <button class="quiz-option" data-correct="true">a. Principle of Independent Assortment</button>
+                    <button class="quiz-option" data-correct="false">b. Law of Unit Characters</button>
+                    <button class="quiz-option" data-correct="false">c. Law of Segregation</button>
+                    <button class="quiz-option" data-correct="false">d. Concept of Dominance</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>11. The Law of Independent Assortment generally applies only to characters determined by genes that are located on:</h3>
+                    <button class="quiz-option" data-correct="false">a. The same chromosome but sufficiently far apart.</button>
+                    <button class="quiz-option" data-correct="false">b. Sex chromosomes only.</button>
+                    <button class="quiz-option" data-correct="true">c. Different chromosomes.</button>
+                    <button class="quiz-option" data-correct="false">d. The same chromosome and close together.</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>12. If genes are located on the same chromosome, they will tend to travel together during Anaphase I of meiosis and do not assort independently (unless crossing over takes place). This phenomenon is termed:</h3>
+                    <button class="quiz-option" data-correct="false">a. Segregation</button>
+                    <button class="quiz-option" data-correct="true">b. Linkage</button>
+                    <button class="quiz-option" data-correct="false">c. Complete dominance</button>
+                    <button class="quiz-option" data-correct="false">d. Continuous variation</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>13. The physical basis for the Law of Independent Assortment is the random orientation of which structures on the metaphase plate during Meiosis I?</h3>
+                    <button class="quiz-option" data-correct="false">a. Sister chromatids</button>
+                    <button class="quiz-option" data-correct="false">b. Gametes</button>
+                    <button class="quiz-option" data-correct="true">c. Homologous pairs (tetrads)</button>
+                    <button class="quiz-option" data-correct="false">d. Individual unreplicated chromosomes</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>14. If an organism has n pairs of chromosomes, how many types of variant gametes can be produced solely due to the Law of Independent Assortment?</h3>
+                    <button class="quiz-option" data-correct="true">a. 2<sup>n</sup></button>
+                    <button class="quiz-option" data-correct="false">b. n</button>
+                    <button class="quiz-option" data-correct="false">c. 2n</button>
+                    <button class="quiz-option" data-correct="false">d. n<sup>2</sup></button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>15. The genotype of the homozygous recessive parent in a dihybrid test cross (Rr Yy×rr yy) ensures that the offspring's phenotype directly reflects the allele combination contributed by the F1​ parent because the recessive parent only contributes gametes with which allele combination?</h3>
+                    <button class="quiz-option" data-correct="false">a. Dominant alleles for both traits (RY)</button>
+                    <button class="quiz-option" data-correct="true">b. Recessive alleles for both traits (ry)</button>
+                    <button class="quiz-option" data-correct="false">c. Any of the four possible combinations in equal proportions</button>
+                    <button class="quiz-option" data-correct="false">d. A mix of one dominant and one recessive allele (Ry or rY)</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>16. When applying the multiplication rule to a dihybrid test cross (Rr Yy×rr yy), the probability of obtaining Round (Rr) progeny is 1/2. What is the probability of obtaining Green (yy) progeny from the seed color cross (Yy×yy)?</h3>
+                    <button class="quiz-option" data-correct="true">a. 1/2</button>
+                    <button class="quiz-option" data-correct="false">b. 1/4</button>
+                    <button class="quiz-option" data-correct="false">c. 1</button>
+                    <button class="quiz-option" data-correct="false">d. 3//4</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>17. Using the multiplication rule, what is the expected proportion of Wrinkled, Green (rr yy) offspring from the dihybrid test cross of Rr Yy×rr yy?</h3>
+                    <button class="quiz-option" data-correct="false">a. 3/4</button>
+                    <button class="quiz-option" data-correct="true">b. 1/4</button>
+                    <button class="quiz-option" data-correct="false">c. 1/2</button>
+                    <button class="quiz-option" data-correct="false">d. 1/16</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>18. The final phenotypic ratio observed in the offspring of a dihybrid test cross (Rr Yy×rr yy) is:</h3>
+                    <button class="quiz-option" data-correct="true">a. 1:1:1:1</button>
+                    <button class="quiz-option" data-correct="false">b. 1:2:1</button>
+                    <button class="quiz-option" data-correct="false">c. 9:3:3:1</button>
+                    <button class="quiz-option" data-correct="false">d. 3:1</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>19. Mendel's work was largely ignored until 1900, when the discovery of chromosomes led scientists to make the crucial connection between Mendel's 'factors' (genes) and:</h3>
+                    <button class="quiz-option" data-correct="false">a. The independent assortment of alleles within a gamete</button>
+                    <button class="quiz-option" data-correct="false">b. Inborn errors of metabolism</button>
+                    <button class="quiz-option" data-correct="true">c. The segregation of homologous pairs during Meiosis I</button>
+                    <button class="quiz-option" data-correct="false">d. DNA molecules</button>
+                </div>
+                
+                <div class="quiz-question">
+                    <h3>20. According to the Concept of Dominance, why does the heterozygote (Dd) display the dominant phenotype, identical to the homozygote (DD)?</h3>
+                    <button class="quiz-option" data-correct="true">a. The recessive allele produces a non-functional product, but the single dominant allele is sufficient to produce the full functional phenotype.</button>
+                    <button class="quiz-option" data-correct="false">b. The dominant allele is physically removed from the chromosome in the heterozygote.</button>
+                    <button class="quiz-option" data-correct="false">c. The recessive allele blends with the dominant allele to produce a functional product.</button>
+                    <button class="quiz-option" data-correct="false">d. The two alleles co-exist without interacting, resulting in a blend.</button>
+                </div>
+            </section>
+        </main>
+        
+        <div class="navigation">
+            <button id="prev-btn" onclick="navigate(-1)" disabled>Previous</button>
+            <button id="next-btn" onclick="navigate(1)">Next</button>
+        </div>
+<footer>
+    <div class="footer-content">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+             alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="footer-text">Email: betabiosciences@gmail.com</p>
+    </div>
+</footer>
+    </div>
+
+    <script>
+        // Section management
+        const sections = document.querySelectorAll('.section');
+        const totalSections = sections.length;
+        let currentSection = 1;
+        
+        // Update section counter and progress bar
+        document.getElementById('total-sections').textContent = totalSections;
+        updateProgress();
+        
+        function navigate(direction) {
+            // Hide current section
+            document.getElementById(`section-${currentSection}`).classList.remove('active');
+            
+            // Update current section
+            currentSection += direction;
+            
+            // Show new section
+            document.getElementById(`section-${currentSection}`).classList.add('active');
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = currentSection === 1;
+            document.getElementById('next-btn').disabled = currentSection === totalSections;
+            
+            // Update section counter and progress bar
+            document.getElementById('current-section').textContent = currentSection;
+            updateProgress();
+            
+            // Scroll to top of section
+            window.scrollTo(0, 0);
+        }
+        
+        function updateProgress() {
+            const progress = (currentSection / totalSections) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+        }
+        
+        // Quiz functionality
+        document.querySelectorAll('.quiz-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Get the question container
+                const question = this.parentElement;
+                
+                // Remove any existing selections in this question
+                question.querySelectorAll('.quiz-option').forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+                
+                // Mark the selected option
+                if (this.getAttribute('data-correct') === 'true') {
+                    this.classList.add('correct');
+                } else {
+                    this.classList.add('incorrect');
+                    
+                    // Also highlight the correct answer
+                    question.querySelector('.quiz-option[data-correct="true"]').classList.add('correct');
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
