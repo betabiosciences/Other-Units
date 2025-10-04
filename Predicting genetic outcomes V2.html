@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicting Genetic Crosses</title>
+    <style>
+        :root {
+            --primary: #0a1128;
+            --secondary: #1c2541;
+            --accent: #5dade2;
+            --text: #e6e6e6;
+            --highlight: #ff9f1c;
+            --gloss: rgba(255, 255, 255, 0.1);
+            --shadow: rgba(0, 0, 0, 0.3);
+            --correct: #2ecc71;
+            --incorrect: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--secondary);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px var(--shadow);
+            position: relative;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), var(--highlight));
+        }
+        
+        header {
+            background: rgba(10, 17, 40, 0.8);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--gloss);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+            text-shadow: 0 2px 4px var(--shadow);
+        }
+        
+        .section-container {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        section.active {
+            display: block;
+        }
+        
+        h2 {
+            color: var(--highlight);
+            margin: 20px 0 15px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--gloss);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            color: var(--accent);
+            margin: 15px 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        p, li {
+            margin-bottom: 12px;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .image-placeholder {
+            background: var(--primary);
+            border: 1px dashed var(--accent);
+            padding: 30px;
+            text-align: center;
+            margin: 15px 0;
+            border-radius: 10px;
+            color: var(--accent);
+        }
+        
+        .question {
+            background: rgba(255, 159, 28, 0.1);
+            border-left: 4px solid var(--highlight);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .options {
+            margin: 15px 0;
+        }
+        
+        .option {
+            margin: 8px 0;
+            padding: 10px;
+            background: rgba(93, 173, 226, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+        
+        .option:hover {
+            background: rgba(93, 173, 226, 0.2);
+        }
+        
+        .option.selected {
+            transform: translateX(5px);
+        }
+        
+        .option.correct {
+            background: rgba(46, 204, 113, 0.2);
+            border-left: 4px solid var(--correct);
+        }
+        
+        .option.incorrect {
+            background: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid var(--incorrect);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: rgba(10, 17, 40, 0.8);
+            border-top: 1px solid var(--gloss);
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--accent), #3498db);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px var(--shadow);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px var(--shadow);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress {
+            text-align: center;
+            padding: 10px 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 0rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            line-height: 1.2;
+            margin: 0; 
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            .section-container {
+                padding: 15px;
+                max-height: 65vh;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PREDICTING THE OUTCOMES OF GENETIC CROSSES</h1>
+            <div class="progress">Section 1 of 6</div>
+        </header>
+        
+        <div class="section-container">
+            <!-- Introduction Section -->
+            <section id="intro" class="active">
+                <p>One of Mendel's goals in conducting his experiments on pea plants was to develop a way to predict the outcome of crosses between plants with different phenotypes.</p>
+            </section>
+            
+            <!-- Punnett Square Section -->
+            <section id="punnett">
+                <h2>1. THE PUNNETT SQUARE METHOD</h2>
+                <p>The <strong>Punnett square</strong>, developed by English geneticist <strong>Reginald C. Punnett in 1917</strong>, is a straightforward method for predicting the outcomes of genetic crosses. It involves drawing a grid to systematically combine the possible <strong>gametes</strong> produced by each parent to determine the resulting <strong>progeny genotypes</strong> and <strong>phenotypes</strong>.</p>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig1.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                
+                <h3>How to Use a Punnett Square</h3>
+                
+                <h4>A. Determine Parental Gametes:</h4>
+                <p>The <strong>Principle of Segregation</strong> states that the two alleles for a trait in a parent separate, with one allele going into each gamete. For example, in a cross between a heterozygous tall plant (Tt) and a homozygous short plant (tt):</p>
+                <ul>
+                    <li>The tt parent produces only t gametes.</li>
+                    <li>The Tt parent produces 50% T gametes and 50% t gametes.</li>
+                </ul>
+                
+                <h4>B. Construct the Square:</h4>
+                <ul>
+                    <li>Place the gametes from one parent along the <strong>top edge</strong> of the grid.</li>
+                    <li>Place the gametes from the other parent down the <strong>left side</strong>.</li>
+                </ul>
+                
+                <h4>C. Fill the Cells:</h4>
+                <p>Each cell in the grid is filled by combining the corresponding alleles from the top and side, which generates the <strong>genotype</strong> of the potential offspring. It is helpful to also write the resulting <strong>phenotype</strong> (e.g., T is dominant for tallness).</p>
+                
+                <h4>D. Determine Ratios:</h4>
+                <p>By counting the cells, you can determine the expected <strong>genotypic ratio</strong> and <strong>phenotypic ratio</strong> of the progeny.</p>
+                
+                <h3>Example and Applications</h3>
+                <ul>
+                    <li>In the example cross (Tt×tt), which is a <strong>backcross</strong> (a cross between an F1​ genotype and one of the parental genotypes), the Punnett square shows:
+                        <ul>
+                            <li><strong>Genotypes:</strong> 2 Tt to 2 tt (a 1:1 ratio).</li>
+                            <li><strong>Phenotypes:</strong> 1/2 tall (Tt) and 1/2 short (tt).</li>
+                        </ul>
+                    </li>
+                    <li>The Punnett square method is effective for situations involving <strong>one or two genes</strong>.</li>
+                    <li>For more complex situations, like those involving more than two genes, the Punnett square becomes <strong>unwieldy</strong>, and a probability-based approach is preferred.</li>
+                </ul>
+            </section>
+            
+            <!-- Forked-Line Section -->
+            <section id="forked-line">
+                <h2>2. THE FORKED-LINE METHOD</h2>
+                <p>The <strong>forked-line method</strong> is an alternative to the Punnett square, used primarily for predicting the outcome of crosses involving <strong>two or more independently assorting genes</strong>. Instead of using a grid to systematically list all progeny, this method uses a <strong>diagram of branching lines</strong> to tally the expected offspring.</p>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig2.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                
+                <h3>How the Forked-Line Method Works</h3>
+                
+                <h4>A. Partition the Cross:</h4>
+                <p>A cross involving multiple genes (like the <strong>trihybrid intercross</strong> Dd Gg Ww×Dd Gg Ww) is broken down into separate <strong>monohybrid crosses</strong> for each gene (Dd×Dd, Gg×Gg, and Ww×Ww). This is possible because the genes assort independently.</p>
+                
+                <h4>B. Determine Ratios for Each Gene:</h4>
+                <p>For an intercross between heterozygotes, each monohybrid cross is expected to yield a <strong>3:1 phenotypic ratio</strong> (e.g., 3 tall : 1 dwarf).</p>
+                
+                <h4>C. Combine Ratios:</h4>
+                <p>The forked-line diagram visually combines these individual ratios. You start with the ratio of the first gene, and then branch off from each of those outcomes with the ratio of the second gene, and so on.</p>
+                
+                <h4>D. Calculate Final Proportions:</h4>
+                <p>Multiplying the proportions along each complete path of the branches gives the overall expected proportions for the combined <strong>phenotypes</strong> of the offspring (e.g., 3/4 tall ×3/4 yellow ×3/4 round leads to 27/64 tall, yellow, round progeny).</p>
+                
+                <h3>Application to a Testcross</h3>
+                <p>The forked-line method can also be used for a <strong>testcross</strong>, which is a cross between a multiply heterozygous individual (Dd Gg Ww) and a multiply homozygous recessive individual (dd gg ww).</p>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig3.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                
+                <ul>
+                    <li>In this case, the homozygous recessive parent only transmits recessive alleles.</li>
+                    <li>The outcome of the offspring's <strong>genotypes</strong> and <strong>phenotypes</strong> is determined entirely by the alleles transmitted by the heterozygous parent.</li>
+                    <li>Because the heterozygous parent segregates the dominant and recessive alleles for each gene in a <strong>1:1 ratio</strong>, the final phenotypic ratios of the offspring will be a combination of these 1:1 probabilities for each independently assorting gene.</li>
+                </ul>
+            </section>
+            
+            <!-- Probability Section -->
+            <section id="probability">
+                <h2>3. THE PROBABILITY METHOD</h2>
+                <p><strong>Probability</strong> is a crucial tool in genetics, as utilized by Mendel, for predicting the likelihood of a specific event—in this context, the outcome of a cross. Probability is formally defined as:</p>
+                
+                <p><strong>Probability = Number of times a particular event occurs / Total number of all possible outcomes</strong></p>
+                
+                <p>For example, the probability of drawing the King of Hearts from a 52-card deck is 1/52 (1 favorable outcome out of 52 total). Probability can be expressed as a <strong>fraction</strong> (e.g., 4/52 for drawing any ace) or a <strong>decimal</strong> (e.g., 0.077).</p>
+                
+                <p>The probability of an event can be determined in two ways:</p>
+                <ol>
+                    <li><strong>By reasoning:</strong> Understanding the nature of the event (e.g., a six-sided die has 6 equal sides, so the probability of rolling a 'four' is 1/6).</li>
+                    <li><strong>Empirically (by observation):</strong> Making a large number of observations to determine the frequency of the event (e.g., a weather forecast based on past conditions).</li>
+                </ol>
+                
+                <h3>Rules of Probability in Genetics</h3>
+                <p>Two fundamental rules of probability are used to predict the ratios of offspring in genetic crosses: the multiplication rule and the addition rule.</p>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig4.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                
+                <h4>The Multiplication Rule</h4>
+                <p>The <strong>multiplication rule</strong> states that the probability of <strong>two or more independent events occurring together</strong> is calculated by multiplying their individual probabilities.</p>
+                <ul>
+                    <li><strong>Formula:</strong> P(A and B)=P(A)×P(B)</li>
+                    <li><strong>Key Indicator:</strong> The word <strong>"and"</strong> (e.g., the probability of getting a 'four' on the first roll <strong>and</strong> a 'four' on the second roll).</li>
+                    <li><strong>Example:</strong> The probability of rolling a die twice and getting a 'four' both times is (1/6)×(1/6)=1/36.</li>
+                    <li><strong>Condition:</strong> This rule is valid <em>only</em> if the events are <strong>independent</strong>, meaning the outcome of one event does not influence the outcome of the other (e.g., one die roll doesn't affect the next).</li>
+                </ul>
+                
+                <h4>The Addition Rule</h4>
+                <p>The <strong>addition rule</strong> states that the probability of <strong>any one of two or more mutually exclusive events</strong> occurring is calculated by adding the probabilities of these individual events.</p>
+                <ul>
+                    <li><strong>Formula:</strong> P(A or B)=P(A)+P(B)</li>
+                    <li><strong>Key Indicators:</strong> The words <strong>"either"</strong> and <strong>"or"</strong> (e.g., the probability of rolling <strong>either</strong> a 'three' <strong>or</strong> a 'four').</li>
+                    <li><strong>Example:</strong> The probability of rolling a single die and getting a 'three' or a 'four' is (1/6)+(1/6)=2/6, or 1/3.</li>
+                    <li><strong>Condition:</strong> This rule is valid <em>only</em> if the events are <strong>mutually exclusive</strong>, meaning the occurrence of one event excludes the possibility of the other event occurring (e.g., you cannot roll both a 'three' and a 'four' on a single toss of one die).</li>
+                </ul>
+                
+                <h3>Using Probability to Solve Genetic Crosses</h3>
+                <p>The <strong>multiplication rule</strong> and <strong>addition rule</strong> of probability offer a powerful alternative to the Punnett square for predicting the ratios of offspring from a genetic cross. While the Punnett square is simpler for single-gene crosses (<strong>monohybrid crosses</strong>), the probability method is <strong>quicker and clearer</strong> for more complex crosses involving multiple genes.</p>
+                
+                <h4>Applying the Rules to a Monohybrid Cross (Tt×Tt)</h4>
+                <ol>
+                    <li><strong>Determine Gamete Probability:</strong> Since each heterozygous parent (Tt) produces T and t gametes in equal proportions, the probability for each gamete type is 1/2.</li>
+                    <li><strong>Use the Multiplication Rule for Genotypes:</strong> To find the probability of a specific offspring <strong>genotype</strong>, the multiplication rule is used because the allele inherited from one parent <strong>and</strong> the allele inherited from the second parent are independent events.
+                        <ul>
+                            <li>TT: P(T from P1)×P(T from P2)=(1/2)×(1/2)=1/4</li>
+                            <li>tt: P(t from P1)×P(t from P2)=(1/2)×(1/2)=1/4</li>
+                            <li>Tt (two ways): P(T from P1 and t from P2)=1/4 <strong>or</strong> P(t from P1 and T from P2)=1/4</li>
+                        </ul>
+                    </li>
+                    <li><strong>Use the Addition Rule for Phenotypes:</strong> To find the probability of an overall <strong>phenotype</strong>, the addition rule is used because a tall plant can be TT, Tt, <strong>or</strong> tT (mutually exclusive events).
+                        <ul>
+                            <li>P(Tall)=P(TT)+P(Tt)+P(tT)=1/4+1/4+1/4=3/4</li>
+                            <li>P(Short)=P(tt)=1/4</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig5.jpg" alt="Monohybrid Cross Diagram">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig6.jpg" alt="Monohybrid Cross Diagram">
+
+                </div>
+                
+                <h3>The Binomial Expansion for Predicting Family Outcomes</h3>
+                <p>When a cross can result in several ways for a set of events to occur (like predicting the gender and traits of multiple children), the <strong>binomial expansion</strong> simplifies the calculations.</p>
+                
+                <h4>Example: Albinism in Three Children</h4>
+                <p>For parents heterozygous for albinism (Aa×Aa), the probability of an affected child (aa) is p=1/4, and the probability of an unaffected child is q=3/4.</p>
+                <ul>
+                    <li><strong>Simple Case (Only One Way):</strong> The probability of having <strong>three children, all with albinism</strong>, is a direct application of the multiplication rule: <strong>P(aaa)=(1/4)×(1/4)×(1/4)=1/64.</strong></li>
+                    <li><strong>Complex Case (Multiple Ways):</strong> The probability of having <strong>one child with albinism and two unaffected</strong> requires the addition rule because there are three possible sequences (e.g., affected-unaffected-unaffected, unaffected-affected-unaffected, or unaffected-unaffected-affected).
+                        <ul>
+                            <li>Probability of one specific sequence: <strong>(1/4)×(3/4)×(3/4)=9/64.</strong></li>
+                            <li>Overall Probability: <strong>9/64+9/64+9/64=27/64.</strong></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <h4>The Binomial Formula</h4>
+                <p>To solve for situations with more children (e.g., two affected and three unaffected out of five children), the <strong>binomial expansion</strong> is used:</p>
+                <p><strong>(p+q)<sup>n</sup></strong></p>
+                <ul>
+                    <li>p = probability of one event (e.g., affected)</li>
+                    <li>q = probability of the alternative event (e.g., unaffected)</li>
+                    <li>n = number of total events (e.g., number of children)</li>
+                </ul>
+                
+                <p>The expansion of (p+q)<sup>n</sup> yields a series of <strong>n+1 terms</strong>. Each term represents the probability of a specific combination of the two events.</p>
+                
+                <p>For n=5 children, the expansion is:<br>
+                <strong>p<sup>5</sup>+5p<sup>4</sup>q+10p<sup>3</sup>q<sup>2</sup>+10p<sup>2</sup>q<sup>3</sup>+5pq<sup>4</sup>+q<sup>5</sup>.</strong></p>
+                
+                <ul>
+                    <li>The desired term for <strong>two affected children (s=2) and three unaffected (t=3)</strong> is 10p<sup>2</sup>q<sup>3</sup>.</li>
+                    <li>Substituting the probabilities:</li>
+                </ul>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig7.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                
+                <p>Alternatively, the general probability formula for specific outcomes is:</p>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig8.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                
+                <p>Where:</p>
+                <ul>
+                    <li>P is the overall probability.</li>
+                    <li>n is the total number of events.</li>
+                    <li>s is the number of times event p occurs.</li>
+                    <li>t is the number of times event q occurs (n=s+t).</li>
+                    <li>! denotes the <strong>factorial</strong> (e.g., 5!=5×4×3×2×1).</li>
+                </ul>
+                
+                <p>Applying this formula to the n=5 children, s=2 affected, t=3 unaffected case yields the same result:</p>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig9.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+            </section>
+            
+            <!-- Chi-Square Section -->
+            <section id="chi-square">
+                <h2>Comparing Observed and Expected Genetic Ratios</h2>
+                <p>In genetic crosses, <strong>expected ratios</strong> of genotypes and phenotypes are based on Mendelian principles like segregation and dominance (e.g., a 1:1 or 3:1 ratio). However, due to <strong>chance</strong> (similar to coin flipping), the <strong>observed numbers</strong> in the progeny often deviate from the expected perfect ratios.</p>
+                
+                <ul>
+                    <li><strong>Example:</strong> A cross between a heterozygous brown cockroach (Yy) and a yellow cockroach (yy) is expected to produce a 1:1 ratio (20 brown : 20 yellow) out of 40 offspring. Observing 22 brown and 18 yellow is a small, reasonable deviation likely due to chance.</li>
+                </ul>
+                
+                <p>However, a large deviation (e.g., 25 brown and 15 yellow) might indicate that something other than chance is at play, such as a more complex inheritance pattern or reduced survival of one genotype (e.g., death of some yellow progeny).</p>
+                
+                <h3>The Goodness-of-Fit Chi-Square Test (χ<sup>2</sup>)</h3>
+                <p>To objectively evaluate whether the difference between observed and expected results is likely due to <strong>chance</strong>, scientists use a statistical tool called the <strong>goodness-of-fit chi-square test</strong> (χ<sup>2</sup>).</p>
+                
+                <h4>What the χ<sup>2</sup> Test Does and Doesn't Do</h4>
+                <ul>
+                    <li><strong>What it does:</strong> It provides the <strong>probability</strong> that the deviation between the observed and expected values is due to <strong>chance alone</strong>. This probability evaluates the <strong>null hypothesis</strong>, which states that chance is responsible for any observed differences.</li>
+                    <li><strong>What it doesn't do:</strong> It cannot prove that a cross was performed correctly, that the results are right, or that the genetic model chosen is correct.</li>
+                </ul>
+                
+                <h4>Calculating the χ<sup>2</sup> Value</h4>
+                <p>The test must be applied to the <strong>actual number of progeny</strong>, not proportions or percentages.</p>
+                
+                <p>The formula for the chi-square (χ<sup>2</sup>) value is:</p>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig10.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                
+                <p>Where ∑ means "the sum of" for all possible phenotype categories.</p>
+                
+                <h4>Example Calculation (Cats)</h4>
+                <p>If two heterozygous black cats (Bb×Bb) are crossed, a 3:1 ratio is expected. Out of 50 kittens:</p>
+                <ol>
+                    <li><strong>Observed Values:</strong> 30 black, 20 gray.</li>
+                    <li><strong>Expected Values:</strong>
+                        <ul>
+                            <li>Black: (3/4)×50=37.5</li>
+                            <li>Gray: (1/4)×50=12.5</li>
+                        </ul>
+                    </li>
+                    <li><strong>Calculate χ<sup>2</sup>:</strong>
+                        <ul>
+                            <li>Black contribution: (30−37.5)<sup>2</sup>/37.5 = (−7.5)<sup>2</sup>/37.5=56.25/37.5=1.5</li>
+                            <li>Gray contribution: (20−12.5)<sup>2</sup>/12.5 = (7.5)<sup>2</sup>/12.5=56.25/12.5=4.5</li>
+                            <li><strong>Total χ<sup>2</sup> Value:</strong> 1.5+4.5=6.0</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h4>Interpreting the χ<sup>2</sup> Probability</h4>
+                <ol>
+                    <li><strong>Determine Degrees of Freedom (df):</strong> For a goodness-of-fit test, df equals the number of expected phenotypic classes (n) minus one: <strong>df=n−1.</strong>
+                        <ul>
+                            <li>In the cat example, there are two phenotypes (black and gray), so df=2−1=1.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Find the Probability:</strong> The calculated χ<sup>2</sup> value (6.0) is compared to a χ<sup>2</sup> table for the corresponding df.
+                        <ul>
+                            <li>For df=1, a χ<sup>2</sup> value of 6.0 falls between the theoretical values associated with a probability of 0.025 and 0.01. This means the probability of getting this large of a deviation by <strong>chance alone is less than 2.5% and greater than 1%</strong>.</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig11.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+                <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/PREDICTING%20THE%20OUTCOMES%20OF%20GENETIC%20CROSSES%20fig12.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+                
+                <h4>Significance and the Cutoff Value</h4>
+                <ul>
+                    <li><strong>Cutoff Value:</strong> Most scientists use a <strong>0.05 probability level</strong> (or 5%) as the standard cutoff.</li>
+                    <li><strong>High Probability (≥0.05):</strong> If the calculated probability is ≥0.05, the <strong>null hypothesis is accepted</strong>; the deviation is considered likely due to chance.</li>
+                    <li><strong>Low Probability (&lt;0.05):</strong> If the calculated probability is &lt;0.05 (like the 0.01−0.025 range for the cats), a <strong>significant difference</strong> exists. This means the null hypothesis is rejected, and some factor other than chance (like reduced viability or a different genetic mechanism) must be responsible for the observed results.</li>
+                </ul>
+                
+                <p><em>Note: Even with a very low probability (e.g., 0.01), there is still a small chance (1%) that the deviation was indeed due to random chance.</em></p>
+            </section>
+            
+            <!-- Test Your Knowledge Section -->
+            <section id="test">
+                <h2>TEST YOUR KNOWLEDGE</h2>
+                
+                <div class="question">
+                    <p>1. For which of the following genetic crosses is the Punnett square typically considered the most straightforward and easiest method to use?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. A trihybrid cross, such as Dd Gg Ww×Dd Gg Ww.</div>
+                        <div class="option" data-correct="true">b. A monohybrid cross, such as Tt×Tt.</div>
+                        <div class="option" data-correct="false">c. A cross involving four independently assorting genes.</div>
+                        <div class="option" data-correct="false">d. A cross requiring calculation of the probability of 2 out of 5 offspring having a recessive trait.</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>2. What is the expected phenotypic ratio for a backcross between a heterozygous tall pea plant (T is dominant) and a short homozygous parental variety? Tt×tt</p>
+                    <div class="options">
+                        <div class="option" data-correct="true">a. 1 Tall : 1 Short</div>
+                        <div class="option" data-correct="false">b. 1 Tall : 2 Medium : 1 Short</div>
+                        <div class="option" data-correct="false">c. 9 Tall : 3 Medium : 3 Short : 1 Very Short</div>
+                        <div class="option" data-correct="false">d. 3 Tall : 1 Short</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>3. The forked-line method simplifies predicting the outcomes of multi-gene crosses by partitioning the cross into a series of monohybrid crosses. This method is valid only because which of Mendel's principles is assumed?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. Principle of Reciprocity</div>
+                        <div class="option" data-correct="true">b. Principle of Independent Assortment</div>
+                        <div class="option" data-correct="false">c. Principle of Segregation</div>
+                        <div class="option" data-correct="false">d. Principle of Dominance</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>4. In a trihybrid intercross: Dd Gg Ww×Dd Gg Ww, what is the expected probability of an offspring being tall (D is dominant), green (G is dominant), and wrinkled (w is recessive)?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 27/64</div>
+                        <div class="option" data-correct="true">b. 9/64</div>
+                        <div class="option" data-correct="false">c. 3/64</div>
+                        <div class="option" data-correct="false">d. 1/64</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>5. Two parents are both heterozygous for albinism (Aa). What is the probability that their first child will have albinism and their second child will be unaffected?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1/16</div>
+                        <div class="option" data-correct="false">b. 1/8</div>
+                        <div class="option" data-correct="true">c. 3/16</div>
+                        <div class="option" data-correct="false">d. 3/4</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>6. In a cross between two heterozygous black cats (Bb×Bb), the expected ratio of black to gray kittens is 3:1. If 50 kittens are born, and 30 are black and 20 are gray, what is the calculated chi-square (χ²) value for this cross?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1.5</div>
+                        <div class="option" data-correct="false">b. 4.5</div>
+                        <div class="option" data-correct="true">c. 6.0</div>
+                        <div class="option" data-correct="false">d. 12.0</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>7. For the cat cross in question 6, with a calculated χ² value of 6.0 and one degree of freedom, what is the approximate probability that the deviation between the observed and expected results is due to chance alone?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. Greater than 0.10 (10%)</div>
+                        <div class="option" data-correct="false">b. Between 0.05 and 0.10 (5%-10%)</div>
+                        <div class="option" data-correct="true">c. Between 0.01 and 0.025 (1%-2.5%)</div>
+                        <div class="option" data-correct="false">d. Less than 0.005 (0.5%)</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>8. In a testcross between a heterozygous individual (Dd Gg Ww) and a homozygous recessive individual (dd gg ww), what is the expected phenotypic ratio for the offspring?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 9:3:3:1</div>
+                        <div class="option" data-correct="false">b. 1:1:1:1:1:1:1:1</div>
+                        <div class="option" data-correct="true">c. 1:1:1:1</div>
+                        <div class="option" data-correct="false">d. 3:1</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>9. The probability of rolling a die and getting a 'four' is 1/6. What is the probability of rolling a die twice and getting a 'four' on the first roll AND a 'four' on the second roll?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1/6</div>
+                        <div class="option" data-correct="false">b. 1/12</div>
+                        <div class="option" data-correct="true">c. 1/36</div>
+                        <div class="option" data-correct="false">d. 1/3</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>10. What is the probability of rolling a single die and getting either a 'three' OR a 'four'?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1/6</div>
+                        <div class="option" data-correct="true">b. 1/3</div>
+                        <div class="option" data-correct="false">c. 1/36</div>
+                        <div class="option" data-correct="false">d. 1/12</div>
+                    </div>
+                </div>
+                
+                <!-- Additional Questions 11-20 -->
+                <div class="question">
+                    <p>11. In a cross between two heterozygous pea plants (Tt×Tt), what is the probability that a specific offspring will be homozygous dominant (TT)?</p>
+                    <div class="options">
+                        <div class="option" data-correct="true">a. 1/4</div>
+                        <div class="option" data-correct="false">b. 1/2</div>
+                        <div class="option" data-correct="false">c. 3/4</div>
+                        <div class="option" data-correct="false">d. 1/3</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>12. If two parents are both heterozygous for cystic fibrosis (Cc), what is the probability that their first child will be affected (cc)?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1/2</div>
+                        <div class="option" data-correct="false">b. 1/4</div>
+                        <div class="option" data-correct="true">c. 1/4</div>
+                        <div class="option" data-correct="false">d. 3/4</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>13. In a dihybrid cross between two heterozygous individuals (AaBb×AaBb), what is the expected phenotypic ratio?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1:1:1:1</div>
+                        <div class="option" data-correct="false">b. 3:1</div>
+                        <div class="option" data-correct="true">c. 9:3:3:1</div>
+                        <div class="option" data-correct="false">d. 1:2:1</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>14. What is the probability that two heterozygous parents (Aa) will have three children, all of whom are homozygous recessive (aa)?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1/64</div>
+                        <div class="option" data-correct="true">b. 1/64</div>
+                        <div class="option" data-correct="false">c. 3/64</div>
+                        <div class="option" data-correct="false">d. 27/64</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>15. In a testcross between a heterozygous individual (Aa) and a homozygous recessive individual (aa), what is the expected genotypic ratio of the offspring?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1:1</div>
+                        <div class="option" data-correct="true">b. 1:1</div>
+                        <div class="option" data-correct="false">c. 3:1</div>
+                        <div class="option" data-correct="false">d. 1:2:1</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>16. If a heterozygous black guinea pig (Bb) is crossed with a white guinea pig (bb), what is the probability that an offspring will be black?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 0</div>
+                        <div class="option" data-correct="true">b. 1/2</div>
+                        <div class="option" data-correct="false">c. 3/4</div>
+                        <div class="option" data-correct="false">d. 1</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>17. In a family with four children, what is the probability that all four will be boys?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1/2</div>
+                        <div class="option" data-correct="false">b. 1/4</div>
+                        <div class="option" data-correct="true">c. 1/16</div>
+                        <div class="option" data-correct="false">d. 1/8</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>18. What is the probability that two heterozygous parents (Aa) will have two children, one homozygous dominant (AA) and one heterozygous (Aa)?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1/16</div>
+                        <div class="option" data-correct="false">b. 3/16</div>
+                        <div class="option" data-correct="true">c. 1/8</div>
+                        <div class="option" data-correct="false">d. 1/4</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>19. In a chi-square test, if the calculated probability is 0.03, what should be the conclusion regarding the null hypothesis?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. Accept the null hypothesis</div>
+                        <div class="option" data-correct="true">b. Reject the null hypothesis</div>
+                        <div class="option" data-correct="false">c. The test is inconclusive</div>
+                        <div class="option" data-correct="false">d. Repeat the experiment</div>
+                    </div>
+                </div>
+                
+                <div class="question">
+                    <p>20. What is the degrees of freedom for a chi-square test involving four phenotypic classes?</p>
+                    <div class="options">
+                        <div class="option" data-correct="false">a. 1</div>
+                        <div class="option" data-correct="false">b. 2</div>
+                        <div class="option" data-correct="true">c. 3</div>
+                        <div class="option" data-correct="false">d. 4</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div class="navigation">
+            <button id="prev-btn" disabled>Previous</button>
+            <button id="next-btn">Next</button>
+        </div>
+<footer>
+    <div class="footer-content">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+             alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="footer-text">Email: betabiosciences@gmail.com</p>
+    </div>
+</footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('section');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progress = document.querySelector('.progress');
+            let currentSection = 0;
+            
+            // Initialize quiz functionality
+            initQuiz();
+            
+            // Update navigation buttons
+            function updateNavigation() {
+                prevBtn.disabled = currentSection === 0;
+                nextBtn.disabled = currentSection === sections.length - 1;
+                
+                // Update progress text
+                progress.textContent = `Section ${currentSection + 1} of ${sections.length}`;
+                
+                // Update section visibility
+                sections.forEach((section, index) => {
+                    section.classList.toggle('active', index === currentSection);
+                });
+            }
+            
+            // Navigation button event listeners
+            prevBtn.addEventListener('click', function() {
+                if (currentSection > 0) {
+                    currentSection--;
+                    updateNavigation();
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentSection < sections.length - 1) {
+                    currentSection++;
+                    updateNavigation();
+                }
+            });
+            
+            // Initialize quiz functionality
+            function initQuiz() {
+                const options = document.querySelectorAll('.option');
+                
+                options.forEach(option => {
+                    option.addEventListener('click', function() {
+                        const question = this.closest('.question');
+                        const allOptions = question.querySelectorAll('.option');
+                        
+                        // Remove selected class from all options in this question
+                        allOptions.forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        
+                        // Add selected class to clicked option
+                        this.classList.add('selected');
+                        
+                        // Check if answer is correct
+                        const isCorrect = this.getAttribute('data-correct') === 'true';
+                        
+                        // Add correct/incorrect class
+                        allOptions.forEach(opt => {
+                            const isOptCorrect = opt.getAttribute('data-correct') === 'true';
+                            opt.classList.add(isOptCorrect ? 'correct' : 'incorrect');
+                        });
+                    });
+                });
+            }
+            
+            // Initialize navigation
+            updateNavigation();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
