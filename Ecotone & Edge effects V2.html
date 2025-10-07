@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecotone and Edge Effects</title>
+    <style>
+        :root {
+            --primary-color: #2a9d8f;
+            --secondary-color: #e9c46a;
+            --background-color: #1a1a2e;
+            --card-color: #16213e;
+            --text-color: #e6e6e6;
+            --accent-color: #f4a261;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+            --correct-color: #4CAF50;
+            --incorrect-color: #f44336;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(42, 157, 143, 0.3);
+        }
+        
+        .subtitle {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        
+        .content-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .section-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: var(--card-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin: 25px 0 15px;
+            font-size: 1.4rem;
+        }
+        
+        h4 {
+            color: var(--accent-color);
+            margin: 20px 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        strong {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        /* Responsive table styles */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(0, 0, 0, 0.2);
+            min-width: 600px; /* Minimum width to ensure readability */
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: normal;
+            word-wrap: break-word;
+        }
+        
+        th {
+            background-color: rgba(42, 157, 143, 0.2);
+            color: var(--primary-color);
+            font-weight: 600;
+            position: sticky;
+            left: 0;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Mobile-specific table styles */
+        @media (max-width: 768px) {
+            .table-container {
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            table {
+                font-size: 0.9rem;
+                min-width: 500px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+            
+            /* Make first column sticky for better readability */
+            th:first-child,
+            td:first-child {
+                position: sticky;
+                left: 0;
+                background-color: rgba(42, 157, 143, 0.15);
+                z-index: 1;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            table {
+                font-size: 0.85rem;
+                min-width: 450px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(135deg, var(--primary-color), #1d7870);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+        
+        .nav-btn:disabled {
+            background: linear-gradient(135deg, #555, #777);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .section-counter {
+            text-align: center;
+            margin: 10px 0;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        
+        .mark {
+            background-color: rgba(233, 196, 106, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        
+        .content-img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: var(--border-radius);
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .quiz-question {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: var(--border-radius);
+        }
+        
+        .quiz-options {
+            margin-top: 15px;
+        }
+        
+        .quiz-option {
+            display: block;
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+        
+        .quiz-option:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .quiz-option.selected {
+            border-color: var(--primary-color);
+        }
+        
+        .quiz-option.correct {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-color: var(--correct-color);
+        }
+        
+        .quiz-option.incorrect {
+            background-color: rgba(244, 67, 54, 0.2);
+            border-color: var(--incorrect-color);
+        }
+        
+        .quiz-feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+        }
+        
+        .quiz-feedback.correct {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--correct-color);
+        }
+        
+        .quiz-feedback.incorrect {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--incorrect-color);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            h3 {
+                font-size: 1.3rem;
+            }
+            
+            .section-container {
+                padding: 15px;
+            }
+            
+            .nav-btn {
+                padding: 10px 15px;
+                min-width: 100px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            .section-container {
+                padding: 12px;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 0rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            line-height: 1.2;
+            margin: 0; 
+        }
+
+
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+        
+        /* Scrollbar styling for table container */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .table-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #1d7870;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ECOTONE AND EDGE EFFECTS</h1>
+            <p class="subtitle">Interactive Learning Experience</p>
+        </header>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="section-counter">
+            <span id="currentSection">1</span> of <span id="totalSections">10</span>
+        </div>
+        
+        <div class="content-container">
+            <div class="section-container">
+                <!-- Section 1: Introduction -->
+                <div class="section active" id="section1">
+                    <h2>Introduction to Ecotones</h2>
+                    <p>The concept of the ecotone provides a fundamental framework for understanding the spatial organization of biological communities. Historically, the ecotone was defined as the transitional boundary zone situated between two distinct adjacent ecosystems. This foundational ecological concept was first formally described in the early twentieth century by pioneers in the field of ecology, <strong>Frederic Clements and Burton Edward Livingston</strong>.</p>
+                    
+                    <img src="https://betabiosciences.github.io//Other-Units/Ecotone%20&%20edge%20effects%20fig1.jpg" alt="Ecotone concept illustration" class="content-img">
+                    <img src="https://betabiosciences.github.io//Other-Units/Ecotone%20&%20edge%20effects%20fig2.jpg" alt="Ecotone examples" class="content-img">
+                    
+                    <p>In contemporary landscape ecology, the ecotone is recognized as far more than a mere geographical delineation. It is considered an <strong>active, structurally unique habitat</strong> serving as a critical pathway for the movement of species, energy, and nutrients between the two systems it connects. Consequently, the analysis of ecotones is essential for addressing contemporary environmental challenges, particularly in enhancing knowledge of ecological interactions vital for climate change adaptation and species conservation.</p>
+                    
+                    <p>Ecotones exhibit significant structural variability. They may manifest as local boundaries, such as the interface between a field and a forest, or they may operate regionally, spanning broad zones such as the transition between grassland and forest ecosystems. Furthermore, their appearance on the ground can range from a <strong>sharp, distinct boundary line to a gradual blending</strong> of two communities across an extensive area. The specific characteristics of an ecotone—its depth (width) and the sharpness of the transition—are highly dependent on the stability and continuity of the environmental gradients that sustain it.</p>
+                </div>
+                
+                <!-- Section 2: Key Characteristics -->
+                <div class="section" id="section2">
+                    <h2>Key Characteristics of Ecotonal Zones</h2>
+                    <p>Ecotones exhibit distinct features resulting from the merging of two systems. These key characteristics include:</p>
+                    
+                    <ul>
+                        <li><strong>Vegetational Sharpness and Transition:</strong> An ecotone often features a <strong>sharp, distinct line</strong> between two communities, marked by rapid vegetational change, such as a change in colors of grasses or plant life. This sharpness can often be objectively defined by the rate of vegetational change.</li>
+                        
+                        <li><strong>Physiognomic Indicators:</strong> A change in <strong>physiognomy</strong> (physical appearance of a plant species) is a key indicator. In water bodies, the boundary may be characterized by differences in the heights of macrophytes (plant species) present in the areas, which reflects the two areas' accessibility to light.</li>
+                        
+                        <li><strong>Species Shift:</strong> A change in species composition clearly signals an ecotone, as there will be specific organisms that are highly prevalent on one side of the ecotone or the other.</li>
+                        
+                        <li><strong>Spatial Mass Effect (SME):</strong> The establishment of new plants through migration—known as spatial mass effects—is noticeable because some organisms may be unable to form self-sustaining populations if they cross the ecotone. If species can survive in both communities, the ecotone is considered to have high species richness.</li>
+                        
+                        <li><strong>Exotic Species Prevalence:</strong> The <strong>abundance of introduced (exotic) species in an ecotone is high</strong>, which can reveal the type of biome or efficiency of the two communities sharing space. The competitive pressure created by the integration of two communities often creates a diverse, yet potentially unstable, ecosystem.</li>
+                    </ul>
+                    
+                    <img src="https://betabiosciences.github.io//Other-Units/Ecotone%20&%20edge%20effects%20fig3.jpg" alt="Ecotone characteristics" class="content-img">
+                </div>
+                
+                <!-- Section 3: Ecotone vs Ecocline -->
+                <div class="section" id="section3">
+                    <h2>The Critical Distinction: Ecotone versus Ecocline</h2>
+                    <p>While often used interchangeably in general discourse, the terms ecotone and ecocline describe distinct types of ecological transitions, differentiated primarily by the <strong>nature and rate of change in physicochemical characteristics</strong>.</p>
+                    
+                    <p>An ecotone is often associated with an ecocline, which is described as a "physical transition zone" between two systems. An ecocline can signal an ecotone chemically (e.g., pH or salinity gradient) or microclimatically (e.g., hydrothermal gradient) between two ecosystems.</p>
+                    
+                    <p>An <strong>ecotone</strong> is characterized by a noticeable gradient shift in physicochemical characteristics resulting from the meeting of two discrete ecosystems. These boundaries typically reflect <strong>rapid environmental discontinuities</strong>, meaning the conditions within the transition zone are often <strong>less stable and more volatile</strong> than the core habitats on either side. The transitional nature of the ecotone is therefore considered more noticeable and "clear-cut" compared to an ecocline. This inherent instability tends to favor species that do not require high habitat continuity or a persistent degree of stability. Ecotone transitions are more clear-cut (distinct), conditions are less stable, and consequently, <strong>species richness is highly variable and context-dependent</strong> (often not universally higher).</p>
+                    
+                    <p>In contrast, an <strong>ecocline</strong> refers to a gradient transition defined by the <strong>gradual, continuous variation</strong> of abiotic parameters, such as altitude, salinity (a <strong>halocline</strong>), or temperature (a <strong>thermocline</strong>). An ecocline is a variation of the physicochemical environment dependent on one or two factors, and thus the presence or absence of certain species. Specific ecoclines include the thermocline (thermal gradient), chemocline (chemical gradient), halocline (salinity gradient), or pycnocline (variations in water density induced by temperature or salinity). Ecocline transitions are generally <strong>less distinctive</strong> and maintain <strong>more stable environmental conditions</strong> internally than ecotones. This stable, gradual change allows for a wider variety of plant species to adapt along the gradient, resulting in potentially high species diversity and species turnover along its length.</p>
+                    
+                    <p>Ecotones can, however, be identified by distinct changes in soil gradient and soil composition between the two interacting communities.</p>
+                </div>
+                
+                <!-- Section 4: Comparative Table -->
+                <div class="section" id="section4">
+                    <h2>Ecotone and Ecocline: Comparative Characteristics</h2>
+                    
+                    <div class="table-container">
+                        <table>
+                            <tr>
+                                <th>Characteristic</th>
+                                <th>Ecotone</th>
+                                <th>Ecocline</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Underlying Mechanism</strong></td>
+                                <td>Transitional boundary between two <strong>distinct ecosystems</strong> or communities.</td>
+                                <td>Gradient shift defined by <strong>gradually varying abiotic parameters</strong> (e.g., altitude, salinity).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Specific Examples</strong></td>
+                                <td>Mangrove/marshland (land/sea), Forest/Desert grassland (vegetation), Estuary (fresh/salt water).</td>
+                                <td><strong>Thermocline</strong> (temperature), <strong>Halocline</strong> (salinity), <strong>Pycnocline</strong> (density), Chemocline (chemical).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Physicochemical Change</strong></td>
+                                <td><strong>Rapid</strong>, noticeable gradient shift (steep slope); conditions are typically <strong>less stable</strong>; transition is <strong>more clear-cut</strong> (distinct).</td>
+                                <td><strong>Gradual</strong> variation (shallow slope); conditions are often <strong>continuous</strong>; transition is <strong>less distinct</strong> (unobtrusive/blended).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Species Diversity Trend</strong></td>
+                                <td>Often <strong>Higher (Edge Effect)</strong>, as it contains species from both adjacent communities plus unique edge species. <strong>Highly context-dependent</strong> (can be lower in highly stressed, narrow zones).</td>
+                                <td><strong>High Overall Variety</strong> due to continuous species turnover and overlapping ranges of specialized species along the gradient.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Species Assemblage Focus</strong></td>
+                                <td><strong>Edge species</strong> (unique to the zone) and species from both adjacent communities. <strong>Exotic/invasive</strong> species are often common.</td>
+                                <td><strong>Specialized species</strong> whose presence is limited by their physiological tolerance to a specific point on the physical gradient.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Spatial Scale Focus</strong></td>
+                                <td>Often viewed as a <strong>Narrow-to-Regional</strong> zone with a clearly defined (though sometimes wide) location on a map (e.g., the coastline, a forest/field edge).</td>
+                                <td>Typically refers to a <strong>Broad or Continental</strong> scale gradient (e.g., latitude, altitude, deep-sea depth) or a continuous physical system.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Primary Driver of Species Distribution</strong></td>
+                                <td><strong>Biotic Interactions</strong> (Competition, Predation) resulting from the juxtaposition of two distinct communities. The species boundary is often determined by the <strong>physical boundary</strong> of the two ecosystems.</td>
+                                <td><strong>Physiological Tolerance</strong> of individual species to the Abiotic Gradient (e.g., temperature, light, salinity). Species boundaries are staggered and independently placed along the gradient.</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Section 5: Drivers and Dynamics -->
+                <div class="section" id="section5">
+                    <h2>Drivers and Dynamics of Ecotonal Systems</h2>
+                    
+                    <h3>Mechanisms of Formation: Natural and Anthropogenic Drivers</h3>
+                    <p>Ecotones are products of both macro-scale environmental processes and localized disturbances. Naturally occurring ecotones often result from catastrophic events such as floods, volcanic activity, or fires.</p>
+                    
+                    <p>However, a significant and increasing proportion of modern ecotones results from direct human action, classifying them as <strong>anthropogenic boundaries</strong>. Activities such as controlled burning, forest clearing, agricultural development, soil pollution, and the over-drafting of groundwater all create or modify transitional zones.</p>
+                    
+                    <p>The persistence and characteristics of these boundaries can also be maintained or dictated by <strong>ecological feedback mechanisms</strong>. For instance, some boundaries are classified as "<strong>switch ecotones</strong>," produced by strong positive feedback between the community structure and the environment (e.g., a lakeside reed bed where organic matter accumulation provides a substrate for trees). This demonstrates that ecotones are not passive recipients of external pressure but are actively maintained or driven by internal community processes.</p>
+                    
+                    <h3>A Typology of Boundary Dynamics (Temporal Classification)</h3>
+                    <p>The classification of ecotones based on their temporal dynamics is crucial for conservation planning:</p>
+                    
+                    <ol>
+                        <li><strong>Stationary Ecotones:</strong> Generally remain <strong>stable</strong> over long periods, maintained by strong, persistent environmental constraints or opposing forces.</li>
+                        
+                        <li><strong>Directional Ecotones:</strong> Change in a <strong>unidirectional fashion</strong> over time, often driven by chronic pressures like long-term successional processes or persistent anthropogenic impacts.</li>
+                        
+                        <li><strong>Shifting Ecotones:</strong> Exhibit <strong>movement</strong> correlated to short-term variation in local or regional drivers (e.g., climatic or oceanographic fluctuations). A shifting ecotone can serve as a valuable indicator for monitoring trends in climate change.</li>
+                    </ol>
+                    
+                    <div class="table-container">
+                        <table>
+                            <tr>
+                                <th>Ecotone Type</th>
+                                <th>Defining Dynamic</th>
+                                <th>Long-term Stability</th>
+                                <th>Primary Drivers</th>
+                                <th>Conservation Relevance</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Directional</strong></td>
+                                <td>Changes in a consistent, unidirectional fashion over time</td>
+                                <td>Unstable</td>
+                                <td>Succession, chronic environmental pollution, long-term climate trends</td>
+                                <td>Requires adaptation or managed retreat strategies</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Shifting</strong></td>
+                                <td>Periodic, non-unidirectional boundary movement in response to local drivers</td>
+                                <td>Intermediate Stability</td>
+                                <td>Short-term climatic variability, oceanographic factors, local disturbance cycles</td>
+                                <td>Useful as potential indicator for climate change trends</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Stationary</strong></td>
+                                <td>Generally remains stable over extended temporal scales</td>
+                                <td>High Stability</td>
+                                <td>Strong environmental constraints, negative feedback loops</td>
+                                <td>Represents predictable, manageable boundaries</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Section 6: Edge Effect Hypothesis -->
+                <div class="section" id="section6">
+                    <h2>Ecological Processes Governing Ecotonal Biodiversity: The Edge Effect Hypothesis</h2>
+                    
+                    <h3>The Theory of the Edge Effect</h3>
+                    <p>The specialized ecological dynamics associated with the boundary zone are collectively termed <strong>edge effects</strong>. The phenomenon is classically defined as the increased variety of plants and animals observed at the community junction, or ecotone. This increase in local species richness is hypothesized to result from a locally broader range of suitable ecological niches created by the mixing of species and resources from both adjacent ecosystems. The species that thrive in these zones—often generalists or those adapted to variable conditions—are termed "<strong>edge species</strong>."</p>
+                    
+                    <h3>The Contested Hypothesis of Higher Species Richness</h3>
+                    <p>A central generalization in classical ecology is that ecotones universally exhibit higher species richness than the adjacent habitats. However, contemporary empirical studies consistently <strong>challenge this assumption</strong>, demonstrating that high species richness is <strong>not an intrinsic feature</strong> of ecotones, but is rather <strong>highly context-dependent</strong>.</p>
+                    
+                    <p>These findings necessitate decoupling the term "edge effect" from the automatic assumption of "increased biodiversity." Ecological transitions depend heavily on the specific environmental situation and the unique life histories of the species present. The failure of the universal high richness paradigm highlights that when fragmentation occurs, the new boundary often acts not as a zone of additive blending, but as a <strong>negative ecological filter</strong>, favoring certain opportunistic species while degrading habitat for others.</p>
+                    
+                    <h3>Evaluating the Spatial Mass Effect (SME)</h3>
+                    <p>The <strong>Spatial Mass Effect (SME)</strong> represents one theoretical mechanism that could drive increased richness in ecotones. SME suggests that the continuous migration and establishment of propagules (such as seeds or seedlings) from adjacent habitats into the ecotone should <strong>reduce vegetational sharpness</strong>, a process that theoretically can increase local diversity. However, empirical evidence supporting the widespread ecological importance of SME in determining ecotone diversity remains limited, suggesting that the harsh, unstable abiotic conditions of the ecotone frequently prevent successful establishment and persistence.</p>
+                    
+                    <h3>Species Assemblages and Environmental Filters</h3>
+                    <p>The inherent instability and variability of ecotones subject them to unique physicochemical filters, which dictate species composition. Abiotic factors such as sediment deposition, erosion rates, snow accumulation, salinity, and nutrient availability are highly influential.</p>
+                    
+                    <p>Species that do not require high stability or continuity in habitat are generally the most likely to thrive. Furthermore, <strong>exotic (non-native) species are known to be especially common in ecotones</strong>. The inherent instability of these zones lowers the ecosystem's resistance to invasion, allowing introduced species to capitalize on fluctuating resources and conditions. While specialized "ecotonal species" that occur <em>only</em> in the ecotone are rare, the overall species assemblage is largely a combination of species from the neighboring ecosystems.</p>
+                </div>
+                
+                <!-- Section 7: Edge Effects and Habitat Degradation -->
+                <div class="section" id="section7">
+                    <h2>Mechanisms of Edge Effects and Habitat Degradation</h2>
+                    
+                    <p>When boundaries are created rapidly through habitat fragmentation, the resulting edge effects often transition from ecological phenomena to mechanisms of <strong>habitat degradation</strong>, critically impacting the stability and persistence of remnant core habitats.</p>
+                    
+                    <h3>Structural Classification of Edge Types</h3>
+                    <p>Edges can be classified based on their structural characteristics and stability:</p>
+                    
+                    <ul>
+                        <li><strong>Inherent Edges:</strong> Naturally occurring boundaries where natural physical features stabilize the border location.</li>
+                        
+                        <li><strong>Induced Edges:</strong> Subject to successional changes over time, often caused by transient natural disturbances or human activities.</li>
+                        
+                        <li><strong>Narrow Edges:</strong> Occur when one habitat abruptly ends and another begins (e.g., a forest/field line).</li>
+                        
+                        <li><strong>Wide Edges (Ecotone):</strong> Characterized by a large transition region separating the borders of two clearly definable habitats.</li>
+                        
+                        <li><strong>Convoluted Edges:</strong> Non-linear, featuring intricate, winding shapes.</li>
+                        
+                        <li><strong>Perforated Edges:</strong> Characterized by gaps that host small patches of other habitats within them.</li>
+                    </ul>
+                    
+                    <h3>The Tripartite Classification of Edge Effects</h3>
+                    <p>Edge effects are systematically classified into three categories based on the mechanism of influence:</p>
+                    
+                    <ol>
+                        <li><strong>Abiotic effect:</strong> Changes in environmental conditions (light, temperature, moisture) resulting from proximity to a structurally dissimilar matrix.</li>
+                        
+                        <li><strong>Direct biological effects:</strong> Changes in species abundance and distribution caused directly by the new physical conditions near the edge.</li>
+                        
+                        <li><strong>Indirect biological effects:</strong> Significant changes in crucial species interactions, including alterations to trophic dynamics such as predation, competition, herbivory, and brood parasitism.</li>
+                    </ol>
+                    
+                    <div class="table-container">
+                        <table>
+                            <tr>
+                                <th>Edge Effect Type</th>
+                                <th>Underlying Mechanism</th>
+                                <th>Ecological Manifestation and Conservation Impact</th>
+                                <th>Penetration Depth</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Abiotic</strong></td>
+                                <td>Altered energy flow (light, heat) and moisture regulation near the boundary</td>
+                                <td>Changes in microclimate; complex soil moisture variation; increased erosion; desiccation stress</td>
+                                <td>Variable; depends on vegetation contrast and topography</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Direct Biological</strong></td>
+                                <td>Species responses dictated by new physical conditions and gradients</td>
+                                <td>Changes in local species abundance; shifts in primary productivity</td>
+                                <td>Variable</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Indirect Biological</strong></td>
+                                <td>Changes in trophic interactions and inter-species dynamics</td>
+                                <td>Increased nest predation and brood parasitism (reducing bird fecundity); invasive species establishment and proliferation</td>
+                                <td>Up to 600m into adjacent habitat (for trophic disruption)</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <h3>Indirect Biological Effects: Trophic Dynamics and Degradation</h3>
+                    <p>The negative impacts of edge effects are often mediated through indirect biological changes, particularly the <strong>disruption of trophic dynamics</strong>. Anthropogenic edges dramatically increase the proportion of edge habitat, which is statistically correlated with <strong>higher fledgling predation rates</strong> and elevated parasitism (e.g., by the brown-headed cowbird).</p>
+                    
+                    <p>This negative influence can penetrate deep into the interior, with documented effects reaching as far as <strong>600 meters</strong> inside the forest boundary. The concentration of generalist predators and parasites near edges transforms these areas into ecological "<strong>sinks</strong>," a process that represents a negative ecological filtering mechanism.</p>
+                    
+                    <h3>The Implication of Widespread Degradation</h3>
+                    <p>Analysis of global habitat structure reveals the alarming magnitude of edge effects: approximately <strong>half of the world's remaining forest is situated within 500 meters of a forest edge</strong>. Given the influence depth of negative edge effects (up to 600 meters), it follows that a vast portion of remaining global terrestrial habitat is functionally compromised.</p>
+                    
+                    <p>The severity of edge effects is significantly influenced by the surrounding matrix. A native forest edge abutting pasture—representing a <strong>high structural contrast</strong>—will experience far more pronounced effects than an edge adjacent to a managed plantation forest.</p>
+                </div>
+                
+                <!-- Section 8: Landscape Ecology and Conservation -->
+                <div class="section" id="section8">
+                    <h2>Landscape Ecology and Conservation Management of Boundaries</h2>
+                    
+                    <p>The pervasive nature of edge effects underscores the critical importance of landscape ecology principles in designing effective conservation strategies.</p>
+                    
+                    <h3>The Imperative of Functional Connectivity</h3>
+                    <p>Habitat fragmentation—characterized by reduced area, increased isolation, and an elevated proportion of edge habitat—reduces the ability of species to persist. Counteracting this requires establishing and maintaining <strong>connectivity</strong>: the functional linkages necessary for the movement of organisms and the flow of essential materials, energy, and nutrients across the landscape.</p>
+                    
+                    <ul>
+                        <li><strong>Structural Connectivity:</strong> Refers to the physical linkage or continuity of habitat patches, often measured using computer modeling and mapping of vegetation patterns or corridors.</li>
+                        
+                        <li><strong>Functional Connectivity:</strong> Describes the measure of a species' <strong>actual ability to move</strong> between habitat patches, encompassing processes such as genetic exchange, seed dispersal, and breeding migrations.</li>
+                    </ul>
+                    
+                    <p>The modern focus has shifted from simply maintaining thin structural corridors to developing nuanced, functional linkages defined by the <strong>perceptual scale of the species being conserved</strong>. Policy implementation must prioritize funding for behavioral ecology and longitudinal monitoring over reliance on easily computed structural indicators.</p>
+                    
+                    <h3>Population Dynamics and the Source-Sink Model</h3>
+                    <p>Boundary dynamics are intimately linked to population viability through the <strong>source-sink model</strong>.</p>
+                    
+                    <p>Increased mortality and depressed reproductive rates caused by elevated predation and parasitism at edges can convert small habitat fragments, which are often dominated by edge habitat, into <strong>ecological sinks</strong>. Populations in these sinks cannot persist without continuous dispersal from robust <strong>source</strong> populations. The negative ecological consequences of fragmentation are intensified when the reduction of usable interior habitat occurs simultaneously with the functional isolation of remaining patches.</p>
+                    
+                    <h3>Reserve Design and the SLOSS Debate</h3>
+                    <p>The challenges posed by edge effects are central to the debate over whether conservation efforts should focus on a <strong>Single Large Or Several Small (SLOSS) reserves</strong> for a fixed total area.</p>
+                    
+                    <ul>
+                        <li>Proponents of the "<strong>single large</strong>" strategy argue that larger reserves contain less total perimeter relative to area, <strong>maximizing the amount of core, interior habitat</strong> and thus mitigating the detrimental influence of edge effects, predation, and source-sink dynamics.</li>
+                        
+                        <li>The "<strong>several small</strong>" strategy may increase γ (regional) richness by harboring certain rare or specialized species, but it increases the proportion of edge habitat, intensifying environmental limitations and stochastic community variation.</li>
+                    </ul>
+                    
+                    <p>Ultimately, decisions regarding reserve size involve a crucial trade-off, primarily centered around how effectively the chosen configuration can manage the detrimental impacts associated with habitat boundaries. Mitigating the edge effect—through maximizing core area and reducing the perimeter-to-area ratio—is synonymous with reducing functional isolation and increasing the long-term persistence ability of species.</p>
+                </div>
+                
+                <!-- Section 9: Conclusion -->
+                <div class="section" id="section9">
+                    <h2>Conclusion</h2>
+                    
+                    <p>The analysis of ecotones and edge effects demonstrates that ecological boundaries are highly dynamic, context-specific interfaces. The primary conservation challenge stems from anthropogenic edge creation through habitat fragmentation, which creates negative ecological filters and drastically reduces the functional area of protected fragments.</p>
+                    
+                    <p>Future conservation efforts must embrace the following directions:</p>
+                    
+                    <ol>
+                        <li><strong>Prioritize Functional Over Structural Connectivity:</strong> Conservation success requires detailed species-specific behavioral and dispersal data to ensure that corridors and linkages are functionally effective.</li>
+                        
+                        <li><strong>Maximize Core Habitat Area and Compactness:</strong> Reserve design must prioritize compact shapes to maximize interior habitat and minimize the perimeter-to-area ratio, thereby reducing the influence of negative edge effects and bolstering population persistence against sink dynamics.</li>
+                        
+                        <li><strong>Implement Adaptive Boundary Management:</strong> For ecotones driven by shifting forces, particularly those related to climate change or human water management (e.g., coastal and riparian zones), conservation plans must be dynamic. The goal should be to maintain ecosystem function through flexible management that allows for the potential natural migration of the boundary, rather than striving for artificial stasis.</li>
+                        
+                        <li><strong>Manage the Adjacent Matrix:</strong> Effective boundary management requires mitigating the structural and ecological contrast between the core habitat and the surrounding land use (the matrix). Reducing this contrast helps dampen the severity of abiotic changes and limits the influx of opportunistic predators and invasive species that degrade the functional integrity of the reserve edge.</li>
+                    </ol>
+                </div>
+                
+                <!-- Section 10: Quiz -->
+                <div class="section" id="section10">
+                    <h2>Test Your Knowledge</h2>
+                    
+                    <div class="quiz-question" id="question1">
+                        <p><strong>1. The historical definition of an ecotone, formally described by Clements and Livingston, focuses on it as:</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. An area of universally high species richness due to the Spatial Mass Effect (SME).</div>
+                            <div class="quiz-option" data-correct="false">b. An active, structurally unique habitat and critical pathway for energy movement.</div>
+                            <div class="quiz-option" data-correct="true">c. The transitional boundary zone situated between two distinct adjacent ecosystems.</div>
+                            <div class="quiz-option" data-correct="false">d. A regional zone spanning a broad area like the transition between grassland and forest ecosystems.</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question2">
+                        <p><strong>2. Which key characteristic distinguishes an ecotone from its adjacent communities, often being objectively defined by the rate of vegetational change?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. Abundance of specialized "ecotonal species."</div>
+                            <div class="quiz-option" data-correct="false">b. Physiognomic indicators like macrophyte height.</div>
+                            <div class="quiz-option" data-correct="true">c. Vegetational sharpness and transition.</div>
+                            <div class="quiz-option" data-correct="false">d. The presence of a halocline or thermocline.</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question3">
+                        <p><strong>3. The contemporary view in landscape ecology recognizes the ecotone as an active habitat critical for which of the following?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. Maintaining a high degree of habitat continuity and stability.</div>
+                            <div class="quiz-option" data-correct="false">b. Reducing the movement of energy and nutrients between systems to protect core habitats.</div>
+                            <div class="quiz-option" data-correct="true">c. Serving as a critical pathway for the movement of species, energy, and nutrients.</div>
+                            <div class="quiz-option" data-correct="false">d. Eliminating biotic interactions such as competition and predation.</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question4">
+                        <p><strong>4. An ecotone characterized as a "switch ecotone" is notable because:</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. It is created primarily by catastrophic events like fires or floods.</div>
+                            <div class="quiz-option" data-correct="false">b. Its position is dictated solely by human activities like forest clearing.</div>
+                            <div class="quiz-option" data-correct="false">c. It results from a strong negative feedback loop between the community and the environment.</div>
+                            <div class="quiz-option" data-correct="true">d. It is produced by strong positive feedback between the community structure and the environment.</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question5">
+                        <p><strong>5. The primary distinction between an ecotone and an ecocline lies in:</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. The type of plant species (macrophytes vs. other flora) found in the transition zone.</div>
+                            <div class="quiz-option" data-correct="true">b. The nature and rate of change in physicochemical characteristics.</div>
+                            <div class="quiz-option" data-correct="false">c. The spatial scale (ecotone is narrow, ecocline is continental).</div>
+                            <div class="quiz-option" data-correct="false">d. The species assemblage focus (edge species vs. specialized species).</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question6">
+                        <p><strong>6. Which characteristic is primarily associated with an ecocline, rather than an ecotone?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. A rapid, noticeable gradient shift with less stable internal conditions.</div>
+                            <div class="quiz-option" data-correct="false">b. Transition is more "clear-cut" or distinct.</div>
+                            <div class="quiz-option" data-correct="true">c. Gradual, continuous variation of abiotic parameters like altitude or salinity.</div>
+                            <div class="quiz-option" data-correct="false">d. Primary driver of species distribution is biotic interactions.</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question7">
+                        <p><strong>7. An estuary, the transition between fresh and saltwater, is given as a specific example of an ecotone. A halocline, a gradient of salinity, is given as an example of an ecocline. This illustrates that:</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. Ecoclines are only found in aquatic systems, while ecotones are terrestrial.</div>
+                            <div class="quiz-option" data-correct="true">b. The ecotone (estuary) reflects the meeting of two distinct ecosystems, while the ecocline (halocline) reflects the gradient change of a single abiotic factor within that system.</div>
+                            <div class="quiz-option" data-correct="false">c. The ecotone is characterized by stable conditions, and the ecocline by volatile conditions.</div>
+                            <div class="quiz-option" data-correct="false">d. The species assemblage focus in the estuary is only on edge species.</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question8">
+                        <p><strong>8. The phenomenon classically defined as the increased variety of plants and animals observed at the community junction is called:</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. Spatial Mass Effect (SME).</div>
+                            <div class="quiz-option" data-correct="false">b. Anthropogenic Boundary.</div>
+                            <div class="quiz-option" data-correct="false">c. Source-Sink Model.</div>
+                            <div class="quiz-option" data-correct="true">d. Edge Effect.</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question9">
+                        <p><strong>9. Contemporary empirical studies challenge the classical assumption about ecotones by demonstrating that high species richness:</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. Is an intrinsic feature resulting from the Spatial Mass Effect (SME).</div>
+                            <div class="quiz-option" data-correct="false">b. Is universally true for all natural, stationary ecotones.</div>
+                            <div class="quiz-option" data-correct="true">c. Is highly context-dependent and not an intrinsic feature of all ecotones.</div>
+                            <div class="quiz-option" data-correct="false">d. Only occurs when the ecotone is an ecocline simultaneously.</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                    
+                    <div class="quiz-question" id="question10">
+                        <p><strong>10. When habitat fragmentation occurs, the resulting boundary often acts as a negative ecological filter, leading to the failure of the universal high richness paradigm. This filter primarily:</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-correct="false">a. Favors specialized species while degrading habitat for generalists.</div>
+                            <div class="quiz-option" data-correct="false">b. Leads to a high rate of propagule establishment from adjacent habitats.</div>
+                            <div class="quiz-option" data-correct="true">c. Favors certain opportunistic species while degrading habitat for others.</div>
+                            <div class="quiz-option" data-correct="false">d. Increases the ecological stability of the core habitats.</div>
+                        </div>
+                        <div class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" disabled>Previous</button>
+            <button class="nav-btn" id="nextBtn">Next</button>
+        </div>
+<footer>
+    <div class="footer-content">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+             alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="footer-text">Email: betabiosciences@gmail.com</p>
+    </div>
+</footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressBar = document.getElementById('progressBar');
+            const currentSectionSpan = document.getElementById('currentSection');
+            const totalSectionsSpan = document.getElementById('totalSections');
+            
+            let currentSection = 0;
+            const totalSections = sections.length;
+            
+            // Initialize display
+            totalSectionsSpan.textContent = totalSections;
+            updateProgress();
+            
+            // Navigation functions
+            function showSection(index) {
+                sections.forEach(section => section.classList.remove('active'));
+                sections[index].classList.add('active');
+                currentSection = index;
+                
+                // Update button states
+                prevBtn.disabled = currentSection === 0;
+                nextBtn.disabled = currentSection === totalSections - 1;
+                
+                // Update progress
+                updateProgress();
+                
+                // Scroll to top of section container
+                document.querySelector('.section-container').scrollTop = 0;
+            }
+            
+            function updateProgress() {
+                const progress = ((currentSection + 1) / totalSections) * 100;
+                progressBar.style.width = `${progress}%`;
+                currentSectionSpan.textContent = currentSection + 1;
+            }
+            
+            // Quiz functionality
+            function setupQuiz() {
+                const quizOptions = document.querySelectorAll('.quiz-option');
+                
+                quizOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        const question = this.closest('.quiz-question');
+                        const feedback = question.querySelector('.quiz-feedback');
+                        const allOptions = question.querySelectorAll('.quiz-option');
+                        
+                        // Remove any existing selections
+                        allOptions.forEach(opt => {
+                            opt.classList.remove('selected', 'correct', 'incorrect');
+                        });
+                        
+                        // Mark this option as selected
+                        this.classList.add('selected');
+                        
+                        // Check if correct
+                        if (this.getAttribute('data-correct') === 'true') {
+                            this.classList.add('correct');
+                            feedback.textContent = 'Correct! Well done.';
+                            feedback.className = 'quiz-feedback correct';
+                        } else {
+                            this.classList.add('incorrect');
+                            feedback.textContent = 'Incorrect. Try again.';
+                            feedback.className = 'quiz-feedback incorrect';
+                            
+                            // Also highlight the correct answer
+                            const correctOption = question.querySelector('.quiz-option[data-correct="true"]');
+                            correctOption.classList.add('correct');
+                        }
+                    });
+                });
+            }
+            
+            // Event listeners
+            prevBtn.addEventListener('click', function() {
+                if (currentSection > 0) {
+                    showSection(currentSection - 1);
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentSection < totalSections - 1) {
+                    showSection(currentSection + 1);
+                }
+            });
+            
+            // Initialize first section and quiz
+            showSection(0);
+            setupQuiz();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
