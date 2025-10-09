@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Species Richness & Community Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c1a2c 0%, #152642 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            -webkit-text-size-adjust: 100%;
+            touch-action: manipulation;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .image-placeholder {
+            background: rgba(25, 45, 75, 0.7);
+            border: 1px dashed rgba(100, 150, 255, 0.5);
+            padding: 15px;
+            text-align: center;
+            margin: 15px 0;
+            border-radius: 10px;
+            color: #81d4fa;
+            overflow: hidden;
+        }
+
+        .image-placeholder img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(25, 45, 75, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.2);
+        }
+
+        h1 {
+            color: #4fc3f7;
+            font-size: clamp(1.4rem, 5vw, 1.8rem);
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+            line-height: 1.3;
+        }
+
+        h2 {
+            color: #81d4fa;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            margin: 15px 0 10px;
+            border-bottom: 1px solid rgba(129, 212, 250, 0.3);
+            padding-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        h3 {
+            color: #b3e5fc;
+            font-size: clamp(1.1rem, 3.5vw, 1.3rem);
+            margin: 12px 0 8px;
+            line-height: 1.3;
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(20, 35, 60, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(100, 150, 255, 0.2);
+            flex-grow: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        p, li {
+            margin-bottom: 12px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            line-height: 1.5;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
+        }
+
+        th, td {
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            padding: 8px 6px;
+            text-align: left;
+            min-width: 120px;
+        }
+
+        th {
+            background-color: rgba(25, 45, 75, 0.8);
+            color: #81d4fa;
+            position: sticky;
+            left: 0;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(30, 50, 80, 0.5);
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(30, 50, 80, 0.6);
+            border-radius: 10px;
+            border: 1px solid rgba(100, 150, 255, 0.2);
+        }
+
+        .quiz-option {
+            background: rgba(40, 60, 90, 0.7);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .quiz-option:hover, .quiz-option:active {
+            background: rgba(50, 80, 120, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .correct {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: rgba(76, 175, 80, 0.5);
+        }
+
+        .incorrect {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: rgba(244, 67, 54, 0.5);
+        }
+
+        .feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .correct-feedback {
+            background: rgba(76, 175, 80, 0.2);
+            color: #a5d6a7;
+            border-left: 3px solid #4caf50;
+        }
+
+        .incorrect-feedback {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ef9a9a;
+            border-left: 3px solid #f44336;
+        }
+
+        .score-container {
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(25, 45, 75, 0.7);
+            border-radius: 10px;
+        }
+
+        .score {
+            font-size: 1.1rem;
+            color: #81d4fa;
+            font-weight: bold;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            gap: 10px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-height: 44px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button:hover, button:active {
+            background: linear-gradient(135deg, #1e88e5 0%, #1565c0 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: linear-gradient(135deg, #546e7a 0%, #37474f 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .section-indicator {
+            text-align: center;
+            margin: 8px 0;
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            color: #81d4fa;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(100, 150, 255, 0.2);
+            border-radius: 2px;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #1976d2 0%, #4fc3f7 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .mark {
+            background-color: rgba(255, 193, 7, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, #0c1a2c, #152642);
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-logo {
+            width: 55px;
+            height: auto;
+            margin-bottom: 0rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+            line-height: 1.2;
+            margin: 0; 
+        }
+
+        /* Mobile-specific improvements */
+        @media (max-width: 768px) {
+            .container {
+                padding: 8px;
+            }
+            
+            header {
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .content-section {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            
+            table {
+                font-size: 0.75rem;
+            }
+            
+            th, td {
+                padding: 6px 4px;
+                min-width: 100px;
+            }
+            
+            .quiz-option {
+                padding: 10px;
+            }
+            
+            .navigation {
+                margin-top: 12px;
+            }
+            
+            button {
+                padding: 10px 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+            
+            header {
+                padding: 8px;
+            }
+            
+            .content-section {
+                padding: 10px;
+            }
+            
+            th, td {
+                padding: 5px 3px;
+                min-width: 90px;
+            }
+            
+            .quiz-option {
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            h2 {
+                font-size: 1.1rem;
+            }
+            
+            h3 {
+                font-size: 1rem;
+            }
+            
+            p, li {
+                font-size: 0.85rem;
+            }
+        }
+
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>THE SPECIES RICHNESS AND COMMUNITY SERVICES</h1>
+            <div class="section-indicator">Section <span id="current-section">1</span> of <span id="total-sections">7</span></div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+        </header>
+
+        <div class="content-section active" id="section1">
+            <h2>THE SPECIES RICHNESS AND COMMUNITY SERVICES</h2>
+            <p>The health and sustainability of human society are fundamentally linked to the <strong>species richness</strong> of the planet's natural ecosystems, which is simply the count of different species within a community. High species richness is a key component of <strong>biodiversity</strong> and is strongly associated with an ecosystem's functional capacity and resilience to stress, with more diverse systems being better able to maintain productivity and recover from disturbances like disease or extreme weather. This biological abundance is the essential driver behind <strong>ecosystem services</strong>, which are the vital, life-sustaining benefits nature provides to humanity. These services are traditionally grouped into three categories: <strong>provisioning services</strong> (such as food, fresh water, and medicinal resources), <strong>regulating services</strong> (like climate control, water purification, and pollination), and <strong>cultural services</strong> (such as recreational and spiritual enrichment). Recognizing the foundational role of species richness in delivering these invaluable services highlights a critical imperative: preserving the variety of life is not merely an environmental goal, but an economic and social necessity for human well-being.</p>
+        </div>
+
+        <div class="content-section" id="section2">
+            <h2>Hypotheses on Species Richness and Community Services</h2>
+            <p>Ecologists have long debated the relationship between the <strong>number of species (species richness)</strong> and how well an ecological <strong>community functions</strong>.</p>
+
+            <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/Species%20Richness%20&%20Community%20fig1.jpg" alt="Species Richness Hypotheses Diagram">
+            </div>
+            
+            <h3>1. Diversity-stability hypothesis</h3>
+            <p>One of the earliest and most influential ideas, put forth by Charles Elton in the 1950s, was the <strong>diversity-stability hypothesis</strong>. This hypothesis posits that a community with more species is inherently <strong>more stable</strong>. If we consider stability to be a measure of overall community performance or the quality of its <strong>community services</strong> (the benefits the ecosystem provides), Elton's idea suggests a <strong>direct, linear correlation</strong>: as the number of species increases, the delivery of community services rises proportionally.</p>
+            
+            <h3>2. Rivet Hypothesis</h3>
+            <p>In 1981, Paul and Ann Ehrlich proposed the <strong>rivet hypothesis</strong> to explain the link between species loss and ecosystem function. This model uses the analogy of an airplane, where each species is like a <strong>rivet</strong> holding the plane (the community) together.</p>
+            <p>Initially, the loss of one or a few species (rivets) may not visibly harm the system, as the community can <strong>tolerate some redundancy</strong>. However, the Ehrlichs argued that we cannot know in advance which species are most critical. As species richness continues to decline, the community's <strong>ability to provide services</strong> (its airworthiness) is gradually but significantly impaired. The overall function doesn't fail all at once; instead, community services are predicted to decline in a <strong>stepwise fashion</strong>, with tipping points where the loss of just a few more species causes a disproportionately large and potentially critical failure in the ecosystem.</p>
+            
+            <h3>3. Redundancy Hypothesis</h3>
+            <p>Brian Walker proposed the <strong>redundancy hypothesis</strong> in 1992, which suggests that many species within a community have overlapping or identical roles. In this model, species are considered <strong>redundant</strong> because the loss of one can be <strong>compensated for</strong> by others that perform the same essential function. Consequently, the hypothesis predicts that species loss generally has <strong>no observable effect on community services</strong> or overall ecosystem function, provided the lost species was not one of the few that performs a unique and critically important function. Essentially, the community has a <strong>functional buffer</strong> built into its diversity.</p>
+            
+            <h3>4. Keystone hypothesis</h3>
+            <p>The <strong>keystone hypothesis</strong> offers a contrasting view, arguing that the function of an entire community rests disproportionately on a few, critically important species. This model suggests that <strong>community services plummet immediately</strong> once a <strong>keystone species</strong>—a member that plays an indispensable role—is removed, even if overall species richness has only declined slightly from its natural state. Therefore, this hypothesis predicts that even minimal species loss can lead to an <strong>immediate and significant reduction</strong> in the ecosystem's ability to provide services.</p>
+            
+            <h3>5. Idiosyncratic Hypothesis</h3>
+            <p>The final alternative is the <strong>idiosyncratic hypothesis</strong>, which proposes that while changes in species richness do affect community services, the <strong>direction and magnitude of these changes are unpredictable</strong>. According to this view, the specific roles and interactions of individual species are so unique and complex that the net effect on ecosystem function cannot be reliably modeled or forecasted. Understanding which of these five models accurately describes how natural communities respond to species loss is crucial, as this knowledge fundamentally informs and dictates how we approach <strong>environmental management and conservation</strong>.</p>
+        </div>
+
+        <div class="content-section" id="section3">
+            <h2>Hypotheses Comparison Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hypothesis</th>
+                        <th>Proponents (Year)</th>
+                        <th>Core Mechanism Analogy</th>
+                        <th>Predicted Relationship</th>
+                        <th>Management Implication</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Diversity-Stability</td>
+                        <td>Charles Elton (1950s)</td>
+                        <td>Diversity directly equates to stability.</td>
+                        <td><strong>Linear:</strong> Services rise directly with richness.</td>
+                        <td>Maximize richness for maximum function.</td>
+                    </tr>
+                    <tr>
+                        <td>Rivet</td>
+                        <td>Paul & Ann Ehrlich (1981)</td>
+                        <td>Species are like <strong>rivets on an airplane</strong>.</td>
+                        <td><strong>Stepwise Decline:</strong> Tipping points cause sharp declines.</td>
+                        <td>Any species loss carries unknown risk.</td>
+                    </tr>
+                    <tr>
+                        <td>Redundancy</td>
+                        <td>Brian Walker (1992)</td>
+                        <td>Species are <strong>redundant</strong> and replaceable.</td>
+                        <td><strong>Threshold:</strong> No effect until critical species lost.</td>
+                        <td>Protect unique/important species.</td>
+                    </tr>
+                    <tr>
+                        <td>Keystone</td>
+                        <td></td>
+                        <td>A few species are <strong>critically important</strong>.</td>
+                        <td><strong>Immediate Plunge:</strong> Services plummet with keystone loss.</td>
+                        <td>Prioritize protection of key species.</td>
+                    </tr>
+                    <tr>
+                        <td>Idiosyncratic</td>
+                        <td></td>
+                        <td>Species roles are <strong>unique and complex</strong>.</td>
+                        <td><strong>Unpredictable:</strong> Changes not reliably predictable.</td>
+                        <td>Site-specific research needed.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="content-section" id="section4">
+            <h2>Research Findings</h2>
+            <p>Experimental and field analyses support the idea that species-rich communities perform better than species-poor communities. These reports also support the redundancy hypothesis, in which the community function is impaired only when species richness is greatly reduced.</p>
+            <p>Experimental studies also suggest that species richness affects community function at higher trophic levels as well as lower trophic levels.</p>
+            <p>Increased plant species richness increases herbivore species richness, which in turn, increases predator species richness. High predator species richness is more effective in reducing herbivore abundance and increasing plant growth.</p>
+            <p>On coral reefs, overfishing causes the density of coral-feeding butterfly fishes to increase, by competitive release, and increased butterfly-fish feeding in turn spreads the coral disease.</p>
+            <p>Reviews recommend that species-rich communities perform much better than species-poor communities, particularly because of the sampling effect, not species complementarity. Communities are stable when their species richness changes very little over time.</p>
+        </div>
+
+        <div class="content-section" id="section5">
+            <h2>Test Your Knowledge</h2>
+            <div class="score-container">
+                <div class="score">Score: <span id="score-value">0</span>/10</div>
+            </div>
+            
+            <div class="question" id="question1">
+                <h3>1. The Diversity-Stability Hypothesis, proposed by Charles Elton, suggests what relationship between species richness and community services?</h3>
+                <div class="quiz-option" data-correct="true">A direct, linear correlation where services rise proportionally as richness increases.</div>
+                <div class="quiz-option">Initial species loss has no effect until a keystone species is removed.</div>
+                <div class="quiz-option">Community services decline sharply after a critical threshold of species loss.</div>
+                <div class="quiz-option">The change in community services is unpredictable due to complex interactions.</div>
+                <div class="feedback correct-feedback">Correct! The Diversity-Stability Hypothesis suggests a direct, linear correlation between species richness and community services.</div>
+                <div class="feedback incorrect-feedback">Incorrect. The Diversity-Stability Hypothesis suggests a direct, linear correlation between species richness and community services.</div>
+            </div>
+            
+            <div class="question" id="question2">
+                <h3>2. Which hypothesis uses the analogy of rivets on an airplane to describe how species contribute to the function of a community?</h3>
+                <div class="quiz-option">Diversity-Stability Hypothesis</div>
+                <div class="quiz-option" data-correct="true">Rivet Hypothesis</div>
+                <div class="quiz-option">Keystone Hypothesis</div>
+                <div class="quiz-option">Redundancy Hypothesis</div>
+                <div class="feedback correct-feedback">Correct! The Rivet Hypothesis uses the airplane rivet analogy.</div>
+                <div class="feedback incorrect-feedback">Incorrect. The Rivet Hypothesis uses the airplane rivet analogy.</div>
+            </div>
+            
+            <div class="question" id="question3">
+                <h3>3. According to the Redundancy Hypothesis, when does the loss of a species begin to negatively affect community services?</h3>
+                <div class="quiz-option">The effect is unpredictable, changing differently in every community.</div>
+                <div class="quiz-option" data-correct="true">Only when a species of critical importance is lost from the community.</div>
+                <div class="quiz-option">When the community reaches a state of maximum stability.</div>
+                <div class="quiz-option">Immediately after the first species is removed from the community.</div>
+                <div class="feedback correct-feedback">Correct! The Redundancy Hypothesis suggests species loss only affects services when a critical species is lost.</div>
+                <div class="feedback incorrect-feedback">Incorrect. The Redundancy Hypothesis suggests species loss only affects services when a critical species is lost.</div>
+            </div>
+            
+            <div class="question" id="question4">
+                <h3>4. The Keystone Hypothesis predicts that community services are most sensitive to species loss because:</h3>
+                <div class="quiz-option">The community function can only be assessed experimentally.</div>
+                <div class="quiz-option">Services decline in a slow, stepwise fashion.</div>
+                <div class="quiz-option">All species contribute equally to the community's stability.</div>
+                <div class="quiz-option" data-correct="true">A few key members are disproportionately responsible for community function.</div>
+                <div class="feedback correct-feedback">Correct! The Keystone Hypothesis suggests a few key species are disproportionately important.</div>
+                <div class="feedback incorrect-feedback">Incorrect. The Keystone Hypothesis suggests a few key species are disproportionately important.</div>
+            </div>
+            
+            <div class="question" id="question5">
+                <h3>5. In the Idiosyncratic Hypothesis, what is the primary difficulty in predicting the effect of species richness change on community services?</h3>
+                <div class="quiz-option" data-correct="true">The direction and magnitude of the change are not predictable due to unique and complex species interactions.</div>
+                <div class="quiz-option">The sampling effect outweighs the effect of species complementarity.</div>
+                <div class="quiz-option">Services only decline when richness is 'greatly reduced,' supporting the redundancy model.</div>
+                <div class="quiz-option">The number of keystone species is constantly fluctuating.</div>
+                <div class="feedback correct-feedback">Correct! The Idiosyncratic Hypothesis suggests changes are unpredictable due to complex interactions.</div>
+                <div class="feedback incorrect-feedback">Incorrect. The Idiosyncratic Hypothesis suggests changes are unpredictable due to complex interactions.</div>
+            </div>
+        </div>
+
+        <div class="content-section" id="section6">
+            <h2>Test Your Knowledge (Continued)</h2>
+            <div class="score-container">
+                <div class="score">Score: <span id="score-value2">0</span>/10</div>
+            </div>
+            
+            <div class="question" id="question6">
+                <h3>6. What is the key implication for environmental management derived from the distinction between the five competing hypotheses?</h3>
+                <div class="quiz-option">Species richness must always be kept at its absolute maximum natural level.</div>
+                <div class="quiz-option">All management efforts should prioritize the Redundancy Hypothesis.</div>
+                <div class="quiz-option">Management should only focus on maximizing Provisioning Services.</div>
+                <div class="quiz-option" data-correct="true">Understanding the effect of species loss dictates how the environment should be managed.</div>
+                <div class="feedback correct-feedback">Correct! Understanding species loss effects is key to environmental management.</div>
+                <div class="feedback incorrect-feedback">Incorrect. Understanding species loss effects is key to environmental management.</div>
+            </div>
+            
+            <div class="question" id="question7">
+                <h3>7. Which two hypotheses suggest that a community can initially tolerate the loss of some species without a noticeable decline in community services?</h3>
+                <div class="quiz-option" data-correct="true">Rivet and Redundancy</div>
+                <div class="quiz-option">Idiosyncratic and Keystone</div>
+                <div class="quiz-option">Keystone and Diversity-Stability</div>
+                <div class="quiz-option">Diversity-Stability and Idiosyncratic</div>
+                <div class="feedback correct-feedback">Correct! Both Rivet and Redundancy hypotheses suggest initial tolerance to species loss.</div>
+                <div class="feedback incorrect-feedback">Incorrect. Both Rivet and Redundancy hypotheses suggest initial tolerance to species loss.</div>
+            </div>
+            
+            <div class="question" id="question8">
+                <h3>8. Which statement best reflects the prediction of the Rivet Hypothesis regarding the decline of community services?</h3>
+                <div class="quiz-option">Services remain high until all species in a functional group are lost.</div>
+                <div class="quiz-option">Services change, but the resulting function is impossible to model.</div>
+                <div class="quiz-option">Services decline immediately and linearly with every species loss.</div>
+                <div class="quiz-option" data-correct="true">Services decline in a stepwise fashion with critical drops occurring at tipping points of species loss.</div>
+                <div class="feedback correct-feedback">Correct! The Rivet Hypothesis predicts stepwise decline with tipping points.</div>
+                <div class="feedback incorrect-feedback">Incorrect. The Rivet Hypothesis predicts stepwise decline with tipping points.</div>
+            </div>
+            
+            <div class="question" id="question9">
+                <h3>9. In the context of the Redundancy Hypothesis, why is the loss of a species often tolerated?</h3>
+                <div class="quiz-option" data-correct="true">Other species that play the same roles can compensate for the lost function.</div>
+                <div class="quiz-option">The community function is only dependent on the largest biomass of a few dominant species.</div>
+                <div class="quiz-option">The lost species' role is quickly replaced by a newly evolving species.</div>
+                <div class="quiz-option">The community services were too low to be affected by a single loss.</div>
+                <div class="feedback correct-feedback">Correct! The Redundancy Hypothesis suggests other species can compensate for lost functions.</div>
+                <div class="feedback incorrect-feedback">Incorrect. The Redundancy Hypothesis suggests other species can compensate for lost functions.</div>
+            </div>
+            
+            <div class="question" id="question10">
+                <h3>10. Which hypothesis suggests that community services are at maximum risk when a community has high species richness but a very small subset of those species are critically important?</h3>
+                <div class="quiz-option">Rivet Hypothesis</div>
+                <div class="quiz-option">Diversity-Stability Hypothesis</div>
+                <div class="quiz-option" data-correct="true">Keystone Hypothesis</div>
+                <div class="quiz-option">Redundancy Hypothesis</div>
+                <div class="feedback correct-feedback">Correct! The Keystone Hypothesis suggests maximum risk when few critical species support high richness.</div>
+                <div class="feedback incorrect-feedback">Incorrect. The Keystone Hypothesis suggests maximum risk when few critical species support high richness.</div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button id="prev-btn" disabled>Previous</button>
+            <button id="next-btn">Next</button>
+        </div>
+        
+        <footer>
+            <div class="footer-content">
+                <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+                     alt="BETA Biosciences Logo" class="footer-logo">
+                <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+                <p class="footer-text">Email: betabiosciences@gmail.com</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.content-section');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const currentSectionSpan = document.getElementById('current-section');
+            const totalSectionsSpan = document.getElementById('total-sections');
+            const progressBar = document.getElementById('progress-bar');
+            
+            let currentSection = 0;
+            const totalSections = sections.length;
+            
+            totalSectionsSpan.textContent = totalSections;
+            
+            // Quiz variables
+            const quizOptions = document.querySelectorAll('.quiz-option');
+            const scoreValue = document.getElementById('score-value');
+            const scoreValue2 = document.getElementById('score-value2');
+            let score = 0;
+            let answeredQuestions = new Set();
+            
+            // Update progress bar
+            function updateProgress() {
+                const progress = ((currentSection + 1) / totalSections) * 100;
+                progressBar.style.width = `${progress}%`;
+            }
+            
+            // Show current section
+            function showSection(index) {
+                sections.forEach(section => section.classList.remove('active'));
+                sections[index].classList.add('active');
+                currentSectionSpan.textContent = index + 1;
+                
+                // Update button states
+                prevBtn.disabled = index === 0;
+                nextBtn.disabled = index === totalSections - 1;
+                
+                updateProgress();
+                
+                // Scroll to top when changing sections on mobile
+                window.scrollTo(0, 0);
+            }
+            
+            // Navigation event listeners
+            prevBtn.addEventListener('click', function() {
+                if (currentSection > 0) {
+                    currentSection--;
+                    showSection(currentSection);
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentSection < totalSections - 1) {
+                    currentSection++;
+                    showSection(currentSection);
+                }
+            });
+            
+            // Add swipe navigation for mobile
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50; // Minimum swipe distance
+                
+                if (touchEndX < touchStartX - swipeThreshold) {
+                    // Swipe left - next section
+                    if (currentSection < totalSections - 1) {
+                        currentSection++;
+                        showSection(currentSection);
+                    }
+                } else if (touchEndX > touchStartX + swipeThreshold) {
+                    // Swipe right - previous section
+                    if (currentSection > 0) {
+                        currentSection--;
+                        showSection(currentSection);
+                    }
+                }
+            }
+            
+            // Quiz functionality
+            quizOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const question = this.closest('.question');
+                    const questionId = question.id;
+                    
+                    // If question already answered, do nothing
+                    if (answeredQuestions.has(questionId)) {
+                        return;
+                    }
+                    
+                    // Mark question as answered
+                    answeredQuestions.add(questionId);
+                    
+                    // Check if selected option is correct
+                    const isCorrect = this.getAttribute('data-correct') === 'true';
+                    
+                    // Highlight correct and incorrect answers
+                    const allOptions = question.querySelectorAll('.quiz-option');
+                    allOptions.forEach(opt => {
+                        if (opt.getAttribute('data-correct') === 'true') {
+                            opt.classList.add('correct');
+                        } else if (opt === this && !isCorrect) {
+                            opt.classList.add('incorrect');
+                        }
+                    });
+                    
+                    // Show feedback
+                    const feedback = isCorrect ? 
+                        question.querySelector('.correct-feedback') : 
+                        question.querySelector('.incorrect-feedback');
+                    feedback.style.display = 'block';
+                    
+                    // Update score
+                    if (isCorrect) {
+                        score++;
+                        scoreValue.textContent = score;
+                        scoreValue2.textContent = score;
+                    }
+                });
+            });
+            
+            // Initialize
+            showSection(currentSection);
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
