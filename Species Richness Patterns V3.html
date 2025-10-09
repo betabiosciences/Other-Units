@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Species Richness Patterns</title>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --text: #f1f1f1;
+            --glow: rgba(233, 69, 96, 0.3);
+            --correct: #4CAF50;
+            --incorrect: #f44336;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(22, 33, 62, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--highlight), var(--accent));
+            z-index: 10;
+        }
+        
+        header {
+            background: var(--accent);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-container {
+            padding: 20px;
+            min-height: 500px;
+            position: relative;
+        }
+        
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        h2 {
+            color: var(--highlight);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: var(--highlight);
+            margin: 15px 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .image-placeholder {
+            background: var(--primary);
+            border: 1px dashed var(--accent);
+            padding: 15px;
+            text-align: center;
+            margin: 15px 0;
+            border-radius: 10px;
+            color: var(--accent);
+            overflow: hidden;
+        }
+        
+        .image-placeholder img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            word-wrap: break-word;
+        }
+        
+        th {
+            background: rgba(15, 52, 96, 0.5);
+            font-weight: 600;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: var(--accent);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        button {
+            background: var(--highlight);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--glow);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--glow);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: rgba(233, 69, 96, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .progress-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            margin: 0 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .progress-dot.active {
+            background: var(--highlight);
+            transform: scale(1.2);
+        }
+        
+        /* Quiz Styles */
+        .quiz-container {
+            margin-top: 20px;
+        }
+        
+        .quiz-question {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .quiz-question h3 {
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .quiz-option {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .quiz-option.correct {
+            background-color: rgba(76, 175, 80, 0.2);
+            border-color: var(--correct);
+            color: #a5d6a7;
+        }
+        
+        .quiz-option.incorrect {
+            background-color: rgba(244, 67, 54, 0.2);
+            border-color: var(--incorrect);
+            color: #ef9a9a;
+        }
+        
+        .quiz-option.selected {
+            border: 1px solid var(--highlight);
+        }
+        
+        .quiz-results {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .quiz-score {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--highlight);
+        }
+        
+        .restart-quiz {
+            margin-top: 10px;
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            color: white;
+            padding: 1.5rem 1rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            line-height: 1.2;
+            margin: 0; 
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Mobile-specific responsive styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            .section-container {
+                padding: 15px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            /* Mobile table styles */
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+            
+            /* Mobile image styles */
+            .image-placeholder {
+                padding: 10px;
+            }
+            
+            .image-placeholder img {
+                max-width: 100%;
+                height: auto;
+            }
+            
+            /* Mobile quiz styles */
+            .quiz-question {
+                padding: 10px;
+            }
+            
+            .quiz-option {
+                padding: 10px 12px;
+                font-size: 0.9rem;
+            }
+            
+            /* Footer mobile adjustments */
+            footer {
+                padding: 1rem 0.5rem;
+            }
+            
+            .footer-text {
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            h3 {
+                font-size: 1.1rem;
+            }
+            
+            .section-container {
+                padding: 10px;
+            }
+            
+            th, td {
+                padding: 6px 8px;
+                font-size: 0.85rem;
+            }
+            
+            .quiz-option {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+        }
+
+        /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SPECIES RICHNESS PATTERNS</h1>
+            <div class="progress">
+                <div class="progress-dot active" data-section="0"></div>
+                <div class="progress-dot" data-section="1"></div>
+                <div class="progress-dot" data-section="2"></div>
+                <div class="progress-dot" data-section="3"></div>
+                <div class="progress-dot" data-section="4"></div>
+                <div class="progress-dot" data-section="5"></div>
+            </div>
+        </header>
+        
+        <div class="section-container">
+            <!-- Section 1: Species-Time Hypothesis -->
+            <div class="section active" id="section1">
+                <h2>1. The Species-Time Hypothesis</h2>
+                <p>The <strong>species-time hypothesis</strong> suggests that biodiversity increases with time, proposing that <strong>temperate regions</strong> have fewer species than tropical regions primarily because temperate zones are <strong>geologically younger</strong> and have only recently recovered from severe climatic disruptions like <strong>glaciations</strong> (e.g., the last glacial maximum 18,000 years ago). These ice sheets and the resulting cold temperatures killed or displaced many species across North America and Europe.</p>
+                
+                <div class="image-placeholder">
+                    <img src="https://betabiosciences.github.io//Other-Units/Species%20Richness%20Patterns%20fig1.jpg" alt="Species-Time Hypothesis Diagram">
+                </div>
+                
+                <h3>Variations and Alternatives</h3>
+                <p>The species-time hypothesis has several specific variations:</p>
+                <ol>
+                    <li><strong>Evolutionary Barriers:</strong> Tropical species may not have yet evolved the necessary traits, such as <strong>freezing tolerance</strong>, to exploit vacant niches in temperate zones. This is suggested by the observation that over half of flowering plant families lack temperate representatives.</li>
+                    <li><strong>Migration Lag:</strong> Tropical species that <em>could</em> survive in temperate areas have not yet migrated back to the now-unglaciated northern areas they were driven out of during the ice ages.</li>
+                    <li><strong>Evolutionary Speed Hypothesis:</strong> Evolution is hypothesized to be <strong>faster in the Tropics</strong> due to factors like high ambient temperatures, shorter generation times, and increased mutation rates. This suggests tropical areas serve as both a <strong>"cradle"</strong> for generating new species (taxa) and a <strong>"museum"</strong> for preserving existing ones.</li>
+                </ol>
+                <p>These "time" hypotheses contrast with <strong>ecological hypotheses</strong>, such as the <strong>species-energy hypothesis</strong>, which posits that factors like <strong>temperature and water availability</strong> (ecological factors) primarily determine species richness, suggesting accumulation rates are similar in both realms.</p>
+                
+                <h3>Evidence Supporting the Species-Time Hypothesis</h3>
+                <ul>
+                    <li><strong>British Trees and Insects (H. John Birks, 1980):</strong> Birks found a significant correlation between the number of insect species on various British trees and the <strong>evolutionary age</strong> (time of colonization) of those trees in Britain. By using <strong>radiocarbon dating of pollen</strong> found in lake sediments, he determined that older tree species (present longer than recent colonists post-glaciation) supported more insect species, suggesting that <strong>time is important</strong> for accumulating biodiversity.</li>
+                    <li><strong>Glaciated vs. Unglaciated Lakes:</strong> Species richness is vastly different between similar-latitude lakes based on glaciation history. <strong>Lake Baikal</strong> (Siberia), an ancient, unglaciated temperate lake, harbors about <strong>580 species</strong> of bottom-dwelling invertebrates, whereas <strong>Great Slave Lake</strong> (Northern Canada), where ice recently melted, contains only <strong>4 species</strong> in the same zone.</li>
+                </ul>
+                
+                <h3>Drawbacks and Conflicting Evidence</h3>
+                <p>Ecologists recognize several limitations and contradictions regarding the species-time hypothesis:</p>
+                <ol>
+                    <li><strong>Vertebrate Parasite Richness (Bush et al., 1990):</strong> This study found that <strong>habitat mattered most</strong>, not taxon age. Aquatic vertebrates had more helminth parasite species than terrestrial ones. Contrary to the hypothesis, the oldest lineage (fish) had <em>fewer</em> parasite species than younger lineages (aquatic mammals or birds).</li>
+                    <li><strong>Limited Marine Applicability:</strong> While terrestrial species may be slow to redistribute (due to barriers like the English Channel) following glaciations, there's no clear reason why <strong>marine organisms</strong> couldn't shift distributions easily in response to climate changes. Yet, the <strong>polar-equatorial gradient</strong> of species richness still exists in marine habitats.</li>
+                    <li><strong>Ectotherm vs. Endotherm Limitation:</strong> The evolutionary speed variation relies on high temperature accelerating generation times and mutation rates, which primarily affects <strong>ectotherms</strong> (cold-blooded animals). However, <strong>endotherms</strong> (warm-blooded animals) also show pronounced latitudinal species richness gradients, limiting the general applicability of the evolutionary speed idea.</li>
+                    <li><strong>Conflicting Speciation Rate Data:</strong>
+                        <ul>
+                            <li><strong>Tropical Plants (Wright et al., 2006):</strong> Found that tropical plant species had <strong>more than twice the rate of molecular evolution</strong> compared to their closely related temperate counterparts, supporting the "cradle" idea of faster tropical evolution.</li>
+                            <li><strong>New World Birds and Mammals (Weir and Schluter, 2007):</strong> Found that the <strong>highest speciation and extinction rates occurred at high latitudes</strong> and declined toward the Tropics. This directly conflicts with the notion that high tropical diversity is a result of high speciation rates in the Tropics.</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+            
+            <!-- Section 2: Species-Area Hypothesis -->
+            <div class="section" id="section2">
+                <h2>2. The Species-Area Hypothesis</h2>
+                <p>The <strong>species-area hypothesis</strong> posits that <strong>larger geographic areas</strong> support a greater number of species than smaller areas.</p>
+                
+                <div class="image-placeholder">
+                    <img src="https://betabiosciences.github.io//Other-Units/Species%20Richness%20Patterns%20fig2.jpg" alt="Species-Area Hypothesis Diagram">
+                </div>
+                
+                <h3>Core Mechanisms and Supporting Evidence</h3>
+                <p>The hypothesis relies on two main mechanisms:</p>
+                <ol>
+                    <li><strong>Population Size:</strong> Larger areas can maintain <strong>larger populations</strong>, which are inherently more <strong>resistant to extinction</strong>.</li>
+                    <li><strong>Habitat Range:</strong> Larger areas tend to encompass a wider <strong>range of habitats</strong>, which promotes <strong>increased speciation rates</strong>.</li>
+                </ol>
+                
+                <h3>Empirical Support</h3>
+                <ul>
+                    <li><strong>British Trees and Insects (Strong, 1974):</strong> Donald Strong found that the richness of insect species on various British trees was directly <strong>correlated with the geographic area</strong> over which the tree species was distributed.</li>
+                    <li><strong>Introduced Species Data:</strong> This hypothesis is supported by data on introduced species, such as <strong>apple trees</strong> in Britain and various global <strong>crop species</strong> (e.g., sugarcane). The species richness of insects and pests on these plants correlates better with the <strong>area planted</strong> than with the time since their introduction. Strong argued that this evidence countered the species-time hypothesis, as some relatively new (low time) but widespread (large area) species supported high insect diversity.</li>
+                </ul>
+                
+                <h3>Application to Tropical Diversity and Criticisms</h3>
+                <p><strong>Tropical Areas</strong></p>
+                <p>The Tropics possess the <strong>largest contiguous land area</strong> with symmetrically similar climates, unlike the Northern and Southern Hemispheres where similar climates are separated by temperate or polar zones. This large, unified area has been proposed as a reason for the Tropics' exceptional species richness, supporting the species-area hypothesis.</p>
+                
+                <div class="image-placeholder">
+                    <img src="https://betabiosciences.github.io//Other-Units/Species%20Richness%20Patterns%20fig3.jpg" alt="Tropical Areas Diagram">
+                </div>
+                
+                <p><strong>Criticisms and Drawbacks</strong></p>
+                <p>The hypothesis struggles to explain certain patterns of species distribution:</p>
+                <ol>
+                    <li><strong>Vast Landmasses:</strong> If increased richness is solely tied to increased area, then regions like the <strong>vast contiguous landmass of Asia</strong> should harbor more species than they currently do.</li>
+                    <li><strong>Large Biomes with Low Richness:</strong> The <strong>tundra</strong> is a geographically large land biome, yet it exhibits very <strong>low species richness</strong>.</li>
+                    <li><strong>Marine Systems:</strong> The <strong>open ocean</strong> is the largest marine system by volume, but it has <strong>fewer species</strong> compared to tropical surface waters, which occupy a relatively smaller volume. This suggests that factors other than volume/area are dominant in some ecosystems.</li>
+                </ol>
+            </div>
+            
+            <!-- Section 3: Species-Energy Hypothesis -->
+            <div class="section" id="section3">
+                <h2>3. The Species-Energy Hypothesis</h2>
+                <p>The <strong>species-energy hypothesis</strong> proposes that the amount of <strong>available energy</strong> determines the species richness of a community.</p>
+                
+                <h3>Mechanism and Supporting Evidence</h3>
+                <p>The central argument is:</p>
+                <ul>
+                    <li>High levels of <strong>solar energy and water abundance</strong> drive high <strong>plant productivity</strong> (total weight of plant material produced).</li>
+                    <li>Increased plant productivity supports a greater number of <strong>herbivores</strong>, which in turn supports more <strong>predator, parasite, and scavenger species</strong>, leading to higher overall species richness.</li>
+                </ul>
+                
+                <h3>Empirical Support: Evapotranspiration</h3>
+                <ul>
+                    <li><strong>David Currie and colleagues (1987)</strong> found that tree species richness in North America is best predicted by the <strong>evapotranspiration rate</strong>.</li>
+                    <li><strong>Evapotranspiration</strong>—the rate water moves into the atmosphere through soil evaporation and plant transpiration—is directly influenced by solar energy and ground water.</li>
+                    <li>Consequently, tree richness is highest in the <strong>hot, moist southeast United States</strong>, where evapotranspiration is high. Tree richness is low in the desert southwest because, despite high temperatures, <strong>low rainfall and water availability</strong> limit productivity.</li>
+                </ul>
+                
+                <h3>Limitations and Contradictions</h3>
+                <p>While the hypothesis offers a strong correlation, there are several exceptions:</p>
+                <ol>
+                    <li><strong>Low Productivity, High Richness:</strong> Some tropical marine areas (e.g., the southeast Pacific off Colombia and Ecuador) have <strong>low productivity</strong> but surprisingly <strong>high species richness</strong>.</li>
+                    <li><strong>High Productivity, Low Richness:</strong>
+                        <ul>
+                            <li>The <strong>sub-Antarctic Ocean</strong> has high productivity but low species richness.</li>
+                            <li><strong>Estuarine areas</strong> are highly productive but low in species, likely because the fluctuating freshwater and saltwater conditions create a <strong>stressful environment</strong>.</li>
+                            <li><strong>Polluted lakes</strong> with fertilizer have high productivity but low species richness.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Tropical vs. Temperate Forests:</strong> Despite the fact that temperate and tropical forests have <strong>similar productivity</strong> (with temperate forests sometimes being higher), <strong>tropical forests exhibit much higher species richness</strong>. This contradicts the idea that richness scales directly with local productivity.</li>
+                    <li><strong>Mechanism Ambiguity:</strong> It remains unclear why increased productivity should lead to an <strong>increase in species richness</strong> rather than simply leading to <strong>high population densities of just a few species</strong>.</li>
+                    <li><strong>Continental Comparisons:</strong> While the pattern holds for tree richness <em>within</em> North America, it fails when comparing continents: <strong>Temperate forests of eastern Asia</strong> (with 729 tree species) support substantially more species than the <strong>climatically similar temperate forests of North America</strong> (253 species) or <strong>Europe</strong> (124 species). This suggests that factors like <strong>evolutionary history</strong> and opportunity for species invasion are also highly important.</li>
+                </ol>
+                <p>Ultimately, ecologists recognize that while the species-time, species-area, and species-energy hypotheses offer explanations for the <strong>pole-equator gradient</strong> in species richness, local species numbers are also influenced by other phenomena, such as disturbance and natural enemies.</p>
+            </div>
+            
+            <!-- Section 4: Intermediate Disturbance Hypothesis -->
+            <div class="section" id="section4">
+                <h2>4. The Intermediate Disturbance Hypothesis</h2>
+                <p>The <strong>Intermediate Disturbance Hypothesis (IDH)</strong> suggests that local species richness is <strong>highest</strong> in communities that experience <strong>intermediate levels of disturbance</strong> (e.g., fires or floods).</p>
+                
+                <div class="image-placeholder">
+                    <img src="https://betabiosciences.github.io//Other-Units/Species%20Richness%20Patterns%20fig4.jpg" alt="Intermediate Disturbance Hypothesis Diagram">
+                </div>
+                
+                <h3>Connell's Rationale (1978)</h3>
+                <p>Joe Connell proposed that disturbance frequency influences species richness through the balance of competition and colonization:</p>
+                <ul>
+                    <li><strong>Low Disturbance Rate:</strong> Species richness is <strong>low</strong>. Competitively <strong>dominant species</strong> (typically <strong>K-selected</strong> species, which are good competitors existing near the environment's carrying capacity, K) outcompete and exclude all other species.</li>
+                    <li><strong>High Disturbance Rate:</strong> Species richness is <strong>low</strong>. Disturbances continually drive species extinct, permitting only <strong>good colonists</strong> (typically <strong>r-selected</strong> species, which have high population growth rates and disperse well) to persist by moving in from adjacent habitats.</li>
+                    <li><strong>Intermediate Disturbance Rate:</strong> Species richness is <strong>highest</strong>. The frequency of disturbance is just right to prevent competitive exclusion (preventing K-selected species from dominating) while not being so severe as to eliminate all but the best colonists. This allows for the coexistence of both <strong>colonists (r-selected)</strong> and <strong>competitors (K-selected)</strong>.</li>
+                </ul>
+                
+                <h3>Corollaries (Variations)</h3>
+                <p>The IDH also suggests that richness is greatest in areas where disturbances are:</p>
+                <ol>
+                    <li>Of <strong>intermediate size</strong> (creating open habitat patches without obliterating all species).</li>
+                    <li>Occurring at <strong>intermediate time intervals</strong> after an event (allowing both colonists and competitors to co-occur before competitors replace the colonists).</li>
+                </ol>
+                
+                <h3>Experimental and Observational Evidence</h3>
+                <p><strong>Marine Intertidal Boulders (Sousa, 1979)</strong></p>
+                <p>Wayne Sousa tested the IDH on algal and animal species richness on intertidal boulders, where wave action acts as the disturbance:</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Boulder Size</th>
+                            <th>Disturbance Frequency</th>
+                            <th>Mean Species Count</th>
+                            <th>Species Type</th>
+                            <th>Conclusion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Small</td>
+                            <td>High (easily moved)</td>
+                            <td>1.7 species</td>
+                            <td>Primarily r-selected</td>
+                            <td>Most species crushed; low richness.</td>
+                        </tr>
+                        <tr>
+                            <td>Large</td>
+                            <td>Low (rarely moved)</td>
+                            <td>2.5 species</td>
+                            <td>Primarily K-selected</td>
+                            <td>Competitive dominants supplanted others; low richness.</td>
+                        </tr>
+                        <tr>
+                            <td>Intermediate</td>
+                            <td>Intermediate</td>
+                            <td>3.7 species</td>
+                            <td>Mix of r- and K-selected</td>
+                            <td>Highest richness.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <p><strong>Japanese Beech Forests (Hiura, 1995)</strong></p>
+                <p>Tsutomu Hiura studied species diversity in Japanese beech forests across a latitudinal gradient and found that locations with an <strong>intermediate mean windstorm interval</strong> (disturbance frequency) had the highest species diversity. Windstorms create light gaps, preventing the dominance of superior competitors while not being frequent enough to drive many tree species extinct.</p>
+                
+                <h3>Additional Support</h3>
+                <p>The IDH is supported by:</p>
+                <ul>
+                    <li><strong>Coral reefs</strong> that maintain high diversity in areas frequently disturbed by hurricanes.</li>
+                    <li>The fact that the richest <strong>tropical forests</strong> often occur where storm disturbance is common.</li>
+                    <li>The observation that some of the richest plant communities in the southeastern United States are found on <strong>army bombing ranges</strong>, which experience high but sporadic rates of disturbance.</li>
+                </ul>
+            </div>
+            
+            <!-- Section 5: Natural Enemies Hypothesis -->
+            <div class="section" id="section5">
+                <h2>5. The natural enemies hypothesis</h2>
+                <p>The <strong>natural enemies hypothesis</strong> suggests that the presence and action of natural enemies (predators, herbivores, etc.) <strong>increases local species richness</strong> by reducing the population density of dominant prey species. This decrease in prey density lessens <strong>inter-prey competition</strong>, thereby allowing more prey species to coexist.</p>
+                
+                <h3>Paine's Keystone Species Experiment</h3>
+                <p>Robert Paine (1966) provided key experimental evidence in the intertidal zone of the U.S. northwest coast (Mukkaw Bay and Tatoosh Island, Washington).</p>
+                <ul>
+                    <li><strong>The Predator:</strong> The starfish, <em><strong>Pisaster</strong></em>, is a common predator that primarily preys on the <strong>mussel (<em>Mytilus californianus</em>)</strong> but also consumes barnacles, limpets, and other organisms.</li>
+                    <li><strong>The Experiment:</strong> When Paine <strong>removed <em>Pisaster</em></strong> from a section of the shore, species richness <strong>dramatically decreased from 15 to 8 species</strong>.</li>
+                    <li><strong>The Result:</strong> The prey species <em>Mytilus californianus</em> (mussel) and the gooseneck barnacle (<em>Pollicipes polymerus</em>) were released from predation pressure. They <strong>increased in number and monopolized the space</strong>, consequently <strong>crowding out</strong> many other species. In unmanipulated areas, <em>Pisaster</em> kept the dominant species in check.</li>
+                    <li><strong>Keystone Species:</strong> Because the removal of <em>Pisaster</em> had such a drastic effect on the entire community structure—an effect not seen when any other single species was removed—Paine termed <em>Pisaster</em> a <strong>keystone species</strong>, essential for maintaining species diversity.</li>
+                </ul>
+                <p>This phenomenon, where enemies prevent competitive exclusion, was also historically noted by <strong>Charles Darwin</strong>, who observed that more grass species coexisted in areas grazed by sheep or rabbits than in ungrazed areas.</p>
+                
+                <h3>Species Richness Across Scales</h3>
+                <p>Ecologists recognize that different processes influence species richness at different <strong>spatial scales</strong>:</p>
+                
+                <div class="image-placeholder">
+                    <img src="https://betabiosciences.github.io//Other-Units/Species%20Richness%20Patterns%20fig5.jpg" alt="Species Richness Across Scales Diagram">
+                </div>
+                
+                <ul>
+                    <li><strong>Continental Scale:</strong> Factors like <strong>evolutionary speed</strong> (time) and <strong>species-area effects</strong> may be most important.</li>
+                    <li><strong>Regional Scale:</strong> The <strong>time since the last glaciation</strong> significantly impacts richness patterns.</li>
+                    <li><strong>Landscape Scale:</strong> <strong>Disturbance frequency</strong> (Intermediate Disturbance Hypothesis) becomes a key factor.</li>
+                    <li><strong>Small (Local) Scales:</strong> <strong>Biotic interactions</strong>, such as the <strong>action of natural enemies</strong>, exert a strong influence.</li>
+                </ul>
+                <p>Species richness at any location is likely determined by the simultaneous interaction of these factors, and global climate change is predicted to drastically alter local richness as temperature and precipitation regimes shift.</p>
+            </div>
+            
+            <!-- Section 6: Quiz -->
+            <div class="section" id="section6">
+                <h2>Test Your Knowledge</h2>
+                <div class="quiz-container">
+                    <div class="quiz-question" data-correct="a">
+                        <h3>1. The Species-Time Hypothesis primarily suggests that temperate regions are less species-rich than tropical regions because temperate areas are:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Geologically younger, having recently recovered from glaciations and severe climatic disruption.</div>
+                            <div class="quiz-option" data-value="b">Subject to frequent high-intensity disturbances like fires and floods.</div>
+                            <div class="quiz-option" data-value="c">Too small in total contiguous land area to prevent high extinction rates.</div>
+                            <div class="quiz-option" data-value="d">Too low in solar energy to support high productivity.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="d">
+                        <h3>2. The 'Evolutionary Speed Hypothesis,' a variation of the Species-Time Hypothesis, proposes that the Tropics are exceptionally species-rich because high temperatures lead to:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">The inability of all tropical species to evolve freezing tolerance needed for temperate zones.</div>
+                            <div class="quiz-option" data-value="b">Decreased competition among dominant species, preventing competitive exclusion.</div>
+                            <div class="quiz-option" data-value="c">Larger population sizes that are more resistant to species extinction</div>
+                            <div class="quiz-option" data-value="d">Shorter generation times and increased mutation rates, accelerating the generation of new taxa.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="d">
+                        <h3>3. H. John Birks's study on British trees and insects, using radiocarbon dating of pollen from lake sediments, supported the Species-Time Hypothesis by showing that:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Glaciation completely eliminated all insect species from the area.</div>
+                            <div class="quiz-option" data-value="b">The largest landmasses supported the highest number of insect species</div>
+                            <div class="quiz-option" data-value="c">Tree species richness was best predicted by the rate of evapotranspiration.</div>
+                            <div class="quiz-option" data-value="d">Older tree species (present in Britain for a longer time) supported more species of insects.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="b">
+                        <h3>4. Which finding is a major drawback or contradiction to the Species-Time Hypothesis and its variations?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Large boulders in the intertidal zone had low species richness due to competitive exclusion.</div>
+                            <div class="quiz-option" data-value="b">The oldest vertebrate lineages (fish) did not have the most helminth parasite species; aquatic habitat mattered more.</div>
+                            <div class="quiz-option" data-value="c">The open ocean, the largest marine system by volume, has fewer species than tropical surface waters.</div>
+                            <div class="quiz-option" data-value="d">Tropical forest productivity is similar to or lower than temperate forest productivity.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="a">
+                        <h3>5. The Species-Area Hypothesis proposes that larger areas support more species because they provide a greater range of habitats, which in turn promotes:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Increased speciation rates.</div>
+                            <div class="quiz-option" data-value="b">Lower evapotranspiration rates, leading to higher water availability.</div>
+                            <div class="quiz-option" data-value="c">Reduced population densities, thereby lowering inter-species competition.</div>
+                            <div class="quiz-option" data-value="d">Faster molecular evolution and shorter generation times.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="b">
+                        <h3>6. Which observation serves as a major limitation or contradiction to the Species-Area Hypothesis?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Many families of flowering plants lack temperate representatives due to a lack of freezing tolerance.</div>
+                            <div class="quiz-option" data-value="b">The vast contiguous landmass of Asia and the large tundra biome do not have proportionally high species richness.</div>
+                            <div class="quiz-option" data-value="c">The highest speciation rates are found at high latitudes, declining toward the Tropics.</div>
+                            <div class="quiz-option" data-value="d">Species richness in the intertidal zone is highest on intermediate-sized boulders.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="a">
+                        <h3>7. The Species-Energy Hypothesis predicts that species richness is primarily determined by:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">The amount of available energy, leading to high plant productivity.</div>
+                            <div class="quiz-option" data-value="b">The total number of species that can migrate back from refuge areas.</div>
+                            <div class="quiz-option" data-value="c">The historical time since the area's recovery from glaciation.</div>
+                            <div class="quiz-option" data-value="d">The frequency of disturbances like fires or hurricanes.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="b">
+                        <h3>8. According to David Currie and colleagues (1987), tree species richness in North America is best predicted by the rate of evapotranspiration, which is highest in the hot, moist southeast United States. This evidence directly supports the:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Species-Time Hypothesis.</div>
+                            <div class="quiz-option" data-value="b">Species-Energy Hypothesis.</div>
+                            <div class="quiz-option" data-value="c">Natural Enemies Hypothesis.</div>
+                            <div class="quiz-option" data-value="d">Intermediate Disturbance Hypothesis.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="b">
+                        <h3>9. A major challenge to the Species-Energy Hypothesis is that the productivity of temperate and tropical forests are often very similar, or sometimes even higher in temperate forests, yet:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">The sub-Antarctic Ocean, a low-productivity area, has very high species richness.</div>
+                            <div class="quiz-option" data-value="b">Tropical forests exhibit much higher species richness than temperate ones.</div>
+                            <div class="quiz-option" data-value="c">Temperate forests still maintain a greater number of species over time.</div>
+                            <div class="quiz-option" data-value="d">Most species in temperate forests have shorter generation times and higher mutation rates.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="b">
+                        <h3>10. Which finding best demonstrates the failure of the Species-Energy Hypothesis when comparing patterns *between* continents?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Tropical marine areas often have low productivity but high species richness.</div>
+                            <div class="quiz-option" data-value="b">Temperate forests in eastern Asia have substantially more tree species than climatically similar forests in Europe or North America.</div>
+                            <div class="quiz-option" data-value="c">The fastest speciation rates are found in high-latitude bird and mammal lineages.</div>
+                            <div class="quiz-option" data-value="d">Estuarine areas are very productive but maintain low species richness.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="b">
+                        <h3>11. According to the Intermediate Disturbance Hypothesis (IDH), which condition leads to the **lowest** species richness?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Low rates of disturbance, where competitively dominant species (K-selected species) exclude most others.</div>
+                            <div class="quiz-option" data-value="b">High rates of disturbance, leading to the persistence of only good colonists (r-selected species).</div>
+                            <div class="quiz-option" data-value="c">Intermediate-sized disturbances that create patches of open habitat.</div>
+                            <div class="quiz-option" data-value="d">Intermediate levels of disturbance, allowing both r- and K-selected species to coexist.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="d">
+                        <h3>12. Why does a low rate of disturbance result in low species richness, according to the IDH?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Only good colonists (r-selected species) can survive the long, stable periods.</div>
+                            <div class="quiz-option" data-value="b">High ambient temperatures cause faster molecular evolution among the K-selected species.</div>
+                            <div class="quiz-option" data-value="c">The area is too large for K-selected species to maintain a stable population size.</div>
+                            <div class="quiz-option" data-value="d">Disturbances occur too infrequently to allow r-selected species to persist.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="d">
+                        <h3>13. Wayne Sousa's experiment on intertidal boulders supported the IDH by finding that intermediate-sized boulders, which experienced intermediate disturbance from waves, had the most species because they contained:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Only r-selected colonists that were constantly moving in from adjacent habitats.</div>
+                            <div class="quiz-option" data-value="b">Only K-selected competitors that were able to outcompete all others.</div>
+                            <div class="quiz-option" data-value="c">The largest populations of Pisaster starfish.</div>
+                            <div class="quiz-option" data-value="d">A mixed population of r-selected colonists and K-selected competitors.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="c">
+                        <h3>14. The Natural Enemies Hypothesis suggests that species richness is increased when predators or herbivores reduce the density of dominant prey, which directly leads to:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">A higher ratio of K-selected species compared to r-selected species.</div>
+                            <div class="quiz-option" data-value="b">An increase in the total carrying capacity (K) of the environment.</div>
+                            <div class="quiz-option" data-value="c">A decrease in inter-prey competition, permitting the coexistence of more species.</div>
+                            <div class="quiz-option" data-value="d">An increase in the overall rate of plant productivity in the ecosystem.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="b">
+                        <h3>15. In Robert Paine's experiment, the starfish Pisaster was termed a keystone species because its removal:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Doubled the size of the intertidal community's effective land area.</div>
+                            <div class="quiz-option" data-value="b">Resulted in a dramatic decrease in the number of species in the community.</div>
+                            <div class="quiz-option" data-value="c">Caused its primary prey, the mussel Mytilus californicus, to go extinct.</div>
+                            <div class="quiz-option" data-value="d">Confirmed that the species richness was linked to the time since the last glaciation.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="d">
+                        <h3>16. Which process is typically considered most important in influencing species richness at a regional scale?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">The action of natural enemies (predation).</div>
+                            <div class="quiz-option" data-value="b">Evolutionary speed and species-area effects.</div>
+                            <div class="quiz-option" data-value="c">Disturbance frequency (e.g., local windstorms).</div>
+                            <div class="quiz-option" data-value="d">The time since the last glaciation.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="b">
+                        <h3>17. Which hypothesis provides a specific reason (Evolutionary Barriers) for why tropical species may **NOT** have moved into temperate zones, even if the climate allowed?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Species-Energy Hypothesis.</div>
+                            <div class="quiz-option" data-value="b">Species-Time Hypothesis.</div>
+                            <div class="quiz-option" data-value="c">Species-Area Hypothesis.</div>
+                            <div class="quiz-option" data-value="d">Intermediate Disturbance Hypothesis.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="a">
+                        <h3>18. The finding that tropical plant species have more than twice the rate of molecular evolution than their temperate counterparts supports the idea that the Tropics are a 'cradle' for new taxa, which is a key part of the:</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Evolutionary Speed Hypothesis.</div>
+                            <div class="quiz-option" data-value="b">Species-Area Hypothesis.</div>
+                            <div class="quiz-option" data-value="c">Intermediate Disturbance Hypothesis.</div>
+                            <div class="quiz-option" data-value="d">Natural Enemies Hypothesis.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="d">
+                        <h3>19. Which example represents an area with high productivity but low species richness, contradicting the Species-Energy Hypothesis?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">Lake Baikal, an ancient unglaciated temperate lake.</div>
+                            <div class="quiz-option" data-value="b">The desert southwest of the United States.</div>
+                            <div class="quiz-option" data-value="c">The temperate forests of eastern Asia.</div>
+                            <div class="quiz-option" data-value="d">Estuarine areas where rivers empty into the sea.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question" data-correct="b">
+                        <h3>20. Which factor is primarily considered to influence species richness at the landscape scale?</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="a">The size of populations and resistance to local extinction.</div>
+                            <div class="quiz-option" data-value="b">The frequency of disturbances like windstorms or fires.</div>
+                            <div class="quiz-option" data-value="c">The rate of species speciation and extinction.</div>
+                            <div class="quiz-option" data-value="d">The simultaneous interaction of all factors on a given point of the globe.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-results" style="display: none;">
+                        <div class="quiz-score">Your Score: <span id="score">0</span>/20</div>
+                        <button class="restart-quiz" id="restartQuiz">Restart Quiz</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" disabled>Previous</button>
+            <button id="nextBtn">Next</button>
+        </div>
+        
+        <footer>
+            <div class="footer-content">
+                <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+                     alt="BETA Biosciences Logo" class="footer-logo">
+                <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+                <p class="footer-text">Email: betabiosciences@gmail.com</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressDots = document.querySelectorAll('.progress-dot');
+            const restartQuizBtn = document.getElementById('restartQuiz');
+            
+            let currentSection = 0;
+            let quizScore = 0;
+            let quizCompleted = false;
+            
+            function updateNavigation() {
+                // Update button states
+                prevBtn.disabled = currentSection === 0;
+                nextBtn.disabled = currentSection === sections.length - 1;
+                
+                // Update progress dots
+                progressDots.forEach((dot, index) => {
+                    if (index === currentSection) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+                
+                // Update button text for last section
+                if (currentSection === sections.length - 1) {
+                    nextBtn.textContent = 'Finish';
+                } else {
+                    nextBtn.textContent = 'Next';
+                }
+            }
+            
+            function showSection(index) {
+                // Hide all sections
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show the selected section
+                sections[index].classList.add('active');
+                
+                // Update current section
+                currentSection = index;
+                
+                // Update navigation
+                updateNavigation();
+            }
+            
+            // Quiz functionality
+            function initializeQuiz() {
+                const quizOptions = document.querySelectorAll('.quiz-option');
+                const quizResults = document.querySelector('.quiz-results');
+                const scoreElement = document.getElementById('score');
+                
+                quizOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        if (quizCompleted) return;
+                        
+                        const question = this.closest('.quiz-question');
+                        const correctAnswer = question.getAttribute('data-correct');
+                        const selectedAnswer = this.getAttribute('data-value');
+                        
+                        // Remove any existing selections from this question
+                        question.querySelectorAll('.quiz-option').forEach(opt => {
+                            opt.classList.remove('selected', 'correct', 'incorrect');
+                        });
+                        
+                        // Mark the selected option
+                        this.classList.add('selected');
+                        
+                        // Show correct/incorrect answers
+                        question.querySelectorAll('.quiz-option').forEach(opt => {
+                            if (opt.getAttribute('data-value') === correctAnswer) {
+                                opt.classList.add('correct');
+                            } else if (opt.getAttribute('data-value') === selectedAnswer && selectedAnswer !== correctAnswer) {
+                                opt.classList.add('incorrect');
+                            }
+                        });
+                        
+                        // Update score if correct
+                        if (selectedAnswer === correctAnswer) {
+                            quizScore++;
+                        }
+                        
+                        // Check if all questions are answered
+                        const allQuestions = document.querySelectorAll('.quiz-question');
+                        const answeredQuestions = document.querySelectorAll('.quiz-option.selected');
+                        
+                        if (answeredQuestions.length === allQuestions.length) {
+                            quizCompleted = true;
+                            scoreElement.textContent = quizScore;
+                            quizResults.style.display = 'block';
+                        }
+                    });
+                });
+                
+                // Restart quiz functionality
+                if (restartQuizBtn) {
+                    restartQuizBtn.addEventListener('click', function() {
+                        quizScore = 0;
+                        quizCompleted = false;
+                        
+                        // Reset all quiz options
+                        document.querySelectorAll('.quiz-option').forEach(option => {
+                            option.classList.remove('selected', 'correct', 'incorrect');
+                        });
+                        
+                        // Hide results
+                        quizResults.style.display = 'none';
+                    });
+                }
+            }
+            
+            // Event listeners for navigation buttons
+            prevBtn.addEventListener('click', function() {
+                if (currentSection > 0) {
+                    showSection(currentSection - 1);
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentSection < sections.length - 1) {
+                    showSection(currentSection + 1);
+                }
+            });
+            
+            // Event listeners for progress dots
+            progressDots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    const sectionIndex = parseInt(this.getAttribute('data-section'));
+                    showSection(sectionIndex);
+                });
+            });
+            
+            // Initialize
+            updateNavigation();
+            initializeQuiz();
+        });
+        
+        // Security and print prevention
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
