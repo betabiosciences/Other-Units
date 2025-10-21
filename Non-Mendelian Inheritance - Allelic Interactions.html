@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non-Mendelian Inheritance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0f0f23 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 255, 255, 0.1);
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+        }
+
+        h1 {
+            color: #00ffff;
+            font-size: 1.5rem;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .content-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .section {
+            display: none;
+            background: rgba(22, 33, 62, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            max-width: 800px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            color: #00ffff;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #66d9ff;
+            margin: 20px 0 15px;
+            font-size: 1.2rem;
+        }
+
+        p, li {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #d0d0d0;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        strong {
+            color: #00ffff;
+            font-weight: 600;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(22, 33, 62, 0.6);
+            backdrop-filter: blur(10px);
+            border-top: 2px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #00ffff 0%, #0099cc 100%);
+            color: #0a0a0a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.6);
+        }
+
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+
+        .nav-btn:disabled {
+            background: linear-gradient(135deg, #333 0%, #555 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.5;
+        }
+
+        .progress {
+            text-align: center;
+            color: #00ffff;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .question-option {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 3px solid #00ffff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .question-option:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .question-option.selected {
+            background: rgba(255, 0, 0, 0.2);
+            border-left: 3px solid #ff0000;
+        }
+
+        .question-option.correct {
+            background: rgba(0, 255, 0, 0.2);
+            border-left: 3px solid #00ff00;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, #00ffff 0%, #0099cc 100%);
+            color: #0a0a0a;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        tr:hover {
+            background: rgba(0, 255, 255, 0.1);
+        }
+
+        .highlight {
+            background: rgba(255, 215, 0, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        .quiz-results {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(22, 33, 62, 0.8);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+
+        .quiz-results h3 {
+            color: #00ffff;
+            margin-bottom: 15px;
+        }
+
+        .score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00ffff;
+            margin-bottom: 15px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #00ff00 0%, #009900 100%);
+            color: #0a0a0a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 255, 0, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 0, 0.6);
+        }
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    h2 {
+        font-size: 1.1rem;
+    }
+
+    .section {
+        padding: 20px;
+    }
+
+    .nav-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    /* NEW MOBILE TABLE STYLING - REPLACES THE OLD ONE */
+    table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        font-size: 0.8rem;
+    }
+    
+    table th, 
+    table td {
+        padding: 8px 6px;
+        min-width: 120px;
+    }
+    
+    table tr {
+        border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    
+    /* For very small screens */
+    @media (max-width: 480px) {
+        table th, 
+        table td {
+            padding: 6px 4px;
+            min-width: 100px;
+            font-size: 0.75rem;
+        }
+    }
+}
+.image-container {
+    width: 100%;
+    margin: 1.5rem 0;
+    text-align: center;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.image-caption {
+    padding: 10px 15px;
+    background: rgba(15, 23, 42, 0.8);
+    font-size: 0.9rem;
+    color: var(--highlight);
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 0rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            line-height: 1.2;
+            margin: 0; 
+        }
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Non-Mendelian Inheritance - Allelic Interactions</h1>
+        </header>
+
+        <div class="content-wrapper">
+            <div id="section-0" class="section active">
+                <h2>Introduction</h2>
+                <p>Mendel's initial work established the concept that hereditary factors (genes) come in <strong>alternate forms (alleles)</strong>, specifically identifying a <strong>dominant</strong> and a <strong>recessive</strong> version.</p>
+                <p>However, subsequent research has demonstrated that this model is an oversimplification. Genes frequently exist in <strong>more than two allelic forms</strong> (multiple alleles), and these alleles can interact in complex ways to influence the observable characteristics (phenotype). These findings, which include various types of <strong>allelic interactions</strong> (like incomplete dominance or codominance) and <strong>gene interactions</strong> (like epistasis), represent <strong>extensions of basic Mendelian ideas</strong>.</p>
+            </div>
+
+            <div id="section-1" class="section">
+                <h2>1. Codominance</h2>
+                <p><strong>Codominance</strong> is a genetic condition where a heterozygote simultaneously and fully expresses the traits of <strong>both</strong> alleles. Neither allele is dominant over the other; instead, their characteristics appear independently. The resulting phenotype is a combination of both homozygous forms, rather than a blend.</p>
+                <p>A classic example is the <strong>MN blood group in humans</strong>. This system is determined by a gene with two codominant alleles, one for the M antigen (L<sup>M</sup>) and one for the N antigen (L<sup>N</sup>).</p>
+                <ul>
+                    <li>L<sup>M</sup> L<sup>M</sup> <strong>(Homozygous):</strong> Produces only M antigens on red blood cells.</li>
+                    <li>L<sup>N</sup> L<sup>N</sup> <strong>(Homozygous):</strong> Produces only N antigens.</li>
+                    <li>L<sup>M</sup> L<sup>N</sup> <strong>(Heterozygous):</strong> Produces <strong>both</strong> M and N antigens.</li>
+                </ul>
+                <p>In a cross between two heterozygotes (L<sup>M</sup> L<sup>M</sup> and L<sup>N</sup> L<sup>N</sup>), the phenotypic ratio is <strong>1:2:1</strong> (1 M blood type : 2 MN blood type : 1 N blood type).</p>
+<div class="image-container">
+    <img src="https://betabiosciences.github.io//Other-Units/Non-mendelian%20genetics%20fig1.jpg" alt="Potassium Channel 3D Structure">
+</div>
+
+            </div>
+
+
+            <div id="section-2" class="section">
+                <h2>2. Incomplete Dominance (Part 1)</h2>
+                <p>Dominance can be understood in regard to how the phenotype of the hetero zygote relates to the phenotypes of the homozygotes. Flower color potentially ranges from red to white. One homozygous genotype, A<sup>1</sup>A<sup>1</sup>, produces red pigment, resulting in red flowers; another, A<sup>2</sup>A<sup>2</sup>, produces no pigment, resulting in white flowers. Where the heterozygote falls in the range of phenotypes determines the type of dominance. If the heterozygote (A<sup>1</sup>A<sup>2</sup>) produces the same amount of pigment as the A<sup>1</sup>A<sup>1</sup> homozygote, resulting in red, then the A<sup>1</sup> allele displays complete dominance over the A<sup>2</sup> allele; that is, red is dominant over white. If, on the other hand, the heterozygote produces no pigment resulting in flowers with the same color as the A<sup>2</sup>A<sup>2</sup> homozygote (white), then the A<sup>2</sup> allele is completely dominant, and white is dominant over red. When the heterozygote falls in between the phenotypes of the two homozygotes, dominance is incomplete. With incomplete dominance, the heterozygote need not be exactly intermediate between the two homozygotes; it might be a slightly lighter shade of red or a slightly pink shade of white. As long as the hetero zygote's phenotype can be differentiated and falls within the range of the two homozygotes, dominance is incomplete.</p>
+<div class="image-container">
+    <img src="https://betabiosciences.github.io//Other-Units/Non-mendelian%20genetics%20fig2.jpg" alt="Potassium Channel 3D Structure">
+</div>
+
+            </div>
+
+            <div id="section-3" class="section">
+                <h2>2. Incomplete Dominance (Part 2)</h2>
+                <p>Incomplete dominance is also exhibited in the fruit color of eggplant. When a homozygous plant that produces purple fruit (PP) is crossed with a homozygous plant that produces white fruit (pp), all the heterozygous F1 (Pp) produce violet fruit. When the F1 are crossed with each other, 1/4 of the F2 are purple (PP), 1/2 are violet (Pp), and 1/4 are white (pp),. Note that this 1 : 2 : 1 ratio is different from the 3 : 1 ratio that we would observe if eggplant fruit color exhibited complete dominance. Another example of incomplete dominance is feather color in chickens. A cross between a homozygous black chicken and a homozygous white chicken produces F1 chickens that are gray. If these gray F1 are intercrossed, they produce F2 birds in a ratio of 1 black : 2 gray : 1 white.</p>
+<div class="image-container">
+    <img src="https://betabiosciences.github.io//Other-Units/Non-mendelian%20genetics%20fig3.jpg" alt="Potassium Channel 3D Structure">
+</div>
+
+            </div>
+
+            <div id="section-4" class="section">
+                <h2>2. Incomplete Dominance (Part 3)</h2>
+                <p>A 1 : 2 : 1 phenotypic ratio arises in the progeny of a cross between two parents heterozygous for a character that exhibits incomplete dominance (Aa × Aa). The genotypic ratio among these progeny also is 1 : 2 : 1. <strong>When a trait displays incomplete dominance, the genotypic ratios and phenotypic ratios of the offspring are the same,</strong> because each genotype has its own phenotype. The important thing to remember about dominance is that it affects the phenotype that genes produce but not the way in which genes are inherited.</p>
+<div class="image-container">
+    <img src="https://betabiosciences.github.io//Other-Units/Non-mendelian%20genetics%20fig4.jpg" alt="Potassium Channel 3D Structure">
+</div>
+
+            </div>
+
+            <div id="section-5" class="section">
+                <h2>3. Multiple Allelism</h2>
+                <p>The classical <strong>Mendelian concept</strong> of a gene having only two allelic states was expanded after the discovery of genes with three or more alleles.</p>
+                <h3>a. Rabbit Coat Color</h3>
+                <p>A classic example is the gene for <strong>rabbit coat color</strong> (<em>c</em>), which has four alleles:</p>
+                <ul>
+                    <li><em>c<sup>+</sup></em> (wild-type, most common)</li>
+                    <li><em>c<sup>ch</sup></em> (chinchilla)</li>
+                    <li><em>c<sup>h</sup></em> (himalayan)</li>
+                    <li><em>c</em> (albino, or colorless)</li>
+                </ul>
+                <p>The <strong>wild-type allele</strong> is commonly symbolized by a <strong>superscript plus sign</strong> (<strong>+</strong>). The other alleles are <strong>mutants</strong>. Genetics often names a gene after a <strong>recessive mutant allele</strong> (like <em>c</em> for albino), which usually produces the most abnormal phenotype. If a mutant allele is <strong>dominant</strong> (like the <em>T</em> gene for a short tail in mice), the gene is named after the associated dominant phenotype.</p>
+                <p><strong>c<sup>+</sup> >c<sup>ch</sup>> c<sup>h</sup>>c</strong></p>
+                <p>The different phenotypes are caused by four different alleles of the c gene. In case of multiple alleles, the number of different genotypes possible among diploid organisms is a function of the number of alleles that exist for any given gene. If 'n' is the number of alleles of a gene, the number of different genotypes possible is n(n+1)/2.</p>
+<div class="image-container">
+    <img src="https://betabiosciences.github.io//Other-Units/Non-mendelian%20genetics%20fig5.jpg" alt="Potassium Channel 3D Structure">
+</div>
+
+            </div>
+
+            <div id="section-6" class="section">
+                <h2>3. Multiple Allelism - Human ABO Blood Types</h2>
+                <h3>b. Human ABO Blood Types</h3>
+                <p>The A, B, AB, and O <strong>human blood types</strong> are controlled by the gene <em>I</em>, which has three alleles:</p>
+                <ul>
+                    <li><em>I<sup>A</sup></em> (specifies the A antigen)</li>
+                    <li><em>I<sup>B</sup></em> (specifies the B antigen)</li>
+                    <li><em>i</em> (specifies no antigen)</li>
+                </ul>
+                <p>This system demonstrates:</p>
+                <ul>
+                    <li><strong>Codominance</strong>: The <em>I<sup>A</sup></em> and <em>I<sup>B</sup></em> alleles are equally expressed in the <em>I<sup>A</sup> I<sup>B</sup></em> heterozygote (Type AB blood).</li>
+                    <li><strong>Recessiveness</strong>: The <em>i</em> allele is recessive to both <em>I<sup>A</sup></em> and <em>I<sup>B</sup></em>.</li>
+                </ul>
+                <p>The presence of these three alleles at high frequencies means the <em>I</em> gene is <strong>polymorphic</strong> ("having many forms").</p>
+<div class="image-container">
+    <img src="https://betabiosciences.github.io//Other-Units/Non-mendelian%20genetics%20fig6.jpg" alt="Potassium Channel 3D Structure">
+</div>
+<div class="image-container">
+    <img src="https://betabiosciences.github.io//Other-Units/Non-mendelian%20genetics%20fig7.jpg" alt="Potassium Channel 3D Structure">
+</div>
+
+            </div>
+
+            <div id="section-7" class="section">
+                <h2>ABO Blood Types - Details</h2>
+                <p>We can represent the dominance relations among the ABO alleles as follows: I<sup>A</sup> > i, I <sup>B</sup> > i, I<sup>A</sup> = I B. The I<sup>A</sup> and the I <sup>B</sup> alleles are dominant over i and are codominant with each other; the AB phenotype is due to the presence of an I<sup>A</sup> allele and an I <sup>B</sup> allele, which results in the production of A and B antigens on red blood cells. A person with genotype ii produces neither antigen and has blood-type O.</p>
+                <p>The six common genotypes at this locus and their phenotypes. The body produces antibodies against any foreign antigens. A person with blood-type A produces anti-B antibodies because the B antigen is foreign to that person. A person with blood-type B produces anti-A antibodies, and a person with blood-type AB produces neither anti-A nor anti-B antibodies because neither A nor B antigen is foreign to that person. A person with blood-type O possesses no A or B antigens; consequently, that person produces both anti-A antibodies and antiB antibodies. The presence of antibodies against foreign ABO antigens means that successful blood transfusions are possible only between people with certain compatible blood types.</p>
+            </div>
+
+            <div id="section-8" class="section">
+                <h2>Rh Blood Group (Part 1)</h2>
+                <p>Discovered by Landsteiner and wiener (1940). The Rh antigens are located on two Rhesus proteins-RhD and RhCE- encoded by two highly polymorphic genes, RhD and RhCE, and are expressed only RBCs. RhD protein carries the D antigen and the RhCE protein carries CE antigens in various combinations (ce, Ce, cE, CE).</p>
+                <p>The classification of Rh- positive and Rh- negative individuals is determined by the presence or absence of the D antigen on the surface of RBCs. If D antigen is present on a person's RBCs, the person is Rh-positive.</p>
+                <p>Each biological parent donates one of their two Rh alleles to their child. A person who is Rh- negative (genotype of Rh/Rh) can only pass Rh allele to son or daughter. A person who is Rh-positive (genotype could be either Rh/Rh or Rh²/Rh) can pass either Rh+ or Rh allele to son or daughter. Rh-positive phenotype is dominant over Rh-negative phenotype. If both of a child's parents are Rh negative, the child will definitely be Rh-negative. Otherwise the child may be Rh positive or Rh-negative, depending on the parent's specific genotypes.</p>
+            </div>
+
+            <div id="section-9" class="section">
+                <h2>Rh Blood Group (Part 2)</h2>
+                <p>The Rh antigen is of particular significance when Rh-negative mothers give birth to Rh positive babies. The foetal and maternal bloods are normally kept separate across the placenta and so the Rh-negative mother is not usually exposed to the Rh antigen of the foetus during the pregnancy. However, during the delivery of the first child, there is a possibility of exposure of the maternal blood to small amounts of the Rh-positive blood from the foetus. In such cases, the mother starts preparing antibodies against the Rh antigen in her blood. However, this does not occur always because the exposure may be minimal and because Rh negative women vary in their sensitivity to the Rh antigen. If the woman does produce antibodies against the Rh antigen, these antibodies can cross the placenta in subsequent pregnancies and cause haemolysis of the Rh-positive red blood cells of the foetus. Therefore, the baby could be born anaemic with a condition called erythroblastosis fetalis (or haemolytic disease of the newborn).</p>
+            </div>
+
+            <div id="section-10" class="section">
+                <h2>Rh Blood Group (Part 3)</h2>
+                <p>Erythroblastosis fetalis can be prevented by injecting the Rh-negative mother with an antibody prepared against the Rh antigen (called anti-Rh antibodies or Rhogam) within 72 hours after the birth of each Rh-positive baby. This is a type of passive immunization in which the injected antibodies inactivate the Rh antigens and thus prevent the mother from becoming actively immunized to them.</p>
+<div class="image-container">
+    <img src="https://betabiosciences.github.io//Other-Units/Non-mendelian%20genetics%20fig8.jpg" alt="Potassium Channel 3D Structure">
+</div>
+
+            </div>
+
+            <div id="section-11" class="section">
+                <h2>4. Pseudoallelism (Part 1)</h2>
+                <p>Pseudoalleles are closely linked genes located near one another on the same chromosome that have similar or related functions. They were initially misidentified as different allelic forms of the same gene, which is why they received the prefix "pseudo-" (meaning false or deceptive).</p>
+                <h3>Key Features and Characteristics</h3>
+                <p><strong>1. Close Linkage and Inheritance:</strong></p>
+                <ul>
+                    <li>Pseudoalleles are situated so close together on a chromosome that they are genetically linked and are nearly always inherited together as a single unit.</li>
+                    <li>Because they are so close, they appear to act as a single gene controlling a trait.</li>
+                </ul>
+                <p><strong>2. Shared Function and Character Effect:</strong></p>
+                <ul>
+                    <li>They have similar functions and affect the same character or trait.</li>
+                    <li>This similarity in effect is what causes them to be confused with true alleles.</li>
+                </ul>
+            </div>
+
+            <div id="section-12" class="section">
+                <h2>4. Pseudoallelism (Part 2)</h2>
+                <p><strong>3. Crossing Over/Recombination:</strong></p>
+                <ul>
+                    <li>Unlike true alleles, which are different forms of the <em>same</em> gene and thus cannot recombine internally, pseudoalleles are two <em>separate</em> genes.</li>
+                    <li>Therefore, crossing over (recombination) can occur between them, although rarely due to their close proximity. This distinguishes them as non-allelic genes.</li>
+                </ul>
+                <p><strong>4. Origin Hypothesis:</strong></p>
+                <ul>
+                    <li>A prevailing hypothesis suggests that pseudoalleles arise from gene duplication events.</li>
+                    <li>Following duplication, the two copies (the pseudoalleles) remain closely linked and can evolve new, but related, functions.</li>
+                </ul>
+                <p><strong>Example</strong>- The <strong>red eye color of <em>Drosophila</em></strong>:</p>
+                <ul>
+                    <li>Mutants like <strong>white</strong> and <strong>apricot</strong> affect the same character (eye pigmentation).</li>
+                    <li>Based on their effect on the same character, they were first considered to be <strong>allelic</strong> (different forms of the same gene).</li>
+                    <li>However, detailed genetic analysis showed that <strong>recombination (crossing over)</strong> could occur between them, demonstrating they are <strong>non-allelic</strong>---meaning they are two separate, but closely linked, genes (pseudoalleles).</li>
+                </ul>
+                <p>A major real-world example of a pseudoallelic gene complex is the <strong>Hox cluster</strong>, a set of genes crucial for regulating body plan development in animals.</p>
+                <p>In summary, pseudoalleles represent a complex genetic state where two functionally related, extremely close genes mimic the behavior of a single, highly mutable gene, with the key difference being the <strong>potential for rare recombination</strong> to occur <em>between</em> them.</p>
+            </div>
+
+            <div id="section-13" class="section">
+                <h2>Summary Table</h2>
+                <table>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Definition/Mechanism</th>
+                        <th>Example</th>
+                        <th>Key Ratio</th>
+                    </tr>
+                    <tr>
+                        <td>Incomplete Dominance</td>
+                        <td>The heterozygote displays a phenotype intermediate to the two homozygous phenotypes (a blend, but not an equal expression). The amount of gene product is typically half the dominant homozygote.</td>
+                        <td>Flower color (Red ˟White Pink); Eggplant color (Purple ˟White Violet); Chicken Feather Color (Black ˟White Gray).</td>
+                        <td>Heterozygote (A<sub>1</sub> A<sub>2</sub>) phenotype is distinguishable and intermediate. <strong>F2 Phenotypic Ratio = 1:2:1</strong> (same as genotypic ratio).</td>
+                    </tr>
+                    <tr>
+                        <td>Codominance</td>
+                        <td>The heterozygote simultaneously and fully expresses the traits of both alleles. Neither allele is dominant; the resulting phenotype is a combination, not a blend.</td>
+                        <td>MN Blood Group in humans. L<sup>M</sup> L<sup>N</sup> individuals produce both M and N antigens. ABO Blood Group I<sup>A</sup> I<sup>B</sup> Type AB).</td>
+                        <td>Both alleles are equally expressed. <strong>F2 Phenotypic Ratio = 1:2:1</strong> (for a cross between two heterozygotes).</td>
+                    </tr>
+                    <tr>
+                        <td>Multiple Alleles</td>
+                        <td>A gene exists in three or more allelic forms within a population. An individual diploid organism still only carries two of these alleles.</td>
+                        <td>Rabbit Coat Color (c<sup>+</sup> > c<sup>ch</sup> > c<sup>h</sup> > c); Human ABO Blood Group (I<sup>A</sup>, I<sup>B</sup>, i).</td>
+                        <td>Hierarchical or combined dominance exists among alleles (e.g., I<sup>A</sup> = I<sup>B</sup> > i). The number of possible genotypes is n(n+1)/2, where n is the number of alleles.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="section-14" class="section">
+                <h2>Summary Table (Continued)</h2>
+                <table>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Definition/Mechanism</th>
+                        <th>Example</th>
+                        <th>Key Information</th>
+                    </tr>
+                    <tr>
+                        <td>Rh Blood Group</td>
+                        <td>Classified by the presence (Rh<sup>+</sup>) or absence (Rh<sup>-</sup>) of the D antigen on red blood cells, determined by the <em>RhD</em> and <em>RhCE</em> genes.</td>
+                        <td>Rh-Positive (Rh <sup>+</sup>/Rh<sup>+</sup>$ or R h<sup>+</sup>/Rh<sup>-</sup>) is dominant over Rh-Negative (Rh <sup>-</sup>/Rh<sup>-</sup>).</td>
+                        <td>Exhibits <strong>Complete Dominance</strong>. Critical for transfusions and preventing <strong>Erythroblastosis fetalis</strong> (Hemolytic Disease of the Newborn) in subsequent pregnancies of Rh<sup>-</sup>mothers with Rh<sup>+</sup> babies.</td>
+                    </tr>
+                    <tr>
+                        <td>Pseudoalleles</td>
+                        <td>Two separate, closely linked genes on the same chromosome that have similar functions and affect the same character, often confusing them with true alleles.</td>
+                        <td><em>Drosophila</em> Eye Color (e.g., <em>white</em> and <em>apricot</em> mutants); Hox Cluster genes.</td>
+                        <td><strong>Non-Allelic</strong> (they are separate genes). The key distinction is that <strong>rare crossing over/recombination <em>can</em> occur</strong> between them, whereas it cannot between true alleles. Originate from gene duplication.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="section-15" class="section">
+                <h2>Test Your Knowledge - All Questions</h2>
+                <form id="quiz-form">
+                    <div class="question-group">
+                        <p><strong>1. What is the expected phenotypic ratio in the F2 generation resulting from a cross between two F1 heterozygotes (Aa ˟Aa) for a character that exhibits incomplete dominance?</strong></p>
+                        <div class="question-option" data-question="1" data-option="a">
+                            <p>a. 1:2:1</p>
+                        </div>
+                        <div class="question-option" data-question="1" data-option="b">
+                            <p>b. 3:1</p>
+                        </div>
+                        <div class="question-option" data-question="1" data-option="c">
+                            <p>c. 9:3:3:1</p>
+                        </div>
+                        <div class="question-option" data-question="1" data-option="d">
+                            <p>d. 1:1</p>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p><strong>2. Which type of allelic interaction is characterized by the heterozygote simultaneously and fully expresses the traits of both alleles, such that neither is dominant over the other?</strong></p>
+                        <div class="question-option" data-question="2" data-option="a">
+                            <p>a. Complete Dominance</p>
+                        </div>
+                        <div class="question-option" data-question="2" data-option="b">
+                            <p>b. Incomplete Dominance</p>
+                        </div>
+                        <div class="question-option" data-question="2" data-option="c">
+                            <p>c. Epistasis</p>
+                        </div>
+                        <div class="question-option" data-question="2" data-option="d">
+                            <p>d. Codominance</p>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p><strong>3. If a gene has 5 different alleles in a diploid organism population (where n=5), how many different genotypes are possible?</strong></p>
+                        <div class="question-option" data-question="3" data-option="a">
+                            <p>a. 25</p>
+                        </div>
+                        <div class="question-option" data-question="3" data-option="b">
+                            <p>b. 10</p>
+                        </div>
+                        <div class="question-option" data-question="3" data-option="c">
+                            <p>c. 15</p>
+                        </div>
+                        <div class="question-option" data-question="3" data-option="d">
+                            <p>d. 30</p>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p><strong>4. In chickens, a cross between a homozygous black chicken and a homozygous white chicken produces F1chickens that are gray. What mode of inheritance does this feather color trait demonstrate?</strong></p>
+                        <div class="question-option" data-question="4" data-option="a">
+                            <p>a. Complete Dominance</p>
+                        </div>
+                        <div class="question-option" data-question="4" data-option="b">
+                            <p>b. Multiple Allelism</p>
+                        </div>
+                        <div class="question-option" data-question="4" data-option="c">
+                            <p>c. Incomplete Dominance</p>
+                        </div>
+                        <div class="question-option" data-question="4" data-option="d">
+                            <p>d. Codominance</p>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p><strong>5. A person with the L<sup>M</sup> L<sup>N</sup> genotype for the MN blood group would have which antigens on their red blood cells?</strong></p>
+                        <div class="question-option" data-question="5" data-option="a">
+                            <p>a. Neither M nor N antigens</p>
+                        </div>
+                        <div class="question-option" data-question="5" data-option="b">
+                            <p>b. Only M antigens</p>
+                        </div>
+                        <div class="question-option" data-question="5" data-option="c">
+                            <p>c. Both M and N antigens</p>
+                        </div>
+                        <div class="question-option" data-question="5" data-option="d">
+                            <p>d. Only N antigens</p>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p><strong>6. How is the dominance relationship among the I<sup>A</sup>, I<sup>B</sup>, and i alleles of the human ABO blood group system best represented?</strong></p>
+                        <div class="question-option" data-question="6" data-option="a">
+                            <p>a. I<sup>A</sup> = I<sup>B</sup> = i</p>
+                        </div>
+                        <div class="question-option" data-question="6" data-option="b">
+                            <p>b. I<sup>A</sup> > I<sup>B</sup> > i</p>
+                        </div>
+                        <div class="question-option" data-question="6" data-option="c">
+                            <p>c. i > I<sup>A</sup> and i > I<sup>B</sup></p>
+                        </div>
+                        <div class="question-option" data-question="6" data-option="d">
+                            <p>d. I<sup>A</sup> > i, I<sup>B</sup> > i, and I<sup>A</sup> = I<sup>B</sup></p>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p><strong>7. What is the key genetic feature that distinguishes pseudoalleles (closely linked genes) from true alleles (forms of the same gene)?</strong></p>
+                        <div class="question-option" data-question="7" data-option="a">
+                            <p>a. They must have arisen from a point mutation.</p>
+                        </div>
+                        <div class="question-option" data-question="7" data-option="b">
+                            <p>b. The genes are located on different chromosomes.</p>
+                        </div>
+                        <div class="question-option" data-question="7" data-option="c">
+                            <p>c. Rare crossing over (recombination) can occur between pseudoalleles.</p>
+                        </div>
+                        <div class="question-option" data-question="7" data-option="d">
+                            <p>d. They affect different characters or traits.</p>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p><strong>8. In the Rh blood group system, the Rh<sup>+</sup> phenotype is dominant over the Rh<sup>-</sup> phenotype. Which genotype is exclusively associated with the Rh<sup>-</sup> (Rh-negative) phenotype?</strong></p>
+                        <div class="question-option" data-question="8" data-option="a">
+                            <p>a. Rh<sup>+</sup> Rh<sup>+</sup></p>
+                        </div>
+                        <div class="question-option" data-question="8" data-option="b">
+                            <p>b. Rh<sup>+</sup> Rh<sup>-</sup></p>
+                        </div>
+                        <div class="question-option" data-question="8" data-option="c">
+                            <p>c. Rh<sup>-</sup> Rh<sup>-</sup></p>
+                        </div>
+                        <div class="question-option" data-question="8" data-option="d">
+                            <p>d. Rh<sup>D</sup> i</p>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p><strong>9. In rabbit coat color genetics, the c<sup>+</sup> allele is designated as the wild-type. In genetics, what is the customary symbol often used to represent wild-type alleles?</strong></p>
+                        <div class="question-option" data-question="9" data-option="a">
+                            <p>a. A lowercase letter without a superscript.</p>
+                        </div>
+                        <div class="question-option" data-question="9" data-option="b">
+                            <p>b. The letter 'w'</p>
+                        </div>
+                        <div class="question-option" data-question="9" data-option="c">
+                            <p>c. An uppercase letter (T)</p>
+                        </div>
+                        <div class="question-option" data-question="9" data-option="d">
+                            <p>d. A superscript plus sign (+)</p>
+                        </div>
+                    </div>
+
+                    <div class="question-group">
+                        <p><strong>10. If a cross between a black chicken (BB) and a white chicken (WW) produces gray F1 chickens (BW), which phenotype would be produced by the homozygous genotype?</strong></p>
+                        <div class="question-option" data-question="10" data-option="a">
+                            <p>a. Gray</p>
+                        </div>
+                        <div class="question-option" data-question="10" data-option="b">
+                            <p>b. Black</p>
+                        </div>
+                        <div class="question-option" data-question="10" data-option="c">
+                            <p>c. White</p>
+                        </div>
+                        <div class="question-option" data-question="10" data-option="d">
+                            <p>d. Black and White Spotted</p>
+                        </div>
+                    </div>
+
+                    <button type="button" class="submit-btn" id="submit-quiz">Submit Quiz</button>
+                </form>
+
+                <div class="quiz-results" id="quiz-results" style="display: none;">
+                    <h3>Quiz Results</h3>
+                    <div class="score-display" id="score-display"></div>
+                    <div id="detailed-results"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button id="prev-btn" class="nav-btn" disabled>Previous</button>
+            <div class="progress" id="progress">1 / 16</div>
+            <button id="next-btn" class="nav-btn">Next</button>
+        </div>
+<footer>
+    <div class="footer-content">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+             alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="footer-text">Email: betabiosciences@gmail.com</p>
+    </div>
+</footer>
+
+    </div>
+
+    <script>
+        // Quiz answers
+        const correctAnswers = {
+            1: "a",
+            2: "d",
+            3: "c",
+            4: "c",
+            5: "c",
+            6: "d",
+            7: "c",
+            8: "c",
+            9: "d",
+            10: "b"
+        };
+
+        // User answers storage
+        let userAnswers = {};
+
+        // Navigation logic
+        const sections = document.querySelectorAll('.section');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progress = document.getElementById('progress');
+        let currentSection = 0;
+
+        // Update navigation buttons and progress
+        function updateNavigation() {
+            prevBtn.disabled = currentSection === 0;
+            nextBtn.disabled = currentSection === sections.length - 1;
+            progress.textContent = `${currentSection + 1} / ${sections.length}`;
+            
+            // Change next button text on last section
+            if (currentSection === sections.length - 1) {
+                nextBtn.textContent = 'Finish';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+        }
+
+        // Show current section
+        function showSection(index) {
+            sections.forEach(section => section.classList.remove('active'));
+            sections[index].classList.add('active');
+            currentSection = index;
+            updateNavigation();
+        }
+
+        // Navigation event listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentSection > 0) {
+                showSection(currentSection - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSection < sections.length - 1) {
+                showSection(currentSection + 1);
+            }
+        });
+
+        // Quiz interaction logic
+        document.querySelectorAll('.question-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.getAttribute('data-question');
+                const selectedOption = this.getAttribute('data-option');
+                
+                // Store user's answer
+                userAnswers[question] = selectedOption;
+                
+                // Remove any previous selections for this question
+                document.querySelectorAll(`.question-option[data-question="${question}"]`).forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Mark this option as selected
+                this.classList.add('selected');
+            });
+        });
+
+        // Submit quiz logic
+        document.getElementById('submit-quiz').addEventListener('click', function() {
+            let score = 0;
+            let detailedResults = '';
+            
+            // Check each question
+            for (let question in correctAnswers) {
+                const userAnswer = userAnswers[question];
+                const correctAnswer = correctAnswers[question];
+                
+                // Update score
+                if (userAnswer === correctAnswer) {
+                    score++;
+                }
+                
+                // Highlight correct and incorrect answers
+                document.querySelectorAll(`.question-option[data-question="${question}"]`).forEach(option => {
+                    const optionValue = option.getAttribute('data-option');
+                    
+                    // Remove any previous styling
+                    option.classList.remove('correct', 'selected');
+                    
+                    // Apply correct styling
+                    if (optionValue === correctAnswer) {
+                        option.classList.add('correct');
+                    }
+                    
+                    // Apply incorrect styling for user's wrong answer
+                    if (userAnswer === optionValue && userAnswer !== correctAnswer) {
+                        option.classList.add('selected');
+                    }
+                });
+                
+                // Build detailed results
+                const questionText = document.querySelector(`.question-group:nth-child(${question}) p`).textContent;
+                const userAnswerText = userAnswer ? 
+                    document.querySelector(`.question-option[data-question="${question}"][data-option="${userAnswer}"] p`).textContent : 
+                    'Not answered';
+                const correctAnswerText = document.querySelector(`.question-option[data-question="${question}"][data-option="${correctAnswer}"] p`).textContent;
+                
+                detailedResults += `
+                    <div style="margin-bottom: 20px; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px;">
+                        <p><strong>Question ${question}:</strong> ${questionText}</p>
+                        <p style="color: ${userAnswer === correctAnswer ? '#00ff00' : '#ff0000'}">
+                            Your answer: ${userAnswerText} ${userAnswer === correctAnswer ? '✓' : '✗'}
+                        </p>
+                        <p style="color: #00ff00">Correct answer: ${correctAnswerText}</p>
+                    </div>
+                `;
+            }
+            
+            // Display results
+            document.getElementById('score-display').textContent = `Your score: ${score} out of ${Object.keys(correctAnswers).length}`;
+            document.getElementById('detailed-results').innerHTML = detailedResults;
+            document.getElementById('quiz-results').style.display = 'block';
+            
+            // Scroll to results
+            document.getElementById('quiz-results').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Initialize
+        updateNavigation();
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
