@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complementation Test</title>
+    <!-- Load Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the app */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Set base theme */
+        .theme-dark {
+            background-color: #111827; /* gray-900 */
+            color: #d1d5db; /* gray-300 */
+        }
+
+        /* Glossy header */
+        header {
+            background-image: linear-gradient(to bottom, #374151, #1f2937); /* gray-700 to gray-800 */
+        }
+        
+        /* Glossy buttons */
+        .glossy-btn {
+            background-image: linear-gradient(to bottom, #22d3ee, #06b6d4); /* cyan-400 to cyan-500 */
+            border: 1px solid #0e7490; /* cyan-700 */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+        }
+        .glossy-btn:hover {
+            background-image: linear-gradient(to bottom, #67e8f9, #22d3ee); /* cyan-300 to cyan-400 */
+        }
+        .glossy-btn:disabled {
+            background-image: linear-gradient(to bottom, #4b5563, #374151); /* gray-600 to gray-700 */
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Content section visibility */
+        .content-section {
+            display: none; /* Hide all sections by default */
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .content-section.active {
+            display: block; /* Show only the active section */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom table styling for the dark theme */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #374151; /* gray-700 */
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+        th {
+            background-color: #1f2937; /* gray-800 */
+            color: #22d3ee; /* cyan-400 */
+        }
+        tbody tr:nth-child(even) {
+            background-color: #1f2937; /* gray-800 */
+        }
+        tbody tr:nth-child(odd) {
+            background-color: #374151; /* gray-700 */
+        }
+
+.image-container {
+    width: 100%;
+    margin: 1.5rem 0;
+    text-align: center;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.image-caption {
+    padding: 10px 15px;
+    background: rgba(15, 23, 42, 0.8);
+    font-size: 0.9rem;
+    color: var(--highlight);
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+        /* Quiz option styling */
+        .quiz-option {
+            background-color: #374151; /* gray-700 */
+            border: 1px solid #4b5563; /* gray-600 */
+            transition: all 0.2s ease;
+        }
+        .quiz-option:hover {
+            background-color: #0e7490; /* cyan-700 */
+            border-color: #06b6d4; /* cyan-500 */
+            color: white;
+        }
+        .quiz-option.correct {
+            background-color: #059669; /* green-600 */
+            border-color: #047857; /* green-700 */
+            color: white;
+            font-weight: bold;
+        }
+        .quiz-option.incorrect {
+            background-color: #dc2626; /* red-600 */
+            border-color: #b91c1c; /* red-700 */
+            color: white;
+            font-weight: bold;
+        }
+        .quiz-option.disabled {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .quiz-feedback {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .quiz-feedback.correct {
+            display: block;
+            background-color: #064e3b; /* green-900 */
+            color: #a7f3d0; /* green-200 */
+            border: 1px solid #059669; /* green-600 */
+        }
+        .quiz-feedback.incorrect {
+            display: block;
+            background-color: #7f1d1d; /* red-900 */
+            color: #fecaca; /* red-200 */
+            border: 1px solid #dc2626; /* red-600 */
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 0rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            line-height: 1.2;
+            margin: 0; 
+        }
+
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+
+    </style>
+</head>
+<body class="theme-dark">
+
+    <div id="app" class="flex flex-col min-h-screen max-w-3xl mx-auto">
+        
+        <!-- Header -->
+        <header class="p-5 rounded-b-xl shadow-2xl text-center sticky top-0 z-10">
+            <h1 class="text-3xl font-bold text-cyan-300">
+                Complementation Test
+            </h1>
+        </header>
+
+        <!-- Content Area -->
+        <!-- Removed pb-24 as the nav is no longer fixed -->
+        <main id="content-container" class="flex-grow p-4 md:p-6 overflow-y-auto">
+            
+            <!-- Section 1: Introduction -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Introduction</h2>
+                <p class="mb-4 text-lg leading-relaxed">The complementation test , or complementation analysis , is an analytical procedure used to determine whether two independent recessive mutations that produce a similar phenotype occur at the same locus (are allelic) or at different loci (are nonallelic) . The original technique was devised by Drosophila geneticist Edward B. Lewis .</p>
+            </section>
+
+            <!-- Section 2: Procedure -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Procedure</h2>
+                <p class="mb-4 text-lg leading-relaxed">The test is carried out by crossing two parents, each homozygous for a different recessive mutation, to produce heterozygous offspring (F1 generation). The phenotype of the F1 offspring is then analyzed.</p>
+                
+                <!-- Outcomes Table -->
+                <h3 class="text-xl font-semibold text-gray-100 mb-3 mt-6">Outcomes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Outcome</th>
+                            <th>Interpretation</th>
+                            <th>Complementation Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Wild-type phenotype</td>
+                            <td>Mutations are in separate genes (nonallelic).</td>
+                            <td>Complementation Occurs</td>
+                        </tr>
+                        <tr>
+                            <td>Mutant phenotype</td>
+                            <td>Mutations affect the same gene (allelic).</td>
+                            <td>Lack of Complementation</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Section 3: Case 1 -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Case 1: Complementation Occurs (Different Loci)</h2>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Parents:</strong> Homozygous mutant for gene A but wild-type for gene B (ab+ a b+) crossed with homozygous mutant for gene B but wild-type for gene A (a+b a+b).</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>F1 Genotype:</strong> ab+ a+b(Heterozygous for both genes).</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Result:</strong> The offspring inherit one mutant allele and one wild-type allele at each locus. The presence of the wild-type allele (b+) from one parent complements the mutation at the A locus (a), and vice versa. This produces the necessary normal products for both genes, resulting in the wild-type phenotype .</p>
+            </section>
+
+            <!-- Section 4: Case 2 -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Case 2: Lack of Complementation (Same Locus/Allelic)</h2>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Parents:</strong> Two mutations (ma and mb) are different mutant alleles of the same gene (Gene M).</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>F1 Genotype:</strong> The offspring are effectively homozygous for the mutant gene M, inheriting two different mutant alleles (e.g., ma/mb).</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Result:</strong> Since the mutations affect the same gene, no normal product of that gene is produced. The mutations fail to complement each other, resulting in the mutant phenotype .</p>
+            </section>
+
+            <!-- Section 5: Complementation Groups -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Complementation Groups</h2>
+                <p class="mb-4 text-lg leading-relaxed">Complementation analysis can be used to screen any number of individual mutations that result in the same phenotype (a heterogeneous trait ).</p>
+                <ul class="list-disc list-inside mb-4 text-lg space-y-2">
+                    <li>All mutations determined to be present in any single gene are said to fall into the same complementation group .</li>
+                    <li>Mutations within the same group will not complement each other.</li>
+                    <li>Mutations in one complementation group will complement mutations in all other groups.</li>
+                </ul>
+                <p class="mb-4 text-lg leading-relaxed">By classifying mutations into these groups, it's possible to predict the total number of genes involved in the determination of that trait.</p>
+            </section>
+
+            <!-- Section 6: Summary Comparison -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Summary</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg border border-red-700">
+                        <h3 class="text-xl font-semibold text-red-400 mb-3">If two mutations failed to complement</h3>
+                        <ul class="list-disc list-inside space-y-2 text-lg">
+                            <li>They are alleles of the same gene</li>
+                            <li>They are allelic to each other</li>
+                            <li>They belong to the same complementation group</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg shadow-lg border border-green-700">
+                        <h3 class="text-xl font-semibold text-green-400 mb-3">If two mutations complements each other</h3>
+                        <ul class="list-disc list-inside space-y-2 text-lg">
+                            <li>They are alleles of different genes</li>
+                            <li>They are not allele to each other</li>
+                            <li>They belong to different complementation group</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 7: Mutations at Different Loci (Detail) -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">1. Mutations at Different Loci (Nonallelic)</h2>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Genotype:</strong> The parents are aa b+b+ and a+a+ bb.</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Offspring Genotype:</strong> The offspring are aa+ bb+. This means they have one wild-type allele ( a+ ) and one mutant allele ( a ) for the first gene, and one wild-type allele ( b+ ) and one mutant allele ( b ) for the second gene.</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Phenotype:</strong> The wild-type alleles "complement" the mutant alleles, meaning the offspring has at least one functional copy of each gene.</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Result:</strong> The offspring exhibits the wild-type phenotype . Complementation has occurred.</p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Complimentation%20test%20fig1.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+            </section>
+
+            <!-- Section 8: Mutations at Same Locus (Detail) -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">2. Mutations at the Same Locus (Allelic)</h2>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Genotype:</strong> Both mutations affect the same gene.</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Parents:</strong> The parent on the left is homozygous for the recessive mutant allele a (aa ). The parent on the right is homozygous for a different recessive mutant allele b(bb).</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Crucially:</strong> In this scenario, a and b represent two different mutations within the same gene .</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Offspring Genotype:</strong> The offspring inherits one mutant chromosome from each parent, resulting in the heterozygous genotype ab. Since both alleles are mutant forms of the same gene, the organism lacks a functional copy of that essential gene, the necessary protein or function cannot be produced.</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Phenotype:</strong> The two mutant alleles do not "complement" each other.</p>
+                <p class="mb-4 text-lg leading-relaxed"><strong>Result:</strong> The offspring exhibits the mutant phenotype . This result indicates the mutations are allelic (part of the same complementation group). Lack of complementation has occurred.</p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Complimentation%20test%20fig2.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+            </section>
+
+            <!-- Section 9: Example 1 - Drosophila Wings -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Example 1: Wingless Mutation in Drosophila</h2>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Complimentation%20test%20fig3.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-100 mb-2">Case 1. All offspring develop normal wings</h3>
+                        <p class="mb-4 text-lg leading-relaxed"><strong>Interpretation:</strong> The two recessive mutations are in separate genes and are not alleles of one another. Following the cross, all F1 flies are heterozygous for both genes. Since each mutation is in a separate gene and each F1 fly is heterozygous at both loci, the normal products of both genes are produced (by the one normal copy of each gene), and wings develop. Under such circumstances, the genes complement one another in restoration of the wild-type phenotype, and complementation is said to occur because the two mutations are in different genes.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-100 mb-2">Case 2. All offspring fail to develop wings.</h3>
+                        <p class="mb-4 text-lg leading-relaxed"><strong>Interpretation:</strong> The two mutations affect the same gene and are alleles of one another. Complementation does not occur. Since the two mutations affect the same gene, the F1 flies are homozygous for the two mutant alleles (the ma allele and the mb allele). No normal product of the gene is produced, and in the absence of this essential product, wings do not form.</p>
+                    </div>
+                    <p class="text-md italic text-gray-400">Complementation analysis of alternative outcomes of two wingless mutations in Drosophila (ma and mb). In case 1, the mutations are not alleles of the same gene, while in case 2, the mutations are alleles of the same gene.</p>
+                </div>
+            </section>
+
+            <!-- Section 10: Example 2 - Drosophila Eyes -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Example 2: Eye Colour mutants in Drosophila</h2>
+                <p class="mb-4 text-lg leading-relaxed">In fruit flies, white is an X-linked mutation that produces white eyes instead of the red eyes found in wild type flies. Apricot is an X-linked recessive mutation that produces light orange-coloured eyes. When the complementation test is applied to white and apricot mutations, all of the heterozygous offspring have light coloured eyes, demonstrating that white and apricot are produced by mutations that occur at the same locus and are allelic (occur at the same locus) . If they were non-allelic independent assorting genes all progeny would have been red eyed due to complementation.</p>
+                <p class="mb-4 text-lg leading-relaxed">If an apricot-eyed female is mated with a white-eyed male, the female offspring are all heterozygous and have mutant light-coloured eyes. Thus, apricot and white are functional alleles, they do not complement. Similarly, buff, cherry and eosin eye colour also not showing complementation. We can conclude that white, apricot, buff, cherry and eosin belong to same allelic/complementation group.</p>
+                <p class="mb-4 text-lg leading-relaxed">Only Prune and Ruby complement with white eye mutant which means, prune and Ruby must be at different locus (non-allelic) to white. Prune and Eosin also do not complement with each other means they both are belonging to the same. Thus, there are two complementation groups.</p>
+                
+                <!-- Eye Color Table -->
+                <div class="overflow-x-auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>W</th>
+                                <th>P</th>
+                                <th>A</th>
+                                <th>B</th>
+                                <th>C</th>
+                                <th>E</th>
+                                <th>R</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>White (W)</strong></td>
+                                <td>-</td>
+                                <td>+</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>+</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Prune (P)</strong></td>
+                                <td></td>
+                                <td>-</td>
+                                <td>+</td>
+                                <td>+</td>
+                                <td>+</td>
+                                <td>-</td>
+                                <td>+</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Apricot (A)</strong></td>
+                                <td></td>
+                                <td></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>+</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Buff (B)</strong></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>+</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cherry(C)</strong></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>+</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Eosin (E)</strong></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>-</td>
+                                <td>+</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ruby(R)</strong></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Section 11: Cis and Trans -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Cis and Trans Arrangement</h2>
+                <p class="mb-4 text-lg leading-relaxed">The complementation test is specifically a test for function in the trans arrangement of two mutations.</p>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-100 mb-2">Trans Arrangement (Complementation Test):</h3>
+                        <ul class="list-disc list-inside space-y-2 text-lg">
+                            <li>The two mutant alleles are on opposite homologous chromosomes .</li>
+                            <li>If a wild-type phenotype is observed, the mutations are complementing (nonallelic). If a mutant phenotype is observed, they are failing to complement (allelic).</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h3 class="text-xl font-semibold text-gray-100 mb-2">Cis Arrangement (Control):</h3>
+                        <ul class="list-disc list-inside space-y-2 text-lg">
+                            <li>The two mutant alleles are on the same homologous chromosome</li>
+                            <li>This arrangement always places one complete set of wild-type alleles on the second chromosome. Assuming the mutations are fully recessive, this configuration should always produce a wild-type phenotype , regardless of whether the mutations are in the same or different genes. The cis arrangement is typically used as a control to confirm the mutations are recessive and that a single wild-type copy is sufficient for normal function.</li>
+                        </ul>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Complimentation%20test%20fig4.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Complimentation%20test%20fig5.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 12: Quiz -->
+            <section class="content-section">
+                <h2 class="text-2xl font-semibold text-cyan-400 mb-4 border-b border-cyan-700 pb-2">Test Your knowledge</h2>
+                
+                <!-- Question 1 -->
+                <div class="quiz-question mb-6 p-4 bg-gray-800 rounded-lg shadow-inner">
+                    <p class="text-lg font-medium mb-4">1. The complementation test, or complementation analysis, is an analytical procedure used to determine which of the following regarding two independent recessive mutations that produce a similar phenotype?</p>
+                    <div class="space-y-2">
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">If they are sex-linked or autosomal.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="true">If they occur at the same locus (allelic) or at different loci (nonallelic).</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">The precise DNA sequence of the mutated genes.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">The dominance relationship between the two mutant alleles.</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+                
+                <!-- Question 2 -->
+                <div class="quiz-question mb-6 p-4 bg-gray-800 rounded-lg shadow-inner">
+                    <p class="text-lg font-medium mb-4">2. In a complementation test, if the offspring resulting from the cross of two homozygous recessive mutant parents exhibits the wild-type phenotype , what is the correct interpretation?</p>
+                    <div class="space-y-2">
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="true">The mutations are in separate genes (nonallelic), and complementation has occurred.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">The mutations affect the same gene (allelic), and lack of complementation has occurred.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">The mutations affect the same gene (allelic), and complementation has occurred.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">The mutations are in separate genes (nonallelic), and lack of complementation has occurred.</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+                
+                <!-- Question 3 -->
+                <div class="quiz-question mb-6 p-4 bg-gray-800 rounded-lg shadow-inner">
+                    <p class="text-lg font-medium mb-4">3. If F1 offspring of a complementation cross exhibits the mutant phenotype , what does this outcome signify?</p>
+                    <div class="space-y-2">
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">The two parents carried mutations that complement each other.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">The mutations belong to different complementation groups.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="true">The mutations are allelic, meaning they affect the same gene.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">The mutations are nonallelic, meaning they are in separate genes.</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+                
+                <!-- Question 4 -->
+                <div class="quiz-question mb-6 p-4 bg-gray-800 rounded-lg shadow-inner">
+                    <p class="text-lg font-medium mb-4">4. What criterion is used to place different individual mutations into the same complementation group ?</p>
+                    <div class="space-y-2">
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="true">They all fail to complement each other, indicating they are present in the same single gene.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">They all exhibit the exact same mutant phenotype.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">They all map to the same chromosome.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">They all complement each other, indicating they are in different genes.</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+                
+                <!-- Question 5 -->
+                <div class="quiz-question mb-6 p-4 bg-gray-800 rounded-lg shadow-inner">
+                    <p class="text-lg font-medium mb-4">5. According to the principles of complementation analysis, if two mutations belong to the same complementation group, what is the expected outcome when they are crossed?</p>
+                    <div class="space-y-2">
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">They must be in the Cis arrangement.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">They will complement each other.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="false">The offspring will be wild-type, and they are nonallelic.</button>
+                        <button class="quiz-option block w-full p-3 text-left rounded-lg" data-correct="true">The offspring will be mutant, and they are allelic.</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+            </section>
+            
+        </main>
+
+        <!-- Footer Navigation -->
+        <!-- Removed fixed positioning and glass-nav style. Added margin-top and a border. -->
+        <nav class="w-full max-w-3xl mx-auto p-4 flex justify-between items-center mt-8 border-t border-gray-700">
+            <button id="prev-btn" class="glossy-btn text-white font-bold py-2 px-5 rounded-lg transition-all flex items-center justify-center">
+                <!-- Previous Arrow SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Prev
+            </button>
+            <span id="section-counter" class="text-cyan-200 font-medium text-sm">
+                1 / 12
+            </span>
+            <button id="next-btn" class="glossy-btn text-white font-bold py-2 px-5 rounded-lg transition-all flex items-center justify-center">
+                Next
+                <!-- Next Arrow SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </nav>
+<footer>
+    <div class="footer-content">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+             alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="footer-text">Email: betabiosciences@gmail.com</p>
+        <p class="footer-text">Contact: +91 97 47 53 35 97</p>
+    </div>
+</footer>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentSection = 0;
+            const sections = document.querySelectorAll('.content-section');
+            const totalSections = sections.length;
+            
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const counterEl = document.getElementById('section-counter');
+            const contentContainer = document.getElementById('content-container');
+            const appContainer = document.getElementById('app');
+
+            function showSection(index) {
+                // Hide all sections
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Show the target section
+                if (sections[index]) {
+                    sections[index].classList.add('active');
+                }
+                
+                // Update state
+                currentSection = index;
+                
+                // Update navigation
+                updateNav();
+                
+                // Scroll to top of content area
+                // We scroll the main container, not the window
+                contentContainer.scrollTop = 0; 
+                // As a fallback for layout, scroll window top too
+                window.scrollTo(0, 0);
+            }
+
+            function updateNav() {
+                // Update counter
+                counterEl.textContent = `${currentSection + 1} / ${totalSections}`;
+                
+                // Update button states
+                prevBtn.disabled = currentSection === 0;
+                nextBtn.disabled = currentSection === totalSections - 1;
+            }
+
+            // Navigation event listeners
+            prevBtn.addEventListener('click', () => {
+                if (currentSection > 0) {
+                    showSection(currentSection - 1);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentSection < totalSections - 1) {
+                    showSection(currentSection + 1);
+                }
+            });
+
+            // Quiz logic
+            const quizOptions = document.querySelectorAll('.quiz-option');
+            
+            quizOptions.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    const selectedOption = e.currentTarget;
+                    const question = selectedOption.closest('.quiz-question');
+                    const allOptions = question.querySelectorAll('.quiz-option');
+                    const feedbackEl = question.querySelector('.quiz-feedback');
+                    const isCorrect = selectedOption.dataset.correct === 'true';
+
+                    // Disable all options for this question
+                    allOptions.forEach(opt => {
+                        opt.classList.add('disabled');
+                        // Show the correct answer
+                        if (opt.dataset.correct === 'true') {
+                            opt.classList.add('correct');
+                        }
+                    });
+
+                    // Mark selected option
+                    if (isCorrect) {
+                        selectedOption.classList.add('correct');
+                        feedbackEl.textContent = "Correct!";
+                        feedbackEl.classList.add('correct');
+                    } else {
+                        selectedOption.classList.add('incorrect');
+                        feedbackEl.textContent = "Incorrect. The correct answer is highlighted.";
+                        feedbackEl.classList.add('incorrect');
+                    }
+                });
+            });
+
+            // Initial setup
+            showSection(0);
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
+
+
