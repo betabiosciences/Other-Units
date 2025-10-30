@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABO Blood Group Genetics</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --text: #ecf0f1;
+            --background: #1a1a2e;
+            --card-bg: #16213e;
+            --highlight: #0f3460;
+            --gloss: rgba(255, 255, 255, 0.1);
+            --correct: #2ecc71;
+            --incorrect: #e74c3c;
+            --selected: #3498db;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--highlight));
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .section {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        h2 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            color: var(--accent);
+            margin: 15px 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        p, li {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        th {
+            background: var(--highlight);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .progress-dots {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .dot.active {
+            background: var(--secondary);
+            transform: scale(1.2);
+        }
+        
+        .glossy-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--gloss), transparent);
+            border-radius: 15px 15px 0 0;
+            pointer-events: none;
+        }
+        
+        /* Quiz Styles */
+        .quiz-container {
+            margin-top: 20px;
+        }
+        
+        .quiz-question {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .quiz-question p {
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .quiz-option {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .quiz-option.selected {
+            border-color: var(--selected);
+            background: rgba(52, 152, 219, 0.2);
+        }
+        
+        .quiz-option.correct {
+            background-color: rgba(46, 204, 113, 0.3);
+            border-color: var(--correct);
+        }
+        
+        .quiz-option.incorrect {
+            background-color: rgba(231, 76, 60, 0.3);
+            border-color: var(--incorrect);
+        }
+        
+        .quiz-feedback {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .quiz-feedback.correct {
+            background-color: rgba(46, 204, 113, 0.2);
+            border-left: 4px solid var(--correct);
+            display: block;
+        }
+        
+        .quiz-feedback.incorrect {
+            background-color: rgba(231, 76, 60, 0.2);
+            border-left: 4px solid var(--incorrect);
+            display: block;
+        }
+        
+        .quiz-results {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            display: none;
+        }
+        
+        .quiz-results h3 {
+            color: var(--secondary);
+            margin-bottom: 15px;
+        }
+        
+        .quiz-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            color: var(--secondary);
+        }
+        
+        .restart-quiz {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            margin: 0 auto;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                min-width: 100px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+            
+            button {
+                padding: 8px 12px;
+                min-width: 90px;
+                font-size: 0.85rem;
+            }
+        }
+
+        .image-container {
+            width: 100%;
+            margin: 1.5rem 0;
+            text-align: center;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .image-caption {
+            padding: 10px 15px;
+            background: rgba(15, 23, 42, 0.8);
+            font-size: 0.9rem;
+            color: var(--highlight);
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, var(--primary), var(--highlight));
+            padding: 25px 20px;
+            margin-top: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--secondary), var(--accent));
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-logo {
+            width: 60px;
+            height: auto;
+            filter: brightness(0) invert(1);
+            opacity: 0.9;
+        }
+        
+        .footer-text {
+            color: var(--text);
+            font-size: 1rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .footer-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            color: var(--secondary);
+        }
+        
+        @media (max-width: 768px) {
+            .footer {
+                padding: 20px 15px;
+            }
+            
+            .footer-logo {
+                width: 150px;
+            }
+            
+            .footer-text {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .footer {
+                padding: 15px 10px;
+            }
+            
+            .footer-logo {
+                width: 130px;
+            }
+            
+            .footer-text {
+                font-size: 0.85rem;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+        }
+
+        /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>THE ABO BLOOD GROUP - THE GENETICS BEHIND IT</h1>
+        </header>
+        
+        <div class="progress-container">
+            <div class="progress-dots" id="progressDots"></div>
+        </div>
+        
+        <!-- Introduction Section -->
+        <section class="section active" id="section1">
+            <div class="glossy-overlay"></div>
+            <h2>Introduction</h2>
+            <p>The <strong>ABO blood group system</strong> is arguably the most crucial classification system for human blood, first discovered by Austrian physician Karl Landsteiner in 1900. Its significance lies in its direct role in safe <strong>blood transfusions</strong>, as mismatches can trigger life-threatening immune reactions. The classification into four main types—<strong>A, B, AB, and O</strong>—is based on the presence or absence of specific <strong>antigens</strong> (A and B) on the surface of red blood cells (RBCs) and the corresponding natural antibodies in the plasma.</p>
+            
+            <div class="navigation">
+                <button disabled id="prevBtn1">Previous</button>
+                <button id="nextBtn1">Next</button>
+            </div>
+        </section>
+        
+        <!-- Genetic Basis Section -->
+        <section class="section" id="section2">
+            <div class="glossy-overlay"></div>
+            <h2>The Genetic Basis</h2>
+            <p>The ABO blood type is determined by a single gene, the <strong>ABO gene</strong>, located on <strong>chromosome 9</strong>. This genetic locus exhibits a classical example of <strong>multiple alleles</strong> and <strong>codominance</strong>, key concepts in genetics.</p>
+            
+            <h3>Alleles</h3>
+            <p>There are three main alternative forms (alleles) of the gene: I<sup>A</sup>, I<sup>B</sup>, and i (sometimes denoted I<sup>O</sup>).</p>
+            
+            <h3>Gene Function</h3>
+            <p>The I<sup>A</sup> and I<sup>B</sup> alleles encode functional <strong>glycosyltransferase enzymes</strong>. These enzymes add a specific sugar molecule to a precursor molecule (the <strong>H antigen</strong>) already present on the red cell surface:</p>
+            <ul>
+                <li>The I<sup>A</sup> allele produces the A transferase, which creates the <strong>A antigen</strong>.</li>
+                <li>The I<sup>B</sup> allele produces the B transferase, which creates the <strong>B antigen</strong>.</li>
+            </ul>
+            
+            <h3>Recessiveness</h3>
+            <p>The i <strong>(or I<sup>O</sup>) allele</strong> is recessive; it results from a small deletion in the gene that produces a non-functional enzyme. Consequently, it leaves the H antigen unmodified, resulting in the <strong>O blood type</strong> (lacking both A and B antigens).</p>
+            
+            <h3>Dominance and Codominance</h3>
+            <ul>
+                <li>I<sup>A</sup> and I<sup>B</sup> are <strong>dominant</strong> over I<sup>O</sup>. Therefore, genotypes I<sup>A</sup> I<sup>A</sup> or I<sup>A</sup> I<sup>O</sup> result in type A blood, and I<sup>B</sup> I<sup>B</sup> or I<sup>B</sup> I<sup>O</sup> result in type B blood.</li>
+                <li>I<sup>A</sup> and I<sup>B</sup> are <strong>codominant</strong> with each other. A person inheriting both (I<sup>A</sup> I<sup>B</sup>) expresses both transferases, resulting in red cells with both A and B antigens, classified as <strong>type AB blood</strong>.</li>
+            </ul>
+            
+            <p>Understanding these genetic principles—multiple alleles, dominance, and codominance—is essential for predicting inheritance patterns, ensuring transfusion safety, and exploring the system's evolutionary and clinical significance.</p>
+            
+            <div class="navigation">
+                <button id="prevBtn2">Previous</button>
+                <button id="nextBtn2">Next</button>
+            </div>
+        </section>
+        
+        <!-- Multiple Allelism Section -->
+        <section class="section" id="section3">
+            <div class="glossy-overlay"></div>
+            <h2>Multiple Allelism</h2>
+            <p>Another multiple-allele system is at the locus for the ABO blood group. This locus determines ABO blood type and, like the MN locus, encodes antigens on red blood cells. The three common alleles for the ABO blood group locus are: I<sup>A</sup>, which encodes the A antigen; I<sup>B</sup>, which encodes the B antigen; and i, which encodes no antigen (O). We can represent the dominance relations among the ABO alleles as follows: I<sup>A</sup> > i, I<sup>B</sup> > i, I<sup>A</sup> = I<sup>B</sup>. Both the I<sup>A</sup> and the I<sup>B</sup> alleles are dominant over i and are codominant with each other; the AB phenotype is due to the presence of an I<sup>A</sup> allele and an I<sup>B</sup> allele, which results in the production of A and B antigens on red blood cells. A person with genotype ii produces neither antigen and has blood type O.</p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/ABO%20blood%20group%20fig1.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+            
+            <p>Antibodies are produced against any foreign antigens. For instance, a person having blood-type A produces anti-B antibodies, because the B antigen is foreign. A person having blood-type B produces anti-A antibodies, and someone having blood-type AB produces neither anti A nor anti-B antibodies, because neither A nor B antigen is foreign. A person having blood-type O possesses no A or B antigens; consequently, that person produces both anti-A antibodies and anti-B antibodies. The presence of antibodies against foreign ABO antigens means that successful blood transfusions are possible only between persons with certain compatible blood types.</p>
+            
+            <div class="navigation">
+                <button id="prevBtn3">Previous</button>
+                <button id="nextBtn3">Next</button>
+            </div>
+        </section>
+        
+        <!-- Terminal Sugar Section -->
+        <section class="section" id="section4">
+            <div class="glossy-overlay"></div>
+            <h2>Terminal Sugar that Determines ABO Blood Group</h2>
+            <p>The ABO blood type is determined by the terminal sugars on glycoproteins on red blood cells: <strong>type A</strong> has <strong>N-acetylgalactosamine</strong>, <strong>type B</strong> has <strong>galactose</strong>, and <strong>type O</strong> has no additional terminal sugar beyond the basic precursor structure. Individuals with type <strong>AB</strong> blood have <strong>both N-acetylgalactosamine and galactose</strong> on their cells. The "O" blood type results from a lack of the enzymes that add the A or B sugars, while the H antigen is the precursor that both A and B antigens are built upon.</p>
+            
+            <table>
+                <tr>
+                    <th>Blood Type</th>
+                    <th>Terminal Sugar</th>
+                </tr>
+                <tr>
+                    <td>Type A</td>
+                    <td>The terminal sugar is N-acetylgalactosamine.</td>
+                </tr>
+                <tr>
+                    <td>Type B</td>
+                    <td>The terminal sugar is galactose.</td>
+                </tr>
+                <tr>
+                    <td>Type O</td>
+                    <td>There is no additional terminal sugar added to the H antigen precursor.</td>
+                </tr>
+                <tr>
+                    <td>Type AB</td>
+                    <td>Both N-acetylgalactosamine and galactose are present as terminal sugars on different oligosaccharide chains.</td>
+                </tr>
+            </table>
+            
+            <div class="navigation">
+                <button id="prevBtn4">Previous</button>
+                <button id="nextBtn4">Next</button>
+            </div>
+        </section>
+        
+        <!-- How It Works Section -->
+        <section class="section" id="section5">
+            <div class="glossy-overlay"></div>
+            <h2>How It Works</h2>
+            <p><strong>Precursor:</strong> All ABO antigens are built on a common precursor structure called the H antigen, which is formed by adding a fucose sugar to the end of an oligosaccharide chain.</p>
+            
+            <p><strong>Enzymes:</strong> The ABO blood group is determined by genes that code for enzymes called glycosyltransferases.</p>
+            
+            <p><strong>Type A:</strong> The A gene produces an enzyme that adds N-acetylgalactosamine to the H antigen precursor.</p>
+            
+            <p><strong>Type B:</strong> The B gene produces an enzyme that adds galactose to the H antigen precursor.</p>
+            
+            <p><strong>Type O:</strong> Individuals with type O blood have two non-functional alleles, so they don't produce either the A or B enzyme. This means the H antigen is the final form on their red blood cells, as there is no enzyme to modify it.</p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/ABO%20blood%20group%20fig2.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/ABO%20blood%20group%20fig3.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+            
+            <div class="navigation">
+                <button id="prevBtn5">Previous</button>
+                <button id="nextBtn5">Next</button>
+            </div>
+        </section>
+        
+        <!-- Bombay Phenotype Section -->
+        <section class="section" id="section6">
+            <div class="glossy-overlay"></div>
+            <h2>The Bombay Phenotype (hh Blood Group) - Recessive Epistasis</h2>
+            <p><strong>Recessive epistasis</strong> is a type of gene interaction where the <strong>homozygous recessive genotype</strong> at one gene locus (<strong>the epistatic gene</strong>) masks or suppresses the expression of alleles (both dominant and recessive) at a second, different gene locus (<strong>the hypostatic gene</strong>).</p>
+            
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Epistatic Gene</td>
+                    <td>The gene that does the <strong>masking</strong>. The masking effect is only seen when this gene is in the <strong>homozygous recessive</strong> state (e.g., aa).</td>
+                </tr>
+                <tr>
+                    <td>Hypostatic Gene</td>
+                    <td>The gene that is <strong>masked</strong> (hidden) by the epistatic gene. The alleles of this gene (e.g., B and b) will only be expressed if the epistatic gene has at least one dominant allele (e.g., A_).</td>
+                </tr>
+                <tr>
+                    <td>F2 Phenotypic Ratio</td>
+                    <td><strong>9:3:4</strong> (instead of 9:3:3:1). The two classes that include the homozygous recessive epistatic genotype are combined, resulting in the "4" portion of the ratio.</td>
+                </tr>
+            </table>
+            
+            <p>The <strong>Bombay phenotype</strong> (or <strong>hh blood group</strong>, also known as <strong>Oh</strong>) is an extremely <strong>rare blood type</strong> first discovered in 1952 in Bombay (now Mumbai), India, by Dr. Y.M. Bhende.</p>
+            
+            <h3>Key Characteristics and Genetics</h3>
+            <ul>
+                <li><strong>Antigen Absence:</strong> Individuals with this phenotype <strong>lack the H antigen</strong> on their red blood cells (RBCs) and in their secretions.</li>
+                <li><strong>ABO Group Inexpression:</strong> The H antigen is the <strong>precursor</strong> molecule required to form the A and B antigens of the ABO blood group system. Since the H antigen is absent, the A and B antigens also <strong>cannot be formed or expressed</strong>, regardless of the individual's ABO genotype.</li>
+                <li><strong>Antibodies Present:</strong> Their serum contains naturally occurring <strong>anti-A, anti-B, and a powerful anti-H antibody</strong>. This anti-H is what distinguishes it from the common O blood type.</li>
+                <li><strong>Genotype:</strong> The condition is caused by inheriting <strong>two recessive alleles (hh)</strong> of the <em>FUT1</em> gene, which codes for the enzyme that produces the H antigen. This is an example of <strong>epistasis</strong>, where one gene (<em>FUT1</em>) controls the expression of another (<em>ABO</em>).</li>
+                <li><strong>Rarity:</strong> Its global prevalence is about 1 in a million, but it is higher in certain communities, particularly in India (up to 1 in 10,000 in Mumbai), often due to <strong>consanguineous marriages</strong>.</li>
+            </ul>
+            
+            <h3>Clinical Significance and Transfusion Challenge</h3>
+            <ul>
+                <li><strong>Transfusion Restriction:</strong> This is the most critical aspect. Bombay phenotype individuals can <strong>only receive blood from another person with the Bombay phenotype</strong> (Oh).</li>
+                <li><strong>Fatal Reaction Risk:</strong> If they receive blood from any other ABO type (A, B, AB, or even normal O, which has the H antigen), their strong <strong>anti-H antibody</strong> will react, causing a <strong>severe and potentially fatal acute hemolytic transfusion reaction</strong>.</li>
+                <li><strong>"Universal Donor" Paradox:</strong> While they can <strong>donate</strong> to any recipient in the ABO system (because their blood lacks all A, B, and H antigens), they are <strong>not universal recipients</strong>.</li>
+                <li><strong>Misdiagnosis:</strong> The phenotype is often misidentified as <strong>Type O</strong> in routine forward blood typing because their RBCs do not react to anti-A or anti-B. The difference is only revealed during reverse grouping or anti-H testing, which is crucial for safe transfusion.</li>
+            </ul>
+            
+            <div class="navigation">
+                <button id="prevBtn6">Previous</button>
+                <button id="nextBtn6">Next</button>
+            </div>
+        </section>
+        
+        <!-- Genetics of the Broader ABO System Section -->
+        <section class="section" id="section7">
+            <div class="glossy-overlay"></div>
+            <h2>Genetics of the Broader ABO System</h2>
+            <p>The Bombay phenotype is a special case of a genetic concept called <strong>epistasis</strong> within the ABO blood group system.</p>
+            
+            <h3>1. Multiple Alleles and Codominance</h3>
+            <ul>
+                <li><strong>Gene Locus:</strong> The ABO blood group is controlled by a single gene located on <strong>Chromosome 9</strong>.</li>
+                <li><strong>Multiple Alleles:</strong> There are three common alleles for this gene: <strong>I<sup>A</sup>, I<sup>B</sup>, and i</strong> (often written as I<sup>O</sup>).</li>
+                <li><strong>Dominance Relationships:</strong>
+                    <ul>
+                        <li><strong>I<sup>A</sup> and I<sup>B</sup> are Codominant</strong> to each other. If both are present (genotype <strong>I<sup>A</sup> I<sup>B</sup></strong>), both A and B antigens are expressed, resulting in <strong>Type AB</strong> blood.</li>
+                        <li><strong>I<sup>A</sup> and I<sup>B</sup> are Dominant</strong> over the <strong>i</strong> allele, which is <strong>Recessive</strong>. The i allele does not produce any functional antigen.</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <h3>2. The Role of the H Antigen and Epistasis</h3>
+            <ul>
+                <li><strong>The <em>FUT1</em> Gene:</strong> The H antigen, which the Bombay phenotype lacks, is produced by a separate gene called <strong><em>FUT1</em></strong>, located on <strong>Chromosome 19</strong>.</li>
+                <li><strong>Precursor Molecule:</strong> The H antigen is a <strong>precursor</strong> molecule. The enzymes produced by the I<sup>A</sup> and I<sup>B</sup> alleles of the ABO gene must attach to this H antigen to create the final A or B antigens, respectively.</li>
+                <li><strong>Epistasis in Bombay Phenotype:</strong> The Bombay phenotype is an example of <strong>recessive epistasis</strong>.
+                    <ul>
+                        <li>The genotype is <strong>hh</strong> (recessive at the <em>FUT1</em> locus), meaning no H antigen is produced.</li>
+                        <li>Even if the person inherits I<sup>A</sup> or I<sup>B</sup> alleles (e.g., a genotype of I<sup>A</sup> I<sup>B</sup> hh), the A and B enzymes have no H precursor to modify.</li>
+                        <li>Therefore, the expression of the ABO genes is <strong>masked</strong> by the hh genotype, and the blood type is functionally <strong>O</strong> (specifically Oh).</li>
+                    </ul>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/ABO%20blood%20group%20fig4.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                </li>
+            </ul>
+            
+            <table>
+                <tr>
+                    <th>Genotype</th>
+                    <th>H present</th>
+                    <th>ABO phenotype</th>
+                </tr>
+                <tr>
+                    <td>H_ I<sup>A</sup>I<sup>A</sup>, H_ I<sup>A</sup>i</td>
+                    <td>Yes</td>
+                    <td>A</td>
+                </tr>
+                <tr>
+                    <td>H_ I<sup>B</sup>I<sup>B</sup>, H_ I<sup>B</sup>i</td>
+                    <td>Yes</td>
+                    <td>B</td>
+                </tr>
+                <tr>
+                    <td>H_ I<sup>A</sup>I<sup>B</sup></td>
+                    <td>Yes</td>
+                    <td>AB</td>
+                </tr>
+                <tr>
+                    <td>H_ ii</td>
+                    <td>Yes</td>
+                    <td>O</td>
+                </tr>
+                <tr>
+                    <td>hh I<sup>A</sup>I<sup>A</sup>, hh I<sup>A</sup>i, hh I<sup>B</sup>I<sup>B</sup>, hh I<sup>B</sup>i, hh I<sup>A</sup>I<sup>B</sup>, and hh ii</td>
+                    <td>No</td>
+                    <td>O</td>
+                </tr>
+            </table>
+            
+            <p>In this example, the alleles at the ABO locus are hypostatic to the recessive h allele.</p>
+            
+            <p>The Bombay phenotype provides us with a good opportunity for considering how epistasis often arises when genes affect a series of steps in a biochemical pathway. The ABO antigens are produced in a multistep biochemical pathway , which depends on enzymes that make H and on other enzymes that convert H into the A or B anti gen. Note that blood-type O may arise in one of two ways: (1) from failure to add a terminal sugar to compound H (genotype H_ ii) or (2) from failure to produce compound H (genotype hh_). Many cases of epistasis arise in this way. A gene (such as h) that has an effect on an early step in a biochemical pathway will be epistatic to genes (such as I<sup>A</sup> and I<sup>B</sup>) that affect subsequent steps, because the effects of the genes in a later step depend on the product of the earlier reaction.</p>
+            
+            <div class="navigation">
+                <button id="prevBtn7">Previous</button>
+                <button id="nextBtn7">Next</button>
+            </div>
+        </section>
+        
+        <!-- Codominance Section -->
+        <section class="section" id="section8">
+            <div class="glossy-overlay"></div>
+            <h2>Codominance in the ABO Blood Group System</h2>
+            <p>The ABO blood group system is a classic and medically important example of <strong>codominance</strong> in human genetics, which occurs specifically in individuals with <strong>Type AB blood</strong>.</p>
+            
+            <p>Codominance is a relationship between two alleles of a single gene where <strong>neither allele is dominant or recessive</strong> to the other. Consequently, when both alleles are present in the genotype, <strong>both traits are fully and equally expressed</strong> in the phenotype.</p>
+            
+            <h3>The ABO Example</h3>
+            <p>The ABO blood type is governed by a single gene with three common alleles: I<sup>A</sup>, I<sup>B</sup>, and i (sometimes written I<sup>O</sup>). The codominance occurs between the I<sup>A</sup> and I<sup>B</sup> alleles:</p>
+            
+            <table>
+                <tr>
+                    <th>Allele</th>
+                    <th>Encoded Product</th>
+                    <th>Dominance Status</th>
+                </tr>
+                <tr>
+                    <td>I<sup>A</sup></td>
+                    <td>alpha-N-acetylgalactosaminyl transferase (A antigen)</td>
+                    <td>Codominant with I<sup>B</sup>; Dominant to i</td>
+                </tr>
+                <tr>
+                    <td>I<sup>B</sup></td>
+                    <td>alpha-D-galactosyl transferase (B antigen)</td>
+                    <td>Codominant with I<sup>A</sup>; Dominant to i</td>
+                </tr>
+                <tr>
+                    <td>i</td>
+                    <td>Non-functional enzyme (No antigen produced)</td>
+                    <td>Recessive to I<sup>A</sup> and I<sup>B</sup></td>
+                </tr>
+            </table>
+            
+            <p>When an individual inherits the <strong>I<sup>A</sup> allele from one parent and the I<sup>B</sup> allele from the other</strong>, their genotype is <strong>I<sup>A</sup> I<sup>B</sup></strong>.</p>
+            
+            <ul>
+                <li>Since I<sup>A</sup> and I<sup>B</sup> are codominant, the body simultaneously produces <strong>both functional enzymes</strong> (A transferase and B transferase).</li>
+                <li>These two enzymes then modify the precursor H antigen on the red blood cell surface, resulting in the production of <strong>both A and B antigens</strong>.</li>
+                <li>The resulting phenotype is <strong>Type AB blood</strong>, where both the A and B antigens are fully expressed side-by-side on the red blood cell surface.</li>
+            </ul>
+            
+            <table>
+                <tr>
+                    <th>Genotype</th>
+                    <th>Antigens on RBCs</th>
+                    <th>Blood Type (Phenotype)</th>
+                    <th>Genetic Principle Illustrated</th>
+                </tr>
+                <tr>
+                    <td>I<sup>A</sup> I<sup>B</sup></td>
+                    <td>Both A and B antigens</td>
+                    <td>AB</td>
+                    <td>Codominance</td>
+                </tr>
+                <tr>
+                    <td>I<sup>A</sup> i</td>
+                    <td>A antigen only</td>
+                    <td>A</td>
+                    <td>Complete Dominance</td>
+                </tr>
+                <tr>
+                    <td>I<sup>B</sup> i</td>
+                    <td>B antigen only</td>
+                    <td>B</td>
+                    <td>Complete Dominance</td>
+                </tr>
+                <tr>
+                    <td>i i</td>
+                    <td>Neither A nor B antigens</td>
+                    <td>O</td>
+                    <td>Complete Recessiveness</td>
+                </tr>
+            </table>
+            
+            <div class="navigation">
+                <button id="prevBtn8">Previous</button>
+                <button id="nextBtn8">Next</button>
+            </div>
+        </section>
+        
+        <!-- Summary Section -->
+        <section class="section" id="section9">
+            <div class="glossy-overlay"></div>
+            <h2>Summary</h2>
+            <p>The <strong>ABO blood group system</strong>, discovered by Karl Landsteiner, is critical for safe blood transfusions and provides a classical model for complex genetic principles. The blood type (A, B, AB, or O) is determined by the <strong>ABO gene</strong> on chromosome 9, which features <strong>multiple alleles</strong> (I<sup>A</sup>, I<sup>B</sup>, and i). I<sup>A</sup> and I<sup>B</sup> encode functional enzymes (glycosyltransferases) that add terminal sugars (A or B antigens) to the <strong>H antigen</strong> precursor. <strong>Codominance</strong> is seen in Type AB blood (genotype I<sup>A</sup> I<sup>B</sup>), where both A and B antigens are fully expressed, while I<sup>A</sup> and I<sup>B</sup> are both <strong>dominant</strong> over the recessive I allele, which produces no functional antigen (Type O blood). Furthermore, the rare <strong>Bombay phenotype</strong> demonstrates <strong>recessive epistasis</strong>, where the homozygous recessive genotype (hh) at the separate <em>FUT1</em> gene locus (on chromosome 19) prevents the formation of the H antigen precursor, thereby <strong>masking</strong> the expression of the ABO alleles and resulting in a functional Type O blood (Oh).</p>
+            
+            <div class="navigation">
+                <button id="prevBtn9">Previous</button>
+                <button id="nextBtn9">Next</button>
+            </div>
+        </section>
+        
+        <!-- Quiz Section -->
+        <section class="section" id="section10">
+            <div class="glossy-overlay"></div>
+            <h2>Test Your Knowledge</h2>
+            <p>Answer the following questions to test your understanding of the ABO blood group system:</p>
+            
+            <div class="quiz-container" id="quizContainer">
+                <!-- Quiz questions will be inserted here by JavaScript -->
+            </div>
+            
+            <div class="quiz-results" id="quizResults">
+                <h3>Quiz Complete!</h3>
+                <p>Your score:</p>
+                <div class="quiz-score" id="quizScore">0/20</div>
+                <p id="quizMessage"></p>
+                <button class="restart-quiz" id="restartQuiz">Restart Quiz</button>
+            </div>
+            
+            <div class="navigation">
+                <button id="prevBtn10">Previous</button>
+                <button id="submitQuiz">Submit Quiz</button>
+            </div>
+        </section>
+        
+        <!-- Footer Section -->
+        <footer class="footer">
+            <div class="footer-content">
+                <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" alt="BETA Biosciences Logo" class="footer-logo">
+                <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.<br>Email: betabiosciences@gmail.com</p>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Contact Us</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            const totalSections = sections.length;
+            const progressDots = document.getElementById('progressDots');
+            
+            // Create progress dots
+            for (let i = 0; i < totalSections; i++) {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (i === 0) dot.classList.add('active');
+                progressDots.appendChild(dot);
+            }
+            
+            // Function to show a specific section
+            function showSection(index) {
+                sections.forEach((section, i) => {
+                    section.classList.toggle('active', i === index);
+                });
+                
+                // Update progress dots
+                document.querySelectorAll('.dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+            }
+            
+            // Set up navigation buttons
+            for (let i = 1; i <= totalSections; i++) {
+                const prevBtn = document.getElementById(`prevBtn${i}`);
+                const nextBtn = document.getElementById(`nextBtn${i}`);
+                
+                if (prevBtn) {
+                    prevBtn.addEventListener('click', () => {
+                        if (i > 1) showSection(i - 2);
+                    });
+                }
+                
+                if (nextBtn) {
+                    nextBtn.addEventListener('click', () => {
+                        if (i < totalSections) showSection(i);
+                    });
+                }
+            }
+            
+            // Initialize the first section as active
+            showSection(0);
+            
+            // Quiz data with correct answers from the document
+            const quizData = [
+                {
+                    question: "Which chromosome is the primary ABO gene, which determines the A, B, and O blood types, located on?",
+                    options: [
+                        "The X Chromosome",
+                        "Chromosome 9",
+                        "Chromosome 1",
+                        "Chromosome 19"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    question: "The ABO blood group system is cited as a classical example of which two key genetic concepts?",
+                    options: [
+                        "Linked genes and Sex-linked inheritance",
+                        "Multiple alleles and Codominance",
+                        "Epistasis and Pleiotropy",
+                        "Multiple alleles and Complete dominance"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Which genotype results in Type AB blood?",
+                    options: [
+                        "I<sup>A</sup> I<sup>O</sup>",
+                        "I<sup>A</sup> I<sup>B</sup>",
+                        "ii",
+                        "I<sup>B</sup> I<sup>B</sup>"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    question: "The recessive allele, i (or I<sup>O</sup>), results in what enzymatic activity and subsequent antigen production?",
+                    options: [
+                        "A functional A transferase enzyme, producing the A antigen.",
+                        "A non-functional enzyme, leaving the H antigen unmodified.",
+                        "A functional B transferase enzyme, producing the B antigen.",
+                        "An enzyme that adds fucose to the oligosaccharide chain."
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    question: "Which blood type produces neither Anti-A nor Anti-B antibodies in the plasma?",
+                    options: [
+                        "Type AB",
+                        "Type B",
+                        "Type A",
+                        "Type O"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    question: "All ABO antigens are built upon a common precursor structure. What is the name of this precursor molecule?",
+                    options: [
+                        "H antigen",
+                        "N-acetylgalactosamine",
+                        "Galactose",
+                        "Fucose"
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    question: "Which terminal sugar is characteristic of Type B blood?",
+                    options: [
+                        "Glucose",
+                        "Galactose",
+                        "N-acetylgalactosamine",
+                        "Fucose"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    question: "The Bombay phenotype is an example of which type of gene interaction?",
+                    options: [
+                        "Codominance",
+                        "Incomplete dominance",
+                        "Complementation",
+                        "Recessive epistasis"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    question: "What is the genotype at the FUT1 locus that causes the Bombay phenotype?",
+                    options: [
+                        "HH",
+                        "I<sup>A</sup> I<sup>B</sup>",
+                        "I<sup>O</sup> I<sup>O</sup>",
+                        "hh"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    question: "What is the strongest clinical challenge for an individual with the Bombay phenotype?",
+                    options: [
+                        "The inability to have children with any other blood type.",
+                        "Increased susceptibility to certain diseases.",
+                        "The inability to donate blood to any recipient.",
+                        "The risk of a severe reaction if they receive any non-Bombay blood."
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    question: "Which antibody is uniquely present in the plasma of a Bombay phenotype (Oh) individual, distinguishing it from normal Type O blood?",
+                    options: [
+                        "Anti-D (Rh factor antibody)",
+                        "Anti-B",
+                        "Anti-H",
+                        "Anti-A"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    question: "The Bombay phenotype is often misidentified as which common blood type during routine forward blood typing?",
+                    options: [
+                        "Type AB",
+                        "Type B",
+                        "Type A",
+                        "Type O"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    question: "The I<sup>A</sup> and I<sup>B</sup> alleles are described as codominant. What does this mean for a person with the I<sup>A</sup> I<sup>B</sup> genotype?",
+                    options: [
+                        "The A antigen is expressed, and the B antigen is suppressed.",
+                        "The blood type is a blend of A and B characteristics, creating a new intermediate antigen.",
+                        "Both the A transferase and B transferase enzymes are produced, resulting in both A and B antigens on RBCs.",
+                        "Only one functional enzyme is produced, leading to an O blood type."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    question: "If a person has the genotype H_ I<sup>A</sup>I<sup>B</sup>, which of the following terminal sugars will be present on their red blood cells?",
+                    options: [
+                        "N-acetylgalactosamine only",
+                        "Both N-acetylgalactosamine and galactose",
+                        "Galactose only",
+                        "Neither N-acetylgalactosamine nor galactose"
+                    ],
+                    correctAnswer: 1
+                },
+                {
+                    question: "In the case of the Bombay phenotype, the hh genotype is the epistatic gene. Which gene locus is therefore the hypostatic gene?",
+                    options: [
+                        "The MN locus",
+                        "The Rh Factor locus",
+                        "The ABO locus",
+                        "The FUT1 locus itself"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Which statement correctly describes the biochemical pathway leading to Type O blood, assuming a person is H_ ii (non-Bombay)?",
+                    options: [
+                        "The H antigen is unmodified because the i allele produces a non-functional enzyme.",
+                        "A functional enzyme is produced that removes the H antigen.",
+                        "The B transferase enzyme is functional but lacks a substrate.",
+                        "The H antigen precursor is not produced."
+                    ],
+                    correctAnswer: 0
+                },
+                {
+                    question: "According to the ABO inheritance principles, if a child has blood type B and the mother has blood type A (genotype I<sup>A</sup> i), what must be the father's allele contribution?",
+                    options: [
+                        "The I<sup>A</sup> allele",
+                        "Both I<sup>A</sup> and I<sup>B</sup> alleles",
+                        "The i allele",
+                        "The I<sup>B</sup> allele"
+                    ],
+                    correctAnswer: 3
+                },
+                {
+                    question: "What is the expected modified dihybrid phenotypic ratio in the F2 generation for a trait governed by recessive epistasis?",
+                    options: [
+                        "9: 7",
+                        "15: 1",
+                        "9:3:4",
+                        "12:3:1"
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Why is the Bombay phenotype considered functionally Type O blood during a forward blood type test, even if the person has an I<sup>A</sup> I<sup>B</sup> genotype?",
+                    options: [
+                        "The hh genotype causes the body to produce antibodies that immediately destroy any A or B antigens that form.",
+                        "The I<sup>A</sup> and I<sup>B</sup> alleles mutate into i alleles when the hh genotype is present.",
+                        "The H antigen precursor is absent, so the A and B enzymes have nothing to attach their terminal sugars to.",
+                        "The hh genotype on chromosome 19 physically destroys the ABO gene on chromosome 9."
+                    ],
+                    correctAnswer: 2
+                },
+                {
+                    question: "Which two alleles of the ABO gene are said to exhibit codominance when inherited together?",
+                    options: [
+                        "I<sup>A</sup> and i",
+                        "I<sup>B</sup> and i",
+                        "I<sup>A</sup> and I<sup>B</sup>",
+                        "i and i"
+                    ],
+                    correctAnswer: 2
+                }
+            ];
+            
+            // Initialize quiz
+            const quizContainer = document.getElementById('quizContainer');
+            const quizResults = document.getElementById('quizResults');
+            const quizScore = document.getElementById('quizScore');
+            const quizMessage = document.getElementById('quizMessage');
+            const restartQuiz = document.getElementById('restartQuiz');
+            const submitQuiz = document.getElementById('submitQuiz');
+            
+            let userAnswers = new Array(quizData.length).fill(null);
+            let quizCompleted = false;
+            
+            // Create quiz questions
+            quizData.forEach((questionData, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'quiz-question';
+                questionElement.innerHTML = `
+                    <p>${index + 1}. ${questionData.question}</p>
+                    <div class="quiz-options">
+                        ${questionData.options.map((option, optionIndex) => `
+                            <div class="quiz-option" data-question="${index}" data-option="${optionIndex}">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="quiz-feedback" id="feedback-${index}"></div>
+                `;
+                quizContainer.appendChild(questionElement);
+            });
+            
+            // Add event listeners to quiz options
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    if (quizCompleted) return;
+                    
+                    const questionIndex = parseInt(this.getAttribute('data-question'));
+                    const optionIndex = parseInt(this.getAttribute('data-option'));
+                    
+                    // Clear previous selection for this question
+                    document.querySelectorAll(`.quiz-option[data-question="${questionIndex}"]`).forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Select this option
+                    this.classList.add('selected');
+                    
+                    // Store user's answer
+                    userAnswers[questionIndex] = optionIndex;
+                });
+            });
+            
+            // Submit quiz
+            submitQuiz.addEventListener('click', function() {
+                if (quizCompleted) return;
+                
+                let score = 0;
+                
+                // Check answers and update UI
+                quizData.forEach((questionData, index) => {
+                    const userAnswer = userAnswers[index];
+                    const correctAnswer = questionData.correctAnswer;
+                    const feedbackElement = document.getElementById(`feedback-${index}`);
+                    
+                    // Get the selected option element
+                    const selectedOption = document.querySelector(`.quiz-option[data-question="${index}"].selected`);
+                    
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        if (selectedOption) {
+                            selectedOption.classList.add('correct');
+                        }
+                        feedbackElement.textContent = "Correct!";
+                        feedbackElement.className = "quiz-feedback correct";
+                    } else {
+                        if (selectedOption) {
+                            selectedOption.classList.add('incorrect');
+                        }
+                        
+                        // Highlight correct answer
+                        const correctOption = document.querySelector(`.quiz-option[data-question="${index}"][data-option="${correctAnswer}"]`);
+                        correctOption.classList.add('correct');
+                        
+                        feedbackElement.textContent = "Incorrect. The correct answer is highlighted in green.";
+                        feedbackElement.className = "quiz-feedback incorrect";
+                    }
+                });
+                
+                // Show results
+                quizScore.textContent = `${score}/${quizData.length}`;
+                
+                // Set message based on score
+                if (score === quizData.length) {
+                    quizMessage.textContent = "Excellent! You have a perfect understanding of the ABO blood group system.";
+                } else if (score >= quizData.length * 0.8) {
+                    quizMessage.textContent = "Great job! You have a good understanding of the ABO blood group system.";
+                } else if (score >= quizData.length * 0.6) {
+                    quizMessage.textContent = "Good effort! Review the material to improve your understanding.";
+                } else {
+                    quizMessage.textContent = "You might want to review the material and try again.";
+                }
+                
+                quizResults.style.display = 'block';
+                quizCompleted = true;
+                submitQuiz.disabled = true;
+            });
+            
+            // Restart quiz
+            restartQuiz.addEventListener('click', function() {
+                // Reset quiz state
+                userAnswers = new Array(quizData.length).fill(null);
+                quizCompleted = false;
+                
+                // Clear selections and feedback
+                document.querySelectorAll('.quiz-option').forEach(option => {
+                    option.classList.remove('selected', 'correct', 'incorrect');
+                });
+                
+                document.querySelectorAll('.quiz-feedback').forEach(feedback => {
+                    feedback.textContent = '';
+                    feedback.className = 'quiz-feedback';
+                });
+                
+                // Hide results
+                quizResults.style.display = 'none';
+                
+                // Enable submit button
+                submitQuiz.disabled = false;
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
