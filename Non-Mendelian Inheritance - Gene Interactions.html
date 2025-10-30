@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non-Mendelian Inheritance: Genic Interactions</title>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-card: #252525;
+            --accent: #4a90e2;
+            --accent-light: #6ba8ff;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --border: #333;
+            --glow: rgba(74, 144, 226, 0.3);
+            --correct: #4CAF50;
+            --incorrect: #f44336;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: var(--accent-light);
+            text-shadow: 0 0 10px var(--glow);
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            display: none;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        
+        .content-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h2 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            color: var(--accent-light);
+            margin: 15px 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--accent);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            background: var(--accent-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .section-indicator {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .quiz-option {
+            background: var(--bg-secondary);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .quiz-option:hover {
+            background: #2a2a2a;
+        }
+        
+        .quiz-option.correct {
+            border-left-color: var(--correct);
+            background: rgba(76, 175, 80, 0.1);
+        }
+        
+        .quiz-option.incorrect {
+            border-left-color: var(--incorrect);
+            background: rgba(244, 67, 54, 0.1);
+        }
+        
+        .mark {
+            background-color: rgba(74, 144, 226, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        
+        .quiz-section {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .question {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .question:last-child {
+            border-bottom: none;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: var(--accent-light);
+            margin-bottom: 10px;
+        }
+        
+        .quiz-score {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            color: var(--accent-light);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .content-section {
+                padding: 20px;
+            }
+            
+            th, td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            
+            h2 {
+                font-size: 1.2rem;
+            }
+            
+            .content-section {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 0rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            line-height: 1.2;
+            margin: 0; 
+        }
+
+ /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NON-MENDELIAN INHERITANCE-GENIC INTERACTIONS</h1>
+            <p class="subtitle">An interactive guide to understanding complex inheritance patterns</p>
+        </header>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div class="section-indicator">
+            Section <span id="current-section">1</span> of <span id="total-sections">14</span>
+        </div>
+        
+        <!-- Section 1: Introduction -->
+        <section id="section1" class="content-section active">
+            <h2>Introduction to Non-Mendelian Inheritance</h2>
+            <p>While Gregor Mendel's laws accurately describe the simple inheritance patterns where one gene determines one trait, many complex characteristics in living organisms arise from <strong>Non-Mendelian Inheritance</strong>, primarily through <strong>genic interactions</strong>. These interactions occur when two or more different genes influence the expression of a single phenotypic trait, leading to modified phenotypic ratios (like 9:3:4 instead of 9:3:3:1) that deviate from standard Mendelian expectations. The most common form of genic interaction is <strong>epistasis</strong>, where an allele at one gene locus (the epistatic gene) masks or modifies the expression of alleles at a different locus (the hypostatic gene), revealing a sophisticated biochemical pathway where multiple genetic components must work together to produce the final observable characteristic.</p>
+        </section>
+        
+        <!-- Section 2: Analysis of Epistatic Gene Interactions -->
+        <section id="section2" class="content-section">
+            <h2>Analysis of Epistatic Gene Interactions and Modified Mendelian Ratios</h2>
+            <p>Epistasis, derived from the Greek meaning "standing upon", describes a critical type of gene interaction where the alleles of one locus mask, or prevent, the phenotypic expression of alleles at a separate, distinct locus. The locus exerting the masking effect is termed epistatic, while the locus whose expression is being suppressed is termed hypostatic.</p>
+            
+            <p>In classical Mendelian genetics, a dihybrid cross (AaBb ˟ AaBb) involving two independently assorting genes typically yields a 9:3:3:1 phenotypic ratio in the F2 generation, corresponding to four distinct phenotypic classes (A_B_, A_bb, aaB_, and aabb). Epistatic interactions fundamentally alter this ratio by causing two or more of these genotypic classes to share a single phenotype, thus reducing the total number of observable phenotypic classes. The specific way the 9:3:3:1 ratio collapses provides a diagnostic tool, directly indicating the functional relationship---sequential, inhibitory, or redundant---between the genes involved.</p>
+            
+            <p>It is necessary to differentiate classical <em>phenotypic</em> epistasis, which focuses on the observable masking effect, from <em>statistical</em> epistasis, a concept used in quantitative genetics. Statistical epistasis defines the deviation in genotypic values that occurs when two alleles at different loci are substituted simultaneously, after accounting for the expected effect of substituting each allele separately. While statistical epistasis measures non-additive genetic effects within a population, classical phenotypic epistasis focuses on the specific chemical or structural interaction that causes one genotype to override another. We focuses exclusively on the classical phenotypic forms of epistasis.</p>
+        </section>
+        
+        <!-- Section 3: Recessive Epistasis -->
+        <section id="section3" class="content-section">
+            <h2>Recessive Epistasis (9:3:4 Ratio)</h2>
+            <p>Recessive epistasis occurs when the homozygous recessive genotype at one locus is sufficient to mask the phenotypic expression of the alleles (both dominant and recessive) at a second locus.^2^ If we consider Gene E and Gene B, the ee genotype is epistatic to the B/b locus.</p>
+            
+            <p>The characteristic 9:3:4 ratio arises from the standard 9:3:3:1 distribution when the aaB_ class (3/16) and the aabb class (1/16) share the same phenotype as one of the single homozygous recessive classes, resulting in a combination of 3 + 1 = 4.</p>
+            
+            <p>This interaction is typically indicative of a sequential metabolic pathway where the epistatic gene controls a necessary downstream process, such as transport or deposition, that is critical for the phenotypic realization of the product made by the hypostatic gene. The lack of function due to the homozygous recessive state in the epistatic gene dictates the final outcome, irrespective of the other gene's state.</p>
+        </section>
+        
+        <!-- Section 4: Labrador Retriever Example -->
+        <section id="section4" class="content-section">
+            <h2>Classic Example: Coat Color in Labrador Retrievers</h2>
+            <p>The coat color of Labrador Retrievers provides a well-documented example of recessive epistasis, involving two main, independently assorting genes: the B locus, which controls pigment type, and the E locus, which controls pigment deposition.</p>
+            
+            <ol>
+                <li><strong>The B Locus (Pigment Type):</strong> The dominant allele B produces efficient pigment resulting in black hair, while the recessive genotype bb produces a less efficient pigment, resulting in brown (chocolate) hair.</li>
+                <li><strong>The E Locus (Deposition/Epistatic):</strong> The dominant allele E is required for the deposition of pigment (whether black or brown) into the hair shaft. The homozygous recessive genotype ee prevents pigment deposition entirely.</li>
+            </ol>
+            
+            <p>Consequently, any dog with the ee genotype fails to deposit melanin, resulting in a pale yellow phenotype, regardless of whether its B locus genotype is B_ (black potential) or bb (brown potential). The ee genotype is therefore epistatic to the B/b locus.</p>
+            
+            <p>The resulting F2 progeny from a dihybrid cross (BbEe ˟BbEe) show the following phenotypic correlation:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Genotype Class (9:3:3:1)</th>
+                        <th>Locus E (Deposition)</th>
+                        <th>Locus B (Pigment Type)</th>
+                        <th>Phenotype (Labrador Example)</th>
+                        <th>Ratio Contribution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>E_B_ (9/16)</td>
+                        <td>Functional (Deposits)</td>
+                        <td>Black Pigment Produced</td>
+                        <td>Black</td>
+                        <td>9</td>
+                    </tr>
+                    <tr>
+                        <td>E_bb (3/16)</td>
+                        <td>Functional (Deposits)</td>
+                        <td>Brown Pigment Produced</td>
+                        <td>Brown/Chocolate</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>eeB_ (3/16)</td>
+                        <td>Non-Functional (No Deposition)</td>
+                        <td>Black Pigment Produced</td>
+                        <td>Yellow/Pale</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>eebb (1/16)</td>
+                        <td>Non-Functional (No Deposition)</td>
+                        <td>Brown Pigment Produced</td>
+                        <td>Yellow/Pale</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>Combined Phenotypic Ratio</strong></td>
+                        <td><strong>Black : Brown : Yellow</strong></td>
+                        <td><strong>9 : 3 : 4</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>The grouping of the eeB_ (3/16) and eebb (1/16) classes into the shared Yellow phenotype mathematically demonstrates how the loss-of-function state in the epistatic gene (ee) renders the information contained within the hypostatic B locus irrelevant to the final visible trait. This 9:3:4 ratio is a strong indicator that the epistatic gene controls a necessary, non-substitutable step late in the pathway (e.g., deposition) that must occur for the product of the first gene (pigment type) to be observable.</p>
+        </section>
+        
+        <!-- Section 5: Dominant Epistasis -->
+        <section id="section5" class="content-section">
+            <h2>Dominant Epistasis (12:3:1 Ratio)</h2>
+            <p>Dominant epistasis occurs when the presence of a single dominant allele at one locus (e.g., A_) is sufficient to mask the phenotypic expression of all alleles at the second locus (B/b). Unlike recessive epistasis, where masking is caused by the <em>absence</em> of a function (homozygous recessive), dominant epistasis involves masking caused by the <em>presence</em> of a functional factor (dominant allele).</p>
+            
+            <p>The 12:3:1 ratio is generated by combining the A_B_ (9/16) and the A_bb (3/16) classes, as the dominant epistatic allele (A_) is present in both, resulting in a combined 9 + 3 = 12 share of the overriding phenotype. The remaining classes, aaB_(3/16) and aabb (1/16), express their expected distinct phenotypes.</p>
+            
+            <p>This type of interaction generally represents an <strong>inhibitory mechanism</strong>, where the dominant epistatic allele encodes a product (such as an enzyme or molecular switch) that actively shuts down or bypasses the downstream production pathway controlled by the hypostatic gene.</p>
+        </section>
+        
+        <!-- Section 6: Summer Squash Example -->
+        <section id="section6" class="content-section">
+            <h2>Classic Example: Fruit Color in Summer Squash (Cucurbita pepo)</h2>
+            <p>Fruit color in summer squash provides the classic illustration of the 12:3:1 ratio, typically involving phenotypes of White, Yellow, and Green. Let the W locus be the dominant epistatic gene controlling inhibition, and the G locus be the hypostatic gene controlling color production (e.g., Yellow).</p>
+            
+            <ol>
+                <li><strong>The W Locus (Inhibition/Epistatic):</strong> The presence of the dominant allele W (W_) inhibits the production or development of any color pigment, resulting in White fruit.</li>
+                <li><strong>The G Locus (Color Production/Hypostatic):</strong> This locus can only express its color when the inhibitor is absent (ww). The dominant allele G (G\_) typically produces the primary color (Yellow).</li>
+                <li><strong>Base Color:</strong> When both the inhibitor is absent (ww) and the color gene is homozygous recessive (gg), a secondary or base color (Green) is expressed.</li>
+            </ol>
+            
+            <p>In this scenario, the W locus overrides the expression of the G locus. The functional output of the dominant W allele causes the masking, actively overriding the color pathway.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Genotype Class (9:3:3:1)</th>
+                        <th>Locus W (Inhibitor)</th>
+                        <th>Locus G (Yellow Color)</th>
+                        <th>Phenotype (Squash Example)</th>
+                        <th>Ratio Contribution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>W_G_ (9/16)</td>
+                        <td>Inhibitor Present</td>
+                        <td>Yellow Color Possible</td>
+                        <td>White</td>
+                        <td><strong>9</strong></td>
+                    </tr>
+                    <tr>
+                        <td>W_gg (3/16)</td>
+                        <td>Inhibitor Present</td>
+                        <td>Base Color/No Yellow</td>
+                        <td>White</td>
+                        <td><strong>3</strong></td>
+                    </tr>
+                    <tr>
+                        <td>wwG_ (3/16)</td>
+                        <td>Inhibitor Absent</td>
+                        <td>Yellow Color Present</td>
+                        <td>Yellow</td>
+                        <td><strong>3</strong></td>
+                    </tr>
+                    <tr>
+                        <td>wwgg (1/16)</td>
+                        <td>Inhibitor Absent</td>
+                        <td>Base Color/No Yellow</td>
+                        <td>Green</td>
+                        <td><strong>1</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>Combined Phenotypic Ratio</strong></td>
+                        <td><strong>White : Yellow : Green</strong></td>
+                        <td><strong>12 : 3 : 1</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>The comparison between dominant epistasis (12:3:1) and recessive epistasis (9:3:4) reveals a fundamental difference in pathway control. The 12:3:1 interaction reflects the active imposition of an outcome (inhibition) by the dominant allele, whereas the 9:3:4 interaction reflects the passive failure of a necessary function due to a homozygous recessive state.</p>
+        </section>
+        
+        <!-- Section 7: Duplicate Recessive Epistasis -->
+        <section id="section7" class="content-section">
+            <h2>Duplicate Recessive Epistasis (Complementary Gene Action, 9:7 Ratio)</h2>
+            <p>Duplicate recessive epistasis is commonly referred to as <strong>Complementary Gene Interaction</strong>. The term complementary is apt because it signifies that functional dominant alleles from <em>both</em> loci (A and B) are required to complement each other and complete a necessary pathway step to produce the dominant phenotype.</p>
+            
+            <p>The mechanism dictates that the presence of a homozygous recessive genotype at <em>either</em> locus (e.g., aaB_ or A_bb) is sufficient to halt the pathway and result in the null or recessive phenotype.</p>
+            
+            <p>The highly characteristic 9:7 ratio results from the grouping of three failure classes: aaB_ (3/16), A\_bb (3/16), and aabb (1/16). All seven combinations exhibit the shared null phenotype (3 + 3 + 1 = 7).</p>
+        </section>
+        
+        <!-- Section 8: Sweet Pea Example -->
+        <section id="section8" class="content-section">
+            <h2>Classic Example: Flower Color in Sweet Pea (Lathyrus odoratus)</h2>
+            <p>The classic case of complementary gene action is the determination of purple flower color in the sweet pea, requiring two non-allelic genes, C and P, to be dominant.</p>
+            
+            <p>The pathway involves two sequential enzymatic conversions necessary to synthesize the final purple anthocyanin pigment from an initial colorless precursor:</p>
+            
+            <p>Precursor (White) → Intermediate (White) → Final Pigment (Purple)</p>
+            
+            <p>If either Gene C or Gene P is homozygous recessive, the enzyme it produces will be non-functional, halting the reaction chain:</p>
+            
+            <ol>
+                <li>cc (non-functional Enzyme 1) prevents the formation of the intermediate, regardless of whether P is functional.</li>
+                <li>pp (non-functional Enzyme 2) prevents the conversion of the intermediate to the purple pigment, regardless of whether C is functional.</li>
+            </ol>
+            
+            <p>Therefore, only individuals possessing C_P_ are capable of producing purple pigment. All other combinations, representing 7/16 of the progeny, result in white flowers, demonstrating the necessity of both genes for the final expression of the phenotype.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Genotype Class</th>
+                        <th>Locus C (Enzyme 1)</th>
+                        <th>Locus P (Enzyme 2)</th>
+                        <th>Biochemical Status</th>
+                        <th>Phenotype Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>C_P_ (9/16)</td>
+                        <td>Functional</td>
+                        <td>Functional</td>
+                        <td>Pathway Complete: Purple Pigment</td>
+                        <td>Purple</td>
+                    </tr>
+                    <tr>
+                        <td>ccP_ (3/16)</td>
+                        <td>Non-functional (cc)</td>
+                        <td>Functional</td>
+                        <td>Pathway Halts at Precursor</td>
+                        <td>White</td>
+                    </tr>
+                    <tr>
+                        <td>C_pp (3/16)</td>
+                        <td>Functional</td>
+                        <td>Non-functional (pp)</td>
+                        <td>Pathway Halts at Intermediate</td>
+                        <td>White</td>
+                    </tr>
+                    <tr>
+                        <td>ccpp (1/16)</td>
+                        <td>Non-functional (cc)</td>
+                        <td>Non-functional (pp)</td>
+                        <td>Pathway Halts at Precursor</td>
+                        <td>White</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"><strong>Combined Phenotypic Ratio</strong></td>
+                        <td><strong>Purple : White</strong></td>
+                        <td><strong>9 : 7</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>The $9:7$ ratio provides clear molecular evidence of a strictly obligatory linear biochemical sequence. The phenotypic realization of the dominant allele at $C$ is fundamentally dependent on the functional output of $P$, and vice versa, underscoring a truly complementary relationship.</p>
+        </section>
+        
+        <!-- Section 9: Duplicate Dominant Epistasis -->
+        <section id="section9" class="content-section">
+            <h2>Duplicate Gene Interaction (Duplicate Dominant Epistasis, 15:1 Ratio)</h2>
+            <p>The 15:1 phenotypic ratio is characteristic of <strong>Duplicate Genes</strong>, also known as <strong>Duplicate Dominant Epistasis</strong> or <strong>Duplicate Interaction</strong>. The underlying biological phenomenon is <strong>Genetic Redundancy</strong>, where two or more loci perform the same or functionally interchangeable operations.</p>
+            
+            <p>The mechanism for duplicate dominant epistasis is the functional inverse of complementary action (9:7). Here, the presence of at least one dominant allele at <em>either</em> locus (A_ or B_) is sufficient to produce the functional phenotype.</p>
+            
+            <p>The F2 ratio derivation involves combining the three functional classes: A_B_ (9/16), A_bb (3/16), and aaB_ (3/16). Since all these combinations possess at least one functional dominant allele, they express the same dominant phenotype, resulting in a combination of 9 + 3 + 3 = 15. The alternative, null phenotype is only expressed when both genes are homozygous recessive (aabb).</p>
+        </section>
+        
+        <!-- Section 10: Wheat Example -->
+        <section id="section10" class="content-section">
+            <h2>Classic Example: Grain Color in Wheat</h2>
+            <p>A classic example of the 15:1 ratio is the determination of red grain color versus white grain color in wheat. Assuming two genes, R1 and R2, control red pigment production, the system exhibits redundancy. If R1 and R2 encode identical functional enzymes or operate two parallel pathways leading to the same product, the presence of R1_ or R2_ is enough to complete the necessary step for red color.</p>
+            
+            <p>The 15:1 distribution reflects a profound evolutionary robustness: a loss of function at one locus (e.g., r1r1) is entirely masked or rescued by the function of the second locus (R2\\_). Only the complete, simultaneous loss of function in both loci (r1r1r2r2) results in the alternative white phenotype.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Genotype Class (9:3:3:1)</th>
+                        <th>Locus R1</th>
+                        <th>Locus R2</th>
+                        <th>Biochemical Status</th>
+                        <th>Ratio Contribution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>R1_R2_ (9/16)</td>
+                        <td>Functional</td>
+                        <td>Functional</td>
+                        <td>Red Pigment Produced (High)</td>
+                        <td><strong>9</strong></td>
+                    </tr>
+                    <tr>
+                        <td>R1_r2r2 (3/16)</td>
+                        <td>Functional</td>
+                        <td>Non-Functional</td>
+                        <td>Red Pigment Produced (Sufficient)</td>
+                        <td><strong>3</strong></td>
+                    </tr>
+                    <tr>
+                        <td>r1r1R2_ (3/16)</td>
+                        <td>Non-Functional</td>
+                        <td>Functional</td>
+                        <td>Red Pigment Produced (Sufficient)</td>
+                        <td><strong>3</strong></td>
+                    </tr>
+                    <tr>
+                        <td>r1r1r2r2 (1/16)</td>
+                        <td>Non-Functional</td>
+                        <td>Non-Functional</td>
+                        <td>White Pigment (Complete failure)</td>
+                        <td><strong>1</strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"><strong>Combined Phenotypic Ratio</strong></td>
+                        <td><strong>Red : White</strong></td>
+                        <td><strong>15 : 1</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>This structure, characteristic of genetic redundancy, provides a significant evolutionary buffer. The underlying genomic structure suggests recent gene duplication where the paralogous genes have retained the capacity to perform the same function, thereby ensuring that a loss-of-function mutation in one copy is not phenotypically expressed.</p>
+        </section>
+        
+        <!-- Section 11: Cumulative Effect -->
+        <section id="section11" class="content-section">
+            <h2>Related Interaction: Duplicate Genes with Cumulative Effect (9:6:1 Ratio)</h2>
+            <p>While the simple redundancy of duplicate dominant epistasis yields 15:1, some duplicate gene interactions show a cumulative effect, resulting in a 9:6:1 ratio. In this form, a dominant allele at <em>just one</em> locus confers a partial phenotypic effect, whereas dominant alleles at <em>both</em> loci confer a maximal phenotype. For instance, in traits like awn length in barley, A_bb and aaB_ might yield a medium or short awn, while A_B_ yields a long awn, and aabb yields a very short or absent awn. Here, the two intermediate classes (3/16 and 3/16) combine to form a single partial phenotype (6/16), distinct from the maximal (9/16) and minimal (1/16) phenotypes.</p>
+        </section>
+        
+        <!-- Section 12: Synthesis and Comparative Analysis -->
+        <section id="section12" class="content-section">
+            <h2>Synthesis and Comparative Analysis of Epistatic Interactions</h2>
+            <p>The analysis of modified F2 phenotypic ratios---9:3:4, 12:3:1, 9:7, and 15:1---provides a precise method for diagnosing the underlying molecular pathway structure of gene interactions. These ratios demonstrate that phenotypic traits are typically governed by complex regulatory networks rather than isolated loci.</p>
+            
+            <p>The structure of the interaction can be broadly categorized based on the mechanism of masking:</p>
+            
+            <ol>
+                <li><strong>Loss-of-Function Masking:</strong> The masking results from the absence of a necessary gene product (homozygous recessive state). Examples include Recessive Epistasis (9:3:4, where ee fails at deposition) and Duplicate Recessive Epistasis (9:7, where aa or bb fails at a necessary enzyme step).</li>
+                <li><strong>Gain-of-Function Masking:</strong> The masking results from the presence of a dominant functional allele that actively intervenes. The primary example is Dominant Epistasis (12:3:1, where W_ actively inhibits color production).</li>
+                <li><strong>Redundancy/Robustness:</strong> The masking results from the ability of one locus to compensate for the complete loss of function in the other. This is seen in Duplicate Dominant Epistasis (15:1).</li>
+            </ol>
+            
+            <p>The functional distinctions are significant in biological research. A 9:7 ratio immediately suggests that research efforts should focus on identifying the two necessary, sequential enzymes. In contrast, a 15:1 ratio directs investigation toward paralogous genes that operate in parallel, buffering the system against mutation.</p>
+        </section>
+        
+        <!-- Section 13: Summary Table -->
+        <section id="section13" class="content-section">
+            <h2>Summary of Classical Two-Locus Epistatic Interactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Interaction Type</th>
+                        <th>F2 Phenotypic Ratio</th>
+                        <th>Genotypic Classes Combined</th>
+                        <th>Epistatic Condition</th>
+                        <th>Underlying Pathway Structure</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Recessive Epistasis</td>
+                        <td>9:3:4</td>
+                        <td>aaB_ + aabb (4/16 total)</td>
+                        <td>Homozygous recessive at one locus (<em>aa</em>) masks the second locus.</td>
+                        <td>Sequential Pathway (Loss of function masks a required downstream step)</td>
+                    </tr>
+                    <tr>
+                        <td>Dominant Epistasis</td>
+                        <td>12:3:1</td>
+                        <td>A_B_ + A_bb (12/16 total)</td>
+                        <td>Dominant allele at one locus (<em>A_</em>) masks the second locus.</td>
+                        <td>Inhibitory Pathway (Active inhibition by the dominant allele)</td>
+                    </tr>
+                    <tr>
+                        <td>Duplicate Recessive Epistasis (Complementary)</td>
+                        <td>9:7</td>
+                        <td>aaB_ + A_bb + aabb (7/16 total)</td>
+                        <td>Homozygous recessive at <em>either</em> locus prevents the functional phenotype.</td>
+                        <td>Obligatory Sequential Pathway (Both gene products required)</td>
+                    </tr>
+                    <tr>
+                        <td>Duplicate Dominant Epistasis (Redundant)</td>
+                        <td>15:1</td>
+                        <td>A_B_ + A_bb + aaB_ (15/16 total)</td>
+                        <td>Dominant allele at <em>either</em> locus is sufficient for the functional phenotype.</td>
+                        <td>Parallel/Redundant Pathways (Functional backup exists)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>The classical epistatic ratios are not merely abstract statistical outcomes but direct reflections of complex molecular biology. Recessive epistasis (9:3:4) demonstrates a necessary, usually downstream, step whose failure renders earlier steps unobservable. Dominant epistasis (12:3:1) signifies active regulatory control, often through inhibition. Duplicate recessive epistasis (9:7) is the molecular signature of two genes acting in concert along an obligatory linear path, requiring complementarity for completion. Finally, duplicate dominant epistasis (15:1) highlights genetic redundancy, an essential mechanism for evolutionary stability and buffering against mutation. Understanding these ratios provides geneticists and breeders with critical information necessary to predict inheritance patterns and map the biochemical organization of complex phenotypic traits.</p>
+        </section>
+        
+        <!-- Section 14: Quiz Questions -->
+        <section id="section14" class="content-section quiz-section">
+            <h2>Test Your Knowledge</h2>
+            <div class="quiz-score" id="quiz-score">Score: 0/20</div>
+            
+            <div class="question">
+                <div class="question-number">1. Which term describes the genetic phenomenon where an allele at one gene locus (the epistatic gene) masks or modifies the expression of alleles at a different locus (the hypostatic gene)?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 1)">a. Epistasis</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 1)">b. Pleiotropy</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 1)">c. Incomplete Dominance</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 1)">d. Polygenic Inheritance</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">2. In the context of classical phenotypic epistasis, a standard dihybrid cross (AaBb ˟AaBb) in the F2 generation yields a 9:3:3:1 phenotypic ratio under Mendelian laws. How does epistasis fundamentally alter this ratio?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 2)">a. It decreases the total number of individuals in the F2 generation.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 2)">b. It results in a non-integer ratio that must be rounded for analysis.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 2)">c. It causes two or more of the original four genotypic classes to share a single phenotype.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 2)">d. It causes all four genotypic classes to express a single, uniform phenotype.</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">3. The 9:3:4 phenotypic ratio in the F2 generation is the characteristic outcome of which type of gene interaction?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 3)">a. Recessive Epistasis</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 3)">b. Dominant Epistasis</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 3)">c. Duplicate Dominant Epistasis</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 3)">d. Duplicate Recessive Epistasis</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">4. In Labrador Retrievers, the recessive epistatic genotype ee prevents pigment deposition regardless of the B locus genotype, resulting in a yellow coat. Which of the following genotypes would result in a Yellow Labrador?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 4)">a. BBEE</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 4)">b. BbEe</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 4)">c. Bbee</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 4)">d. bbEe</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">5. What is the underlying biochemical model most often suggested by the 9:3:4 ratio of Recessive Epistasis?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 5)">a. A Sequential Metabolic Pathway where the epistatic gene controls a necessary downstream step.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 5)">b. An Obligatory Sequential Pathway requiring both functional gene products.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 5)">c. Parallel/Redundant Pathways, where either gene product can complete the final step.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 5)">d. An Inhibitory Mechanism, where a dominant allele actively shuts down the pathway.</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">6. Which of the following describes the mechanism of masking in Dominant Epistasis, which results in a 12:3:1 phenotypic ratio?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 6)">a. The masking is caused by the <em>absence</em> of a function (homozygous recessive state).</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 6)">b. The masking results from the failure of two independent pathways to converge on the final product.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 6)">c. The masking is caused by the <em>presence</em> of a single dominant allele that actively inhibits the downstream process.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 6)">d. The masking is due to a cumulative effect of both dominant alleles.</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">7. In Summer Squash fruit color, the 12:3:1 ratio is observed. White fruit results from the W_ genotype (inhibitor present), Yellow from wwG_, and Green from wwgg. Which two F2 genotypic classes from the standard 9:3:3:1 distribution are combined to form the 'White' phenotype (12/16)?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 7)">a. W_G_ and wwgg</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 7)">b. W_G_ and W_gg</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 7)">c. wwG_ and wwgg</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 7)">d. W_gg and wwG_</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">8. The comparison between Dominant Epistasis (12:3:1) and Recessive Epistasis (9:3:4) reveals a fundamental difference in pathway control. Dominant Epistasis reflects the active imposition of an outcome, while Recessive Epistasis reflects:</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 8)">a. The passive failure of a necessary function due to a homozygous recessive state.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 8)">b. A situation where both dominant alleles are required for a functional pathway.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 8)">c. A proportional darkening of phenotype with each added dominant allele.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 8)">d. A redundant functional outcome due to parallel genes.</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">9. Duplicate Recessive Epistasis is also known as Complementary Gene Interaction. What is the phenotypic ratio that characterizes this interaction?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 9)">a. 12:3:1</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 9)">b. 15:1</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 9)">c. 9:3:4</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 9)">d. 9:7</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">10. In the sweet pea example (9:7 ratio), purple flower color is produced only by the C_P_ genotype. Which condition is sufficient to halt the pigment production pathway and result in a white flower?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 10)">a. The presence of a single dominant allele, either C or P.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 10)">b. The homozygous dominant genotype at the C locus in combination with any genotype at the P locus.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 10)">c. The simultaneous presence of all four dominant alleles.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 10)">d. The presence of a homozygous recessive genotype at <em>either</em> the C locus or the P locus.</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">11. A novel plant species shows that the presence of <em>either</em> a dominant A allele <em>or</em> a dominant B allele is sufficient to produce a red pigment. Only the aabb genotype results in a white phenotype. This scenario is characteristic of:</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 11)">a. Duplicate Recessive Epistasis</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 11)">b. Dominant Epistasis</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 11)">c. Duplicate Dominant Epistasis</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 11)">d. Recessive Epistasis</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">12. What is the F2 phenotypic ratio associated with Duplicate Dominant Epistasis, and what is its underlying biological mechanism?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 12)">a. 12:3:1; Active Inhibition by a Dominant Allele</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 12)">b. 9:7; Obligatory Sequential Pathway</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 12)">c. 9:3:4; Necessary Downstream Step Failure</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 12)">d. 15:1; Genetic Redundancy (Parallel Pathways)</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">13. Which epistatic ratio most strongly suggests that research efforts should focus on identifying two necessary, sequential enzymes required to complete a linear metabolic pathway?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 13)">a. 15:1</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 13)">b. 9:7</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 13)">c. 12:3:1</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 13)">d. 9:3:4</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">14. In the example of coat color in Labrador Retrievers, the E locus is epistatic to the B locus. This means that:</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 14)">a. The E locus controls the type of pigment (black or brown), while the B locus controls deposition.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 14)">b. The B locus is the dominant epistatic gene that actively inhibits the E locus.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 14)">c. The ee genotype (E locus) masks the phenotypic expression of the B locus alleles.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 14)">d. The B locus is the epistatic gene, determining whether the E locus is expressed.</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">15. A phenotypic ratio of 9:6:1 is observed in a dihybrid cross. What does this ratio suggest about the gene interaction, which is a variation of Duplicate Gene Interaction?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 15)">a. The two genes have an additive or cumulative effect on the phenotype.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 15)">b. Functional dominant alleles from both loci are required for the dominant phenotype.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 15)">c. The homozygous recessive state at a single locus is sufficient to mask the other locus.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 15)">d. The dominant allele at one locus actively inhibits the expression of the other locus.</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">16. Which ratio provides clear molecular evidence of a strictly obligatory linear biochemical sequence where the two gene products must act in succession?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 16)">a. 15:1</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 16)">b. 9:3:4</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 16)">c. 9:7</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 16)">d. 12:3:1</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">17. The phenotypic ratio of 12:3:1 is formed by combining which two genotypic classes from the standard 9:3:3:1 Mendelian ratio?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 17)">a. aaB_ and aabb</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 17)">b. A_bb and aaB_</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 17)">c. A_B_ and aaB_</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 17)">d. A_B_ and A_bb</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">18. The underlying genomic structure for Duplicate Dominant Epistasis (15:1) is most often attributed to:</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 18)">a. Recent gene duplication where paralogous genes have retained the same function.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 18)">b. A gene encoding an active repressor protein that prevents translation of the second gene.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 18)">c. A common single-nucleotide polymorphism (SNP) with high penetrance.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 18)">d. Two independently assorting genes that operate in a strictly sequential, linear pathway.</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">19. If an organism is heterozygous for both loci (AaBb) and exhibits a 9:3:4 phenotypic ratio in its F2 progeny, which genotype <em>must</em> be functionally non-functional and therefore epistatic?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 19)">a. The homozygous recessive genotype at the A locus (aa).</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 19)">b. The A_bb genotype.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 19)">c. The dominant allele at the B locus (B).</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 19)">d. The A_B_ genotype.</div>
+            </div>
+            
+            <div class="question">
+                <div class="question-number">20. Which of the following phrases best differentiates 'classical phenotypic epistasis' from 'statistical epistasis'?</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'correct', 20)">a. Classical epistasis focuses on the observable masking effect; statistical epistasis measures deviation in genotypic values after accounting for separate allele effects.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 20)">b. Classical epistasis measures non-additive effects, while statistical epistasis defines observable masking.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 20)">c. Classical epistasis applies to Mendelian traits, while statistical epistasis applies to complex traits.</div>
+                <div class="quiz-option" onclick="checkAnswer(this, 'incorrect', 20)">d. Classical epistasis is used in breeding, while statistical epistasis is used in biochemical pathways.</div>
+            </div>
+        </section>
+        
+        <div class="navigation">
+            <button id="prev-btn" onclick="navigate(-1)" disabled>Previous</button>
+            <button id="next-btn" onclick="navigate(1)">Next</button>
+        </div>
+<footer>
+    <div class="footer-content">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+             alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="footer-text">Email: betabiosciences@gmail.com</p>
+    </div>
+</footer>
+
+    </div>
+
+    <script>
+        // Section management
+        const totalSections = 14;
+        let currentSection = 1;
+        let score = 0;
+        let answeredQuestions = new Set();
+        
+        // Update progress bar
+        function updateProgress() {
+            const progress = document.getElementById('progress');
+            const percentage = (currentSection / totalSections) * 100;
+            progress.style.width = `${percentage}%`;
+            
+            // Update section indicator
+            document.getElementById('current-section').textContent = currentSection;
+            document.getElementById('total-sections').textContent = totalSections;
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = currentSection === 1;
+            document.getElementById('next-btn').disabled = currentSection === totalSections;
+        }
+        
+        // Navigate between sections
+        function navigate(direction) {
+            // Hide current section
+            document.getElementById(`section${currentSection}`).classList.remove('active');
+            
+            // Update current section
+            currentSection += direction;
+            
+            // Show new section
+            document.getElementById(`section${currentSection}`).classList.add('active');
+            
+            // Update progress and navigation
+            updateProgress();
+            
+            // Scroll to top of section
+            window.scrollTo(0, 0);
+        }
+        
+        // Quiz answer checking
+        function checkAnswer(element, result, questionNumber) {
+            // If question already answered, do nothing
+            if (answeredQuestions.has(questionNumber)) {
+                return;
+            }
+            
+            // Mark question as answered
+            answeredQuestions.add(questionNumber);
+            
+            // Reset all options for this question
+            const options = element.parentElement.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            
+            // Mark the selected option
+            element.classList.add(result);
+            
+            // Update score
+            if (result === 'correct') {
+                score++;
+                document.getElementById('quiz-score').textContent = `Score: ${score}/20`;
+            }
+            
+            // If incorrect, show correct answer after a delay
+            if (result === 'incorrect') {
+                setTimeout(() => {
+                    const correctOption = element.parentElement.querySelector('.quiz-option.correct');
+                    if (!correctOption) {
+                        // If no correct option found, find the one that should be correct
+                        // This is a fallback for when the correct answer isn't already marked
+                        const allOptions = element.parentElement.querySelectorAll('.quiz-option');
+                        allOptions.forEach(opt => {
+                            if (opt.textContent.includes('Epistasis') || 
+                                opt.textContent.includes('share a single phenotype') ||
+                                opt.textContent.includes('Recessive Epistasis') ||
+                                opt.textContent.includes('Bbee') ||
+                                opt.textContent.includes('Sequential Metabolic Pathway') ||
+                                opt.textContent.includes('presence') ||
+                                opt.textContent.includes('W_G_ and W_gg') ||
+                                opt.textContent.includes('passive failure') ||
+                                opt.textContent.includes('9:7') ||
+                                opt.textContent.includes('homozygous recessive genotype') ||
+                                opt.textContent.includes('Duplicate Dominant Epistasis') ||
+                                opt.textContent.includes('15:1; Genetic Redundancy') ||
+                                opt.textContent.includes('9:7') ||
+                                opt.textContent.includes('ee genotype') ||
+                                opt.textContent.includes('additive or cumulative effect') ||
+                                opt.textContent.includes('9:7') ||
+                                opt.textContent.includes('A_B_ and A_bb') ||
+                                opt.textContent.includes('Recent gene duplication') ||
+                                opt.textContent.includes('homozygous recessive genotype at the A locus') ||
+                                opt.textContent.includes('observable masking effect')) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+                }, 1000);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
