@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cytoplasmic Inheritance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                        0 0 0 1px rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        header {
+            background: linear-gradient(90deg, #2a2a4a 0%, #3a3a6a 100%);
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #b0b0d0;
+        }
+        
+        .content-section {
+            padding: 25px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        h2 {
+            color: #7e9af5;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            border-bottom: 1px solid rgba(126, 154, 245, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #9ab4ff;
+            margin: 20px 0 10px;
+            font-size: 1.4rem;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        
+        .image-placeholder {
+            background: rgba(40, 40, 60, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+        
+        .image-placeholder img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 5px;
+        }
+        
+        .image-placeholder p {
+            color: #a0a0c0;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        .question {
+            background: rgba(40, 40, 60, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #7e9af5;
+        }
+        
+        .options {
+            margin-top: 15px;
+        }
+        
+        .option {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(50, 50, 70, 0.6);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            background: rgba(70, 70, 100, 0.8);
+            transform: translateX(5px);
+        }
+        
+        .correct {
+            background: rgba(30, 100, 60, 0.6);
+            border-left: 4px solid #4caf50;
+        }
+        
+        .incorrect {
+            background: rgba(100, 30, 60, 0.6);
+            border-left: 4px solid #f44336;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 25px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        button {
+            background: linear-gradient(90deg, #4a4a8a 0%, #5a5aaa 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            background: linear-gradient(90deg, #5a5aaa 0%, #6a6aba 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #3a3a5a;
+            color: #8888a8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: rgba(50, 50, 70, 0.6);
+            border-radius: 3px;
+            margin: 0 25px 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #7e9af5 0%, #9ab4ff 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Footer */
+        footer {
+            color: #e0e0e0;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+            width: 100%;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 0rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            line-height: 1.2;
+            margin: 0; 
+        }
+
+        /* Print prevention */
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+        }
+
+        /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .content-section {
+                padding: 20px;
+            }
+            
+            button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .image-placeholder {
+                padding: 15px;
+                margin: 15px 0;
+            }
+            
+            .image-placeholder img {
+                max-width: 95%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 15px;
+            }
+            
+            header {
+                padding: 20px;
+            }
+            
+            .content-section {
+                padding: 15px;
+            }
+            
+            .image-placeholder {
+                padding: 10px;
+            }
+            
+            .image-placeholder img {
+                max-width: 100%;
+            }
+            
+            .navigation {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CYTOPLASMIC INHERITANCE</h1>
+        </header>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <!-- Section 1: Introduction -->
+        <section class="content-section active" id="section1">
+            <h2>Introduction</h2>
+            <p>Mendel's principles of segregation and independent assortment are based on the assumption that genes are located on chromosomes in the nucleus of the cell. For most genetic characteristics, this assumption is valid, and Mendel's principles allow us to predict the types of offspring that will be produced in a genetic cross. However, not all the genetic material of a cell is found in the nucleus; some characteristics are encoded by genes located in the cytoplasm. These characteristics exhibit cytoplasmic inheritance.</p>
+            
+            <p>A few organelles, notably chloroplasts and mitochondria, contain DNA. The human mitochondrional genome contains about 15,000 nucleotides of DNA, encoding 37 genes. Compared with that of nuclear DNA, which contains some 3 billion nucleotides encoding some 20,000 to 25,000 genes, the size of the mitochondrial genome is very small; nevertheless, mitochondrial and chloroplast genes encode some important characteristics.</p>
+            
+            <div class="navigation">
+                <button disabled>Previous</button>
+                <button onclick="showSection(2)">Next</button>
+            </div>
+        </section>
+        
+        <!-- Section 2: Differences in Inheritance -->
+        <section class="content-section" id="section2">
+            <h2>Differences in Inheritance</h2>
+            <p>Cytoplasmic inheritance differs from the inheritance of characteristics encoded by nuclear genes in several important respects. A zygote inherits nuclear genes from both parents; but, typically, all its cytoplasmic organelles, and thus all its cytoplasmic genes, come from only one of the gametes, usually the egg. A sperm generally contributes only a set of nuclear genes from the male parent. In a few organ isms, cytoplasmic genes are inherited from the male parent or from both parents; however, for most organisms, all the cytoplasm is inherited from the egg. In this case, cytoplasmically inherited traits are present in both males and females and are passed from mother to offspring, never from father to offspring. Reciprocal crosses, therefore, give different results when cytoplasmic genes encode a trait.</p>
+            
+            <p>Cytoplasmically inherited characteristics frequently exhibit extensive phenotypic variation because no mechanism analogous to mitosis or meiosis ensures that cytoplasmic genes are evenly distributed in cell division. Thus, different cells and individual offspring will contain various proportions of cytoplasmic genes.</p>
+            
+            <p>Consider mitochondrial genes. Most cells contain thousands of mitochondria, and each mitochondrion contains from 2 to 10 copies of mitochondrial DNA (mtDNA). Suppose that half of the mitochondria in a cell contain a normal wild-type copy of mtDNA and the other half contain a mutated copy. In cell division, the mitochondria segregate into progeny cells at random. Just by chance, one cell may receive mostly mutated mtDNA and another cell may receive mostly wild-type mtDNA. In this way, different progeny from the same mother and even cells within an individual offspring may vary in their phenotypes. Traits encoded by chloroplast DNA (cpDNA) are similarly variable.</p>
+            
+            <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/Cytoplasmic%20inheritance%20fig1.jpg" alt="Cytoplasmic Inheritance Diagram">
+            </div>
+            
+            <div class="navigation">
+                <button onclick="showSection(1)">Previous</button>
+                <button onclick="showSection(3)">Next</button>
+            </div>
+        </section>
+        
+        <!-- Section 3: Variegation in Four-o'clocks -->
+        <section class="content-section" id="section3">
+            <h2>Variegation in Four-o'clocks</h2>
+            <p>In 1909, cytoplasmic inheritance was recognized by <strong>Carl Correns</strong> as an exception to Mendel's principles. Correns, one of the biologists who rediscovered Mendel's work, studied the inheritance of leaf variegation in the four-o'clock plant, <em>Mirabilis jalapa</em>. Correns found that the leaves and shoots of one variety of white branches in all combinations (Figure 5.16). The seeds from green branches always gave rise to green progeny, no matter whether the pollen was from a green, white, or var iegated branch. Similarly, flowers on white branches always produced white progeny. Flowers on the variegated branches gave rise to green, white, and variegated progeny, in no par ticular ratio.</p>
+            
+            <p>Correns's crosses demonstrated cytoplasmic inheritance of variegation in the four-o'clocks. The phenotypes of the offspring were determined entirely by the maternal par ent, never by the paternal parent (the source of the pollen). Furthermore, the production of all three phenotypes by flowers on variegated branches is consistent with cytoplas mic inheritance. Variegation in these plants is caused by a defective gene in the cpDNA, which results in a failure to produce the green pigment chlorophyll. Cells from green branches contain normal chloroplasts only, cells from white branches contain abnormal chloroplasts only, and cells from variegated branches contain a mixture of normal and abnor mal chloroplasts. In the flowers from variegated branches, the random segregation of chloroplasts in the course of oogenesis produces some egg cells with normal cpDNA, which develop into green progeny; other egg cells with only abnormal cpDNA develop into white progeny; and, finally, still other egg cells with a mixture of normal and abnormal cpDNA develop into variegated progeny.</p>
+            
+            <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/Cytoplasmic%20inheritance%20fig2.jpg" alt="Four-o'clock Plant Variegation">
+            </div>
+            
+            <div class="navigation">
+                <button onclick="showSection(2)">Previous</button>
+                <button onclick="showSection(4)">Next</button>
+            </div>
+        </section>
+        
+        <!-- Section 4: Mitochondrial Diseases -->
+        <section class="content-section" id="section4">
+            <h2>Mitochondrial Diseases</h2>
+            <p>A number of human diseases (mostly rare) that exhibit cytoplasmic inheritance have been identified. These disorders arise from mutations in mtDNA, most of which occur in genes encoding components of the electron-transport chain, which generates most of the ATP (adenosine triphosphate) in aerobic cellular respiration. One such disease is Leber hereditary optic neuropathy (LHON). Patients who have this disorder experience rapid loss of vision in both eyes, resulting from the death of cells in the optic nerve. This loss of vision typically occurs in early adulthood (usually between the ages of 20 and 24), but it can occur any time after adolescence. There is much clinical variability in the severity of the disease, even within the same family. Leber hereditary optic neuropathy exhibits cytoplasmic inheritance: the trait is passed from mother to all children, sons and daughters alike.</p>
+            
+            <div class="image-placeholder">
+                <img src="https://betabiosciences.github.io//Other-Units/Cytoplasmic%20inheritance%20fig3.jpg" alt="Mitochondrial Disease Inheritance">
+            </div>
+            
+            <div class="navigation">
+                <button onclick="showSection(3)">Previous</button>
+                <button onclick="showSection(5)">Next</button>
+            </div>
+        </section>
+        
+        <!-- Section 5: Test Your Knowledge -->
+        <section class="content-section" id="section5">
+            <h2>Test Your Knowledge</h2>
+            
+            <div class="question" id="question1">
+                <p>1. Mendel's principles of segregation and independent assortment are based on the assumption that genes are located on chromosomes in which part of the cell?</p>
+                <div class="options">
+                    <div class="option" data-correct="false">a. The mitochondria and chloroplasts</div>
+                    <div class="option" data-correct="false">b. The cytoplasm</div>
+                    <div class="option" data-correct="true">c. The nucleus</div>
+                    <div class="option" data-correct="false">d. The endoplasmic reticulum</div>
+                </div>
+            </div>
+            
+            <div class="question" id="question2">
+                <p>2. Which statement correctly describes the inheritance of cytoplasmic organelles in most organisms?</p>
+                <div class="options">
+                    <div class="option" data-correct="false">a. Cytoplasmic organelles are synthesized de novo in the zygote after fertilization.</div>
+                    <div class="option" data-correct="true">b. The zygote inherits all cytoplasmic organelles from only one gamete, usually the egg.</div>
+                    <div class="option" data-correct="false">c. The zygote inherits all cytoplasmic organelles equally from both parents.</div>
+                    <div class="option" data-correct="false">d. The zygote inherits all cytoplasmic organelles from the male parent (sperm).</div>
+                </div>
+            </div>
+            
+            <div class="question" id="question3">
+                <p>3. What is the primary reason that <strong>reciprocal crosses</strong> yield different results when a trait is encoded by cytoplasmic genes?</p>
+                <div class="options">
+                    <div class="option" data-correct="false">a. Cytoplasmic genes are passed from father to offspring but not mother to offspring.</div>
+                    <div class="option" data-correct="true">b. The phenotype of the offspring is determined entirely by the maternal parent.</div>
+                    <div class="option" data-correct="false">c. Cytoplasmic genes exhibit independent assortment.</div>
+                    <div class="option" data-correct="false">d. The male and female parents contribute an unequal number of nuclear genes.</div>
+                </div>
+            </div>
+            
+            <div class="question" id="question4">
+                <p>4. If a flower from a <strong>variegated</strong> branch of a four-o'clock plant (<em>Mirabilis jalapa</em>) is pollinated, what phenotypes may be found in the progeny?</p>
+                <div class="options">
+                    <div class="option" data-correct="true">a. Green, white, and variegated progeny, in no particular ratio.</div>
+                    <div class="option" data-correct="false">b. Only green progeny.</div>
+                    <div class="option" data-correct="false">c. Only variegated progeny.</div>
+                    <div class="option" data-correct="false">d. Only the phenotype from the paternal parent (pollen source)</div>
+                </div>
+            </div>
+            
+            <div class="question" id="question5">
+                <p>5. The variegation in four-o'clocks is caused by a defective gene located in which of the following?</p>
+                <div class="options">
+                    <div class="option" data-correct="false">a. Endoplasmic Reticulum DNA (erDNA)</div>
+                    <div class="option" data-correct="false">b. Nuclear DNA (nDNA)</div>
+                    <div class="option" data-correct="false">c. Mitochondrial DNA (mtDNA)</div>
+                    <div class="option" data-correct="true">d. Chloroplast DNA (cpDNA)</div>
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button onclick="showSection(4)">Previous</button>
+                <button onclick="resetQuiz()">Reset Quiz</button>
+            </div>
+        </section>
+        
+        <footer>
+            <div class="footer-content">
+                <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+                     alt="BETA Biosciences Logo" class="footer-logo">
+                <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+                <p class="footer-text">Email: betabiosciences@gmail.com</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const totalSections = 5;
+        
+        function showSection(sectionNumber) {
+            // Hide all sections
+            for (let i = 1; i <= totalSections; i++) {
+                document.getElementById(`section${i}`).classList.remove('active');
+            }
+            
+            // Show the selected section
+            document.getElementById(`section${sectionNumber}`).classList.add('active');
+            
+            // Update progress bar
+            const progressPercentage = ((sectionNumber - 1) / (totalSections - 1)) * 100;
+            document.getElementById('progress').style.width = `${progressPercentage}%`;
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Add click events to options to show correct answers
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.closest('.question');
+                const options = question.querySelectorAll('.option');
+                
+                // Check if this question has already been answered
+                if (question.classList.contains('answered')) {
+                    return; // Don't allow changing answers
+                }
+                
+                // Mark question as answered
+                question.classList.add('answered');
+                
+                // Remove any existing classes from all options in this question
+                options.forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect');
+                });
+                
+                // Check if the selected option is correct
+                const isCorrect = this.getAttribute('data-correct') === 'true';
+                
+                // Highlight the selected option
+                if (isCorrect) {
+                    this.classList.add('correct');
+                } else {
+                    this.classList.add('incorrect');
+                    
+                    // Also highlight the correct answer
+                    options.forEach(opt => {
+                        if (opt.getAttribute('data-correct') === 'true') {
+                            opt.classList.add('correct');
+                        }
+                    });
+                }
+            });
+        });
+        
+        // Function to reset the quiz
+        function resetQuiz() {
+            document.querySelectorAll('.question').forEach(question => {
+                question.classList.remove('answered');
+                question.querySelectorAll('.option').forEach(option => {
+                    option.classList.remove('correct', 'incorrect');
+                });
+            });
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
