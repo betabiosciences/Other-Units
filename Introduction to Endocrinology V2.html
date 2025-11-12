@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to Endocrinology</title>
+    <style>
+        :root {
+            --primary: #0a1128;
+            --secondary: #1c2541;
+            --accent: #5d9bff;
+            --accent-light: #7eb1ff;
+            --text: #e0e0e0;
+            --text-light: #f5f5f5;
+            --border: #3a506b;
+            --highlight: #00c8ff;
+            --shadow: rgba(0, 0, 0, 0.5);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(28, 37, 65, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--shadow);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        h1 {
+            color: var(--text-light);
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px var(--shadow);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: var(--accent-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            padding: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .active {
+            display: block;
+        }
+        
+        h2 {
+            color: var(--accent);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
+        
+        h3 {
+            color: var(--accent-light);
+            margin: 15px 0 10px;
+            font-size: 1.2rem;
+        }
+        
+        p, li {
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: rgba(10, 17, 40, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--secondary);
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: rgba(58, 80, 107, 0.2);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background: var(--secondary);
+            border-top: 1px solid var(--border);
+        }
+        
+        button {
+            background: linear-gradient(to bottom, var(--accent), #4a7de0);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px var(--shadow);
+            background: linear-gradient(to bottom, var(--accent-light), var(--accent));
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button:disabled {
+            background: #3a506b;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 15px;
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+        
+        .quiz-option {
+            background: rgba(58, 80, 107, 0.3);
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .quiz-option:hover {
+            background: rgba(58, 80, 107, 0.5);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .correct {
+            background: rgba(0, 200, 100, 0.2);
+            border-left: 4px solid #00c864;
+        }
+        
+        .incorrect {
+            background: rgba(255, 50, 50, 0.2);
+            border-left: 4px solid #ff3232;
+        }
+        
+        .quiz-result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .content-section {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.85rem;
+            }
+            
+            th, td {
+                padding: 8px 5px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+.image-container {
+    width: 100%;
+    margin: 1.5rem 0;
+    text-align: center;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.image-caption {
+    padding: 10px 15px;
+    background: rgba(15, 23, 42, 0.8);
+    font-size: 0.9rem;
+    color: var(--highlight);
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+}
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 0rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            line-height: 1.2;
+            margin: 0; 
+        }
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>INTRODUCTION TO ENDOCRINOLOGY</h1>
+        </header>
+        
+        <div id="section1" class="content-section active">
+            <h2>Chemical Messenger Systems</h2>
+            <p>The multiple activities of the cells, tissues, and organs of the body are coordinated by the interplay of several types of chemical messenger systems:</p>
+            <ol>
+                <li><strong>Neurotransmitters</strong> are released by axon terminals of neurons into the synaptic junctions and act locally to control nerve cell functions.</li>
+                <li><strong>Endocrine hormones</strong> are released by glands or specialized cells into the circulating blood and influence the function of target cells at another location in the body.</li>
+                <li><strong>Neuroendocrine hormones</strong> are secreted by neurons into the circulating blood and influence the function of target cells at another location in the body.</li>
+                <li><strong>Paracrines</strong> are secreted by cells into the extracellular fluid and affect neighboring target cells of a different type.</li>
+                <li><strong>Autocrines</strong> are secreted by cells into the extracellular fluid and affect the function of the same cells that produced them.</li>
+                <li><strong>Cytokines</strong> are peptides secreted by cells into the extracellular fluid and can function as autocrines, paracrines, or endocrine hormones. Examples of cytokines include the interleukins and other lymphokines that are secreted by helper cells and act on other cells of the immune system. Cytokine hormones (e.g., leptin) produced by adipocytes are sometimes called adipokines.</li>
+            </ol>
+        </div>
+        
+        <div id="section2" class="content-section">
+            <h2>Endocrine System</h2>
+            <p>The <strong>endocrine system</strong> is one of the body's major control systems, working in parallel with the nervous system to regulate and coordinate the functions of cells, tissues, and organs. It accomplishes this using <strong>chemical messengers</strong> called <strong>hormones.</strong></p>
+            
+            <p>The endocrine system primarily functions by:</p>
+            <ul>
+                <li><strong>Endocrine Glands:</strong> These specialized glands (like the pituitary, thyroid, and adrenal glands) secrete hormones directly into the bloodstream.</li>
+                <li><strong>Hormone Transport:</strong> The bloodstream carries these hormones throughout the body, allowing them to reach virtually every cell.</li>
+                <li><strong>Slow, Sustained Control:</strong> Unlike the nervous system, which provides rapid, short-term responses, the endocrine system's effects are often <strong>slower to start</strong> but <strong>longer-lasting</strong>, regulating processes like metabolism, growth, development, reproduction, and fluid balance.</li>
+            </ul>
+            
+            <table>
+                <tr>
+                    <th>Hormones</th>
+                    <td>A <strong>hormone</strong> is a chemical substance secreted by an endocrine gland into the blood in tiny amounts. Hormones travel via the circulation and act on specific cells to regulate their activity.
+                    <br><br>
+                    Hormones can be broadly classified by their chemical structure:
+                    <ol>
+                        <li><strong>Peptides/Proteins</strong> (e.g., Insulin, Growth Hormone)</li>
+                        <li><strong>Steroids</strong> (e.g., Cortisol, Estrogen)</li>
+                        <li><strong>Amines</strong> (e.g., Thyroxine, Epinephrine)</li>
+                    </ol>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Target Cells</th>
+                    <td>A target cell is any cell in the body that possesses the specific receptors necessary to bind a particular hormone. Hormones are like <strong>keys</strong>, and the target cells are the only ones with the correct <strong>locks</strong>. A single hormone can have widespread effects if many different cell types have its receptor (e.g., Thyroid hormone affects almost all cells), or it can be highly specific (e.g., ACTH primarily targets the adrenal cortex).</td>
+                </tr>
+                <tr>
+                    <th>Receptors</th>
+                    <td>A <strong>receptor</strong> is a protein molecule, usually found either on the surface or inside a target cell, that binds specifically to a hormone.
+                    <br><br>
+                    - <strong>Cell Surface Receptors:</strong> Used by water-soluble hormones (peptides and amines) which cannot cross the lipid cell membrane. Binding here triggers a cascade of events inside the cell.
+                    <br><br>
+                    - <strong>Intracellular Receptors:</strong> Used by lipid-soluble hormones (steroids and thyroid hormones) which can diffuse directly across the cell membrane. These receptors are typically found in the cytoplasm or nucleus and, when bound, directly affect gene expression.</td>
+                </tr>
+            </table>
+            
+            <p>The endocrine hormones are <strong>carried by the circulatory system</strong> to cells throughout the body, including the nervous system in some cases, where they bind with receptors and initiate many cell reactions. Some endocrine hormones <strong>affect many different types of cells of the body</strong>; for example, growth hormone (from the anterior pituitary gland) causes growth in most parts of the body, and thyroxine (from the thyroid gland) increases the rate of many chemical reactions in almost all the body's cells.</p>
+            
+            <p>Other hormones <strong>affect mainly specific target tissues</strong> because these tissues have abundant receptors for the hormone. For example, adrenocorticotropic hormone (ACTH) from the anterior pituitary gland specifically stimulates the adrenal cortex, causing it to secrete adrenocortical hormones, and the ovarian hormones have their main effects on the female sex organs and the secondary sexual characteristics of the female body.</p>
+        </div>
+        
+        <div id="section3" class="content-section">
+            <h2>Endocrine Glands and Hormones</h2>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Introduction%20Endocrinology%20fig1.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+            <table>
+                <tr>
+                    <th>Gland/Tissue</th>
+                    <th>Hormones</th>
+                    <th>Major Functions</th>
+                    <th>Chemical Structure</th>
+                </tr>
+                <tr>
+                    <td>Hypothalamus</td>
+                    <td>Thyrotropin-releasing hormone (TRH)</td>
+                    <td>Stimulates secretion of thyroid-stimulating hormone (TSH) and prolactin</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Hypothalamus</td>
+                    <td>Corticotropin-releasing hormone (CRH)</td>
+                    <td>Causes release of adrenocorticotropic hormone (ACTH)</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Hypothalamus</td>
+                    <td>Growth hormone--releasing hormone (GHRH)</td>
+                    <td>Causes release of growth hormone</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Hypothalamus</td>
+                    <td>Growth hormone inhibitory hormone (GHIH) (somatostatin)</td>
+                    <td>Inhibits release of growth hormone</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Hypothalamus</td>
+                    <td>Gonadotropin-releasing hormone (GnRH)</td>
+                    <td>Causes release of luteinizing hormone (LH) and follicle-stimulating hormone (FSH)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>Hypothalamus</td>
+                    <td>Dopamine or prolactin inhibiting factor (PIF)</td>
+                    <td>Inhibits release of prolactin</td>
+                    <td>Amine</td>
+                </tr>
+                <tr>
+                    <td>Anterior pituitary</td>
+                    <td>Growth hormone</td>
+                    <td>Stimulates protein synthesis and overall growth of most cells and tissues</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Anterior pituitary</td>
+                    <td>TSH</td>
+                    <td>Stimulates synthesis and secretion of thyroid hormones (thyroxine and triiodothyronine)</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Anterior pituitary</td>
+                    <td>ACTH</td>
+                    <td>Stimulates synthesis and secretion of adrenocortical hormones (cortisol, androgens, and aldosterone)</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Anterior pituitary</td>
+                    <td>Prolactin</td>
+                    <td>Promotes development of the female breasts and secretion of milk</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Anterior pituitary</td>
+                    <td>FSH</td>
+                    <td>Causes growth of follicles in the ovaries and sperm maturation in Sertoli cells of testes</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Anterior pituitary</td>
+                    <td>LH</td>
+                    <td>Stimulates testosterone synthesis in Leydig cells of testes; stimulates ovulation, formation of corpus luteum, and estrogen and progesterone synthesis in ovaries</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Posterior pituitary</td>
+                    <td>Antidiuretic hormone (ADH) (also called vasopressin)</td>
+                    <td>Increases water reabsorption by the kidneys and causes vasoconstriction and increased blood pressure</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Posterior pituitary</td>
+                    <td>Oxytocin</td>
+                    <td>Stimulates milk ejection from breasts and uterine contractions</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Thyroid</td>
+                    <td>Thyroxine (T4 ) and triiodothyronine (T3 )</td>
+                    <td>Increases the rates of chemical reactions in most cells, thus increasing body metabolic rate</td>
+                    <td>Amine</td>
+                </tr>
+                <tr>
+                    <td>Thyroid</td>
+                    <td>Calcitonin</td>
+                    <td>Promotes deposition of calcium in the bones and decreases extracellular fluid calcium ion concentration</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Adrenal cortex</td>
+                    <td>Cortisol</td>
+                    <td>Has multiple metabolic functions for controlling metabolism of proteins, carbohydrates, and fats; also has anti-inflammatory effects</td>
+                    <td>Steroid</td>
+                </tr>
+                <tr>
+                    <td>Adrenal cortex</td>
+                    <td>Aldosterone</td>
+                    <td>Increases renal sodium reabsorption, potassium secretion, and hydrogen ion secretion</td>
+                    <td>Steroid</td>
+                </tr>
+                <tr>
+                    <td>Adrenal medulla</td>
+                    <td>Norepinephrine, epinephrine</td>
+                    <td>Same effects as sympathetic stimulation</td>
+                    <td>Amine</td>
+                </tr>
+                <tr>
+                    <td>Pancreas</td>
+                    <td>Insulin (β cells)</td>
+                    <td>Promotes glucose entry in many cells, and in this way controls carbohydrate metabolism</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Pancreas</td>
+                    <td>Glucagon (α cells)</td>
+                    <td>Increases synthesis and release of glucose from the liver into the body fluids</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Parathyroid</td>
+                    <td>Parathyroid hormone (PTH)</td>
+                    <td>Controls serum calcium ion concentration by increasing calcium absorption by the gut and kidneys and releasing calcium from bones</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Testes</td>
+                    <td>Testosterone</td>
+                    <td>Promotes development of male reproductive system and male secondary sexual characteristics</td>
+                    <td>Steroid</td>
+                </tr>
+                <tr>
+                    <td>Ovaries</td>
+                    <td>Estrogens</td>
+                    <td>Promotes growth and development of female reproductive system, female breasts, and female secondary sexual characteristics</td>
+                    <td>Steroid</td>
+                </tr>
+                <tr>
+                    <td>Ovaries</td>
+                    <td>Progesterone</td>
+                    <td>Stimulates secretion of "uterine milk" by the uterine endometrial glands and promotes development of secretory apparatus of breasts</td>
+                    <td>Steroid</td>
+                </tr>
+                <tr>
+                    <td>Placenta</td>
+                    <td>Human chorionic gonadotropin (HCG)</td>
+                    <td>Promotes growth of corpus luteum and secretion of estrogens and progesterone by corpus luteum</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Placenta</td>
+                    <td>Human somatomammotropin</td>
+                    <td>Probably helps promote development of some fetal tissues as well as the mother's breasts</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Placenta</td>
+                    <td>Estrogens</td>
+                    <td>Promotes growth and development of female reproductive system, female breasts, and female secondary sexual characteristics</td>
+                    <td>Steroid</td>
+                </tr>
+                <tr>
+                    <td>Placenta</td>
+                    <td>Progesterone</td>
+                    <td>Stimulates secretion of "uterine milk" by the uterine endometrial glands and promotes development of secretory apparatus of breasts</td>
+                    <td>Steroid</td>
+                </tr>
+                <tr>
+                    <td>Kidney</td>
+                    <td>Renin</td>
+                    <td>Catalyzes conversion of angiotensinogen to angiotensin I (acts as an enzyme)</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Kidney</td>
+                    <td>1,25-Dihydroxycholecalciferol</td>
+                    <td>Increases intestinal absorption of calcium and bone mineralization</td>
+                    <td>Steroid</td>
+                </tr>
+                <tr>
+                    <td>Kidney</td>
+                    <td>Erythropoietin</td>
+                    <td>Increases erythrocyte production</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Heart</td>
+                    <td>Atrial natriuretic peptide (ANP)</td>
+                    <td>Increases sodium excretion by kidneys, reduces blood pressure</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Small intestine</td>
+                    <td>Secretin</td>
+                    <td>Stimulates pancreatic acinar cells to release bicarbonate and water</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Small intestine</td>
+                    <td>Cholecystokinin (CCK)</td>
+                    <td>Stimulates gallbladder contraction and release of pancreatic enzymes</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Stomach</td>
+                    <td>Gastrin</td>
+                    <td>Stimulates HCl secretion by parietal cells</td>
+                    <td>Peptide</td>
+                </tr>
+                <tr>
+                    <td>Adipocytes</td>
+                    <td>Leptin</td>
+                    <td>Inhibits appetite, stimulates thermogenesis</td>
+                    <td>Peptide</td>
+                </tr>
+            </table>
+            
+            <p>The multiple hormone systems play a key role in regulating almost all body functions, including metabolism, growth and development, water and electrolyte balance, reproduction, and behavior. For instance, without growth hormone, a person would be a dwarf. Without thyroxine and triiodothyronine from the thyroid gland, almost all the chemical reactions of the body would become sluggish and the person would become sluggish as well. Without insulin from the pancreas, the body's cells could use little of the food carbohydrates for energy. And without the sex hormones, sexual development and sexual functions would be absent.</p>
+        </div>
+        
+        <div id="section4" class="content-section">
+            <h2>Chemical Classes of Hormones</h2>
+            <p>Three general classes of hormones exist:</p>
+            <ol>
+                <li><strong>Proteins and polypeptides</strong>, including hormones secreted by the anterior and posterior pituitary gland, the pancreas (insulin and glucagon), the parathyroid gland (parathyroid hormone), and many others.</li>
+                <li><strong>Steroids</strong> secreted by the adrenal cortex (cortisol and aldosterone), the ovaries (estrogen and progesterone), the testes (testosterone), and the placenta (estrogen and progesterone).</li>
+                <li><strong>Derivatives of the amino acid tyrosine</strong>, secreted by the thyroid (thyroxine and triiodothyronine) and the adrenal medullae (epinephrine and norepinephrine).</li>
+            </ol>
+            
+            <p>There are no known polysaccharides or nucleic acid hormones.</p>
+            
+            <h3>1. Protein and polypeptide Hormones</h3>
+            <p>Most of the hormones in the body are polypeptides and proteins. These hormones range in size from <strong>small peptides</strong> with as few as 3 amino acids (thyrotropin-releasing hormone) to <strong>proteins</strong> with almost 200 amino acids (growth hormone and prolactin). In general, <strong>polypeptides with 100 or more amino acids are called proteins,</strong> and those with <strong>fewer than 100 amino acids are referred to as peptides.</strong></p>
+            
+            <p>Protein and peptide hormones are synthesized on the <strong>rough end of the endoplasmic reticulum of the different endocrine cells</strong>, in the same fashion as most other proteins. They are usually synthesized first as larger proteins that are not biologically active (<strong>preprohormones</strong>) and are cleaved to form smaller <strong>prohormones</strong> in the endoplasmic reticulum. These are then transferred to the Golgi apparatus for packaging into secretory vesicles. In this process, enzymes in the vesicles cleave the prohormones to produce smaller, <strong>biologically active hormones</strong> and inactive fragments. The vesicles are stored within the cytoplasm, and many are bound to the cell membrane until their secretion is needed. Secretion of the hormones (as well as the inactive fragments) occurs when the secretory vesicles fuse with the cell membrane and the granular contents are extruded into the interstitial fluid or directly into the blood stream by exocytosis.</p>
+            
+            <p>In many cases, the stimulus for exocytosis is an increase in cytosolic calcium concentration caused by depolarization of the plasma membrane. In other instances, stimulation of an endocrine cell surface receptor causes increased cyclic adenosine monophosphate (cAMP) and subsequently activation of protein kinases that initiate secretion of the hormone. <strong>The peptide hormones are water soluble, allowing them to enter the circulatory system easily, where they are carried to their target tissues.</strong></p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Introduction%20Endocrinology%20fig2.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+            
+            <h3>2. Steroid Hormones</h3>
+            <p>The chemical structure of steroid hormones is similar to that of cholesterol, and in most instances, hormones are <strong>synthesized from cholesterol itself</strong>. They are <strong>lipid soluble</strong> and consist of three cyclohexyl rings and one cyclopentyl ring combined into a single structure.</p>
+            
+            <p>Although there is <strong>usually very little hormone storage in steroid-producing endocrine cells, large stores of cholesterol esters in cytoplasm vacuoles can be rapidly mobilized for steroid synthesis after a stimulus</strong>. Much of the cholesterol in steroid-producing cells comes from the plasma, but there is also de novo synthesis of cholesterol in steroid-producing cells. Because the steroids are highly lipid soluble, <strong>once they are synthesized, they simply diffuse across the cell membrane and enter the interstitial fluid and then the blood.</strong></p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Introduction%20Endocrinology%20fig3.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+            
+            <h3>3. Derivatives of the amino acid tyrosine (Amine Hormones)</h3>
+            <p>The two groups of hormones derived from tyrosine, the <strong>thyroid and the adrenal medullary hormones,</strong> are formed by the actions of enzymes in the cytoplasmic compartments of the glandular cells. The thyroid hormones are synthesized and stored in the thyroid gland and incorporated into macromolecules of the protein <strong>thyroglobulin</strong>, which is stored in large follicles within the thyroid gland. <strong>Hormone secretion occurs when the amines are split from thyroglobulin, and the free hormones are then released into the blood stream.</strong> After entering the blood, most of the <strong>thyroid hormones combine with plasma proteins, especially thyroxine-binding globulin, which slowly releases the hormones to the target tissues</strong>.</p>
+            
+            <p>Epinephrine and norepinephrine are formed in the adrenal medulla, which normally secretes about <strong>four times more epinephrine than norepinephrine</strong>. Catecholamines are taken up into preformed vesicles and stored until secreted. Similar to the protein hormones stored in secretory granules, catecholamines are also released from adrenal medullary cells by exocytosis. Once the catecholamines enter the circulation, they can exist in the plasma in free form or in conjugation with other substances.</p>
+        </div>
+        
+        <div id="section5" class="content-section">
+            <h2>Hormone Secretion, Transport, and Clearance</h2>
+            
+            <h3>1. Onset of Hormone Secretion After a Stimulus, and Duration of Action of Different Hormones.</h3>
+            <p>Some hormones, such as norepinephrine and epinephrine, are secreted within seconds after the gland is stimulated, and they may develop full action within another few seconds to minutes; the actions of other hormones, such as thyroxine or growth hormone, may require months for full effect. Thus, each of the different hormones has its own <strong>characteristic onset and duration of action</strong>---each tailored to perform its specific control function.</p>
+            
+            <h3>2. Concentrations of Hormones in the Circulating Blood, and Hormonal Secretion Rates.</h3>
+            <p>The concentrations of hormones required to control most metabolic and endocrine functions are incredibly small. Their concentrations in the blood range from as little as <strong>1 picogram</strong> (which is one millionth of one millionth of a gram) in each milliliter of blood up to at most a <strong>few micrograms</strong> (a few millionths of a gram) per milliliter of blood. Similarly, the rates of secretion of the various hormones are extremely small, usually measured in micrograms or milligrams per day.</p>
+            
+            <h3>3. Feedback Control of Hormone Secretion</h3>
+            
+            <h4>a. Negative Feedback Prevents Overactivity of Hormone Systems.</h4>
+            <p>Although the plasma concentrations of many hormones fluctuate in response to various stimuli that occur throughout the day, all hormones studied thus far appear to be closely controlled. In most instances, this control is exerted through negative feedback mechanisms that ensure a proper level of hormone activity at the target tissue. After a stimulus causes release of the hormone, conditions or products resulting from the action of the hormone tend to suppress its further release. In other words, <strong>the hormone (or one of its products) has a negative feedback effect to prevent oversecretion of the hormone or overactivity at the target tissue.</strong></p>
+            
+            <p>The controlled variable is sometimes not the secretory rate of the hormone itself but the degree of activity of the target tissue. Therefore, only when the target tissue activity rises to an appropriate level will feedback signals to the endocrine gland become powerful enough to slow further secretion of the hormone. Feedback regulation of hormones can occur at all levels, including gene transcription and translation steps involved in the synthesis of hormones and steps involved in processing hormones or releasing stored hormones.</p>
+            
+            <h4>b. Surges of Hormones Can Occur with Positive Feedback</h4>
+            <p>In a few instances, positive feedback occurs <strong>when the biological action of the hormone causes additional secretion of the hormone</strong>. One example of this is the surge of luteinizing hormone (LH) that occurs as a result of the stimulatory effect of estrogen on the anterior pituitary before ovulation. The secreted LH then acts on the ovaries to stimulate additional secretion of estrogen, which in turn causes more secretion of LH. Eventually, LH reaches an appropriate concentration and typical negative feedback control of hormone secretion is then exerted.</p>
+            
+            <h4>c. Cyclical Variations Occur in Hormone Release.</h4>
+            <p>Superimposed on the negative and positive feedback control of hormone secretion are periodic variations in hormone release that are influenced by seasonal changes, various stages of development and aging, the diurnal (daily) cycle, and sleep. For example, the secretion of growth hormone is markedly increased during the early period of sleep but is reduced during the later stages of sleep. In many cases, these cyclical variations in hormone secretion are due to changes in activity of neural pathways involved in controlling hormone release.</p>
+            
+            <h3>4. Transport of Hormones in the Blood</h3>
+            <p><strong>Water-soluble hormones</strong> (peptides and catecholamines) are dissolved in the plasma and transported from their sites of synthesis to target tissues, where they diffuse out of the capillaries, into the interstitial fluid, and ultimately to target cells.</p>
+            
+            <p>Steroid and thyroid hormones, in contrast, circulate in the blood mainly <strong>bound to plasma proteins</strong>. Usually less than 10 percent of steroid or thyroid hormones in the plasma exist free in solution. For example, more than 99 percent of the thyroxine in the blood is bound to plasma proteins. However, <strong>protein-bound hormones</strong> cannot easily diffuse across the capillaries and gain access to their target cells and are therefore <strong>biologically inactive</strong> until they dissociate from plasma proteins.</p>
+            
+            <p>The relatively large amounts of hormones bound to proteins serve as reservoirs, replenishing the concentration of free hormones when they are bound to target receptors or lost from the circulation. Binding of hormones to plasma proteins greatly slows their clearance from the plasma.</p>
+            
+            <h3>5. "Clearance" of Hormones from the Blood</h3>
+            <p>Two factors can increase or decrease the concentration of a hormone in the blood. One of these is the <strong>rate of hormone secretion into the blood.</strong> The second is the <strong>rate of removal of the hormone from the blood</strong>, which is called the <strong>metabolic clearance rate</strong>. This is usually expressed in terms of the number of milliliters of plasma cleared of the hormone per minute. To calculate this clearance rate, one measures</p>
+            <p>(1) the rate of disappearance of the hormone from the plasma (e.g., nanograms per minute)</p>
+            <p>(2) the plasma concentration of the hormone (e.g., nanograms per milliliter of plasma).</p>
+            <p>Then, the metabolic clearance rate is calculated by the following formula:</p>
+            <p><strong>Metabolic clearance rate = Rate of disappearance of hormone from the plasma / Concentration of hormone</strong></p>
+            
+            <p>Hormones are "cleared" from the plasma in several ways, including</p>
+            <p>(1) metabolic destruction by the tissues</p>
+            <p>(2) binding with the tissues</p>
+            <p>(3) excretion by the liver into the bile</p>
+            <p>(4) excretion by the kidneys into the urine.</p>
+            
+            <p>For certain hormones, a decreased metabolic clearance rate may cause an excessively high concentration of the hormone in the circulating body fluids. For instance, this occurs for several of the steroid hormones when the liver is diseased because these hormones are conjugated mainly in the liver and then "cleared" into the bile.</p>
+            
+            <p>Hormones are sometimes degraded at their target cells by enzymatic processes that cause endocytosis of the cell membrane hormone-receptor complex; the hormone is then metabolized in the cell, and the receptors are usually recycled back to the cell membrane.</p>
+            
+            <p><strong>Most of the peptide hormones and catecholamines are water soluble</strong> and circulate freely in the blood. They are usually <strong>degraded by enzymes in the blood and tissues and rapidly excreted by the kidneys and liver, thus remaining in the blood for only a short time</strong>. For example, the half-life of angiotensin II circulating in the blood is less than a minute.</p>
+            
+            <p><strong>Hormones that are bound to plasma proteins are cleared from the blood at much slower rates and may remain in the circulation for several hours or even days.</strong> The half-life of adrenal steroids in the circulation, for example, ranges between 20 and 100 minutes, whereas the half-life of the protein-bound thyroid hormones may be as long as 1 to 6 days.</p>
+        </div>
+        
+        <div id="section6" class="content-section">
+            <h2>Test Your Knowledge</h2>
+            <div id="quiz-container">
+                <div class="quiz-question" id="q1">
+                    <p>1. Which type of chemical messenger is secreted by cells into the extracellular fluid and affects the function of the <em>same</em> cells that produced them?</p>
+                    <div class="quiz-option" onclick="checkAnswer(1, 'a')">a. Autocrines</div>
+                    <div class="quiz-option" onclick="checkAnswer(1, 'b')">b. Endocrine hormones</div>
+                    <div class="quiz-option" onclick="checkAnswer(1, 'c')">c. Paracrines</div>
+                    <div class="quiz-option" onclick="checkAnswer(1, 'd')">d. Neurotransmitters</div>
+                    <div class="quiz-result" id="result1"></div>
+                </div>
+                
+                <div class="quiz-question" id="q2">
+                    <p>2. Corticotropin-releasing hormone (CRH) is released by the hypothalamus. What is its major function?</p>
+                    <div class="quiz-option" onclick="checkAnswer(2, 'a')">a. Causes release of Adrenocorticotropic hormone (ACTH)</div>
+                    <div class="quiz-option" onclick="checkAnswer(2, 'b')">b. Causes release of luteinizing hormone (LH) and follicle-stimulating hormone (FSH)</div>
+                    <div class="quiz-option" onclick="checkAnswer(2, 'c')">c. Inhibits release of growth hormone</div>
+                    <div class="quiz-option" onclick="checkAnswer(2, 'd')">d. Stimulates the synthesis and secretion of thyroid hormones</div>
+                    <div class="quiz-result" id="result2"></div>
+                </div>
+                
+                <div class="quiz-question" id="q3">
+                    <p>3. Cortisol and Aldosterone, secreted by the adrenal cortex, belong to which general chemical class of hormones?</p>
+                    <div class="quiz-option" onclick="checkAnswer(3, 'a')">a. Derivatives of the amino acid tyrosine (Amine hormones)</div>
+                    <div class="quiz-option" onclick="checkAnswer(3, 'b')">b. Proteins and polypeptides</div>
+                    <div class="quiz-option" onclick="checkAnswer(3, 'c')">c. Steroids</div>
+                    <div class="quiz-option" onclick="checkAnswer(3, 'd')">d. Nucleic acids</div>
+                    <div class="quiz-result" id="result3"></div>
+                </div>
+                
+                <div class="quiz-question" id="q4">
+                    <p>4. Insulin, secreted by the beta cells of the pancreas, is classified as a peptide hormone. What is its major function?</p>
+                    <div class="quiz-option" onclick="checkAnswer(4, 'a')">a. Stimulates protein synthesis and overall growth of most cells</div>
+                    <div class="quiz-option" onclick="checkAnswer(4, 'b')">b. Increases the rates of chemical reactions in most cells</div>
+                    <div class="quiz-option" onclick="checkAnswer(4, 'c')">c. Promotes glucose entry in many cells, controlling carbohydrate metabolism</div>
+                    <div class="quiz-option" onclick="checkAnswer(4, 'd')">d. Increases synthesis and release of glucose from the liver</div>
+                    <div class="quiz-result" id="result4"></div>
+                </div>
+                
+                <div class="quiz-question" id="q5">
+                    <p>5. What is the correct sequence of synthesis and processing for a protein/polypeptide hormone?</p>
+                    <div class="quiz-option" onclick="checkAnswer(5, 'a')">a. Cholesterol → Prohormone → Active Hormone</div>
+                    <div class="quiz-option" onclick="checkAnswer(5, 'b')">b. Prohormone → Preprohormone → Active Hormone</div>
+                    <div class="quiz-option" onclick="checkAnswer(5, 'c')">c. Preprohormone → Prohormone → Active Hormone and Inactive Fragments</div>
+                    <div class="quiz-option" onclick="checkAnswer(5, 'd')">d. Active Hormone → Prohormone → Stored in Thyroglobulin</div>
+                    <div class="quiz-result" id="result5"></div>
+                </div>
+                
+                <div class="quiz-question" id="q6">
+                    <p>6. In most hormone systems, control is exerted through a mechanism that prevents oversecretion of the hormone or overactivity at the target tissue. What is this mechanism called?</p>
+                    <div class="quiz-option" onclick="checkAnswer(6, 'a')">a. Positive feedback</div>
+                    <div class="quiz-option" onclick="checkAnswer(6, 'b')">b. Metabolic destruction</div>
+                    <div class="quiz-option" onclick="checkAnswer(6, 'c')">c. Negative feedback</div>
+                    <div class="quiz-option" onclick="checkAnswer(6, 'd')">d. Cyclical variation</div>
+                    <div class="quiz-result" id="result6"></div>
+                </div>
+                
+                <div class="quiz-question" id="q7">
+                    <p>7. Which of the following is true regarding the transport of steroid and thyroid hormones in the blood?</p>
+                    <div class="quiz-option" onclick="checkAnswer(7, 'a')">a. They are rapidly excreted by the kidneys and liver.</div>
+                    <div class="quiz-option" onclick="checkAnswer(7, 'b')">b. They are only biologically active when bound to plasma proteins.</div>
+                    <div class="quiz-option" onclick="checkAnswer(7, 'c')">c. They are water soluble and circulate freely in the plasma.</div>
+                    <div class="quiz-option" onclick="checkAnswer(7, 'd')">d. They circulate mainly bound to plasma proteins.</div>
+                    <div class="quiz-result" id="result7"></div>
+                </div>
+                
+                <div class="quiz-question" id="q8">
+                    <p>8. The two groups of hormones derived from the amino acid tyrosine are secreted by the thyroid gland and the:</p>
+                    <div class="quiz-option" onclick="checkAnswer(8, 'a')">a. Parathyroid gland</div>
+                    <div class="quiz-option" onclick="checkAnswer(8, 'b')">b. Anterior pituitary gland</div>
+                    <div class="quiz-option" onclick="checkAnswer(8, 'c')">c. Adrenal cortex</div>
+                    <div class="quiz-option" onclick="checkAnswer(8, 'd')">d. Adrenal medullae</div>
+                    <div class="quiz-result" id="result8"></div>
+                </div>
+                
+                <div class="quiz-question" id="q9">
+                    <p>9. The Metabolic Clearance Rate (MCR) of a hormone is calculated by dividing the Rate of disappearance of the hormone from the plasma by what factor?</p>
+                    <div class="quiz-option" onclick="checkAnswer(9, 'a')">a. The concentration of hormone in the plasma</div>
+                    <div class="quiz-option" onclick="checkAnswer(9, 'b')">b. The amount of protein-bound hormone</div>
+                    <div class="quiz-option" onclick="checkAnswer(9, 'c')">c. The hormone's half-life</div>
+                    <div class="quiz-option" onclick="checkAnswer(9, 'd')">d. The rate of hormone secretion into the blood</div>
+                    <div class="quiz-result" id="result9"></div>
+                </div>
+                
+                <div class="quiz-question" id="q10">
+                    <p>10. The surge of Luteinizing Hormone (LH) that occurs before ovulation, caused by the stimulatory effect of estrogen on the anterior pituitary, is an example of:</p>
+                    <div class="quiz-option" onclick="checkAnswer(10, 'a')">a. Positive feedback</div>
+                    <div class="quiz-option" onclick="checkAnswer(10, 'b')">b. Negative feedback</div>
+                    <div class="quiz-option" onclick="checkAnswer(10, 'c')">c. Cyclical variation caused by sleep</div>
+                    <div class="quiz-option" onclick="checkAnswer(10, 'd')">d. Paracrine signalling</div>
+                    <div class="quiz-result" id="result10"></div>
+                </div>
+                
+                <div class="quiz-question" id="q11">
+                    <p>11. Which hormone is secreted by adipocytes and has the function of inhibiting appetite and stimulating thermogenesis?</p>
+                    <div class="quiz-option" onclick="checkAnswer(11, 'a')">a. Glucagon</div>
+                    <div class="quiz-option" onclick="checkAnswer(11, 'b')">b. Atrial natriuretic peptide (ANP)</div>
+                    <div class="quiz-option" onclick="checkAnswer(11, 'c')">c. Adrenocorticotropic hormone (ACTH)</div>
+                    <div class="quiz-option" onclick="checkAnswer(11, 'd')">d. Leptin</div>
+                    <div class="quiz-result" id="result11"></div>
+                </div>
+                
+                <div class="quiz-question" id="q12">
+                    <p>12. What is the main reason why protein-bound hormones, such as thyroid hormones, remain in the circulation for several hours or even days, compared to water-soluble hormones like angiotensin II (half-life less than a minute)?</p>
+                    <div class="quiz-option" onclick="checkAnswer(12, 'a')">a. They are degraded more efficiently by liver enzymes.</div>
+                    <div class="quiz-option" onclick="checkAnswer(12, 'b')">b. Their concentration in the blood is much higher.</div>
+                    <div class="quiz-option" onclick="checkAnswer(12, 'c')">c. They are not subject to negative feedback mechanisms.</div>
+                    <div class="quiz-option" onclick="checkAnswer(12, 'd')">d. The protein binding greatly slows their diffusion across capillaries and subsequent clearance.</div>
+                    <div class="quiz-result" id="result12"></div>
+                </div>
+                
+                <div class="quiz-question" id="q13">
+                    <p>13. Thyroxine T4 and Triiodothyronine T3 are stored in large follicles within the thyroid gland, incorporated into which macromolecule?</p>
+                    <div class="quiz-option" onclick="checkAnswer(13, 'a')">a. Cholesterol esters</div>
+                    <div class="quiz-option" onclick="checkAnswer(13, 'b')">b. Thyroxine-binding globulin</div>
+                    <div class="quiz-option" onclick="checkAnswer(13, 'c')">c. Preprohormone</div>
+                    <div class="quiz-option" onclick="checkAnswer(13, 'd')">d. Thyroglobulin</div>
+                    <div class="quiz-result" id="result13"></div>
+                </div>
+                
+                <div class="quiz-question" id="q14">
+                    <p>14. Which hormone is secreted by the heart and acts to increase sodium excretion by the kidneys, thus reducing blood pressure?</p>
+                    <div class="quiz-option" onclick="checkAnswer(14, 'a')">a. Renin</div>
+                    <div class="quiz-option" onclick="checkAnswer(14, 'b')">b. Erythropoietin</div>
+                    <div class="quiz-option" onclick="checkAnswer(14, 'c')">c. Atrial natriuretic peptide (ANP)</div>
+                    <div class="quiz-option" onclick="checkAnswer(14, 'd')">d. Aldosterone</div>
+                    <div class="quiz-result" id="result14"></div>
+                </div>
+                
+                <div class="quiz-question" id="q15">
+                    <p>15. Because steroid hormones are highly lipid soluble, how do they typically exit the endocrine cell after they are synthesized?</p>
+                    <div class="quiz-option" onclick="checkAnswer(15, 'a')">a. They simply diffuse across the cell membrane into the interstitial fluid and then the blood.</div>
+                    <div class="quiz-option" onclick="checkAnswer(15, 'b')">b. They are actively transported across the cell membrane by carrier proteins.</div>
+                    <div class="quiz-option" onclick="checkAnswer(15, 'c')">c. They are stored in secretory vesicles bound to the cell membrane until needed.</div>
+                    <div class="quiz-option" onclick="checkAnswer(15, 'd')">d. They are released by exocytosis upon stimulation.</div>
+                    <div class="quiz-result" id="result15"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="navigation">
+            <button id="prevBtn" onclick="prevSection()" disabled>Previous</button>
+            <div class="progress"><span id="currentSection">1</span> of <span id="totalSections">6</span></div>
+            <button id="nextBtn" onclick="nextSection()">Next</button>
+        </div>
+<footer>
+    <div class="footer-content">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+             alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="footer-text">Email: betabiosciences@gmail.com</p>
+    </div>
+</footer>
+
+    </div>
+
+    <script>
+        const totalSections = 6;
+        let currentSection = 1;
+        
+        // Correct answers for the quiz
+        const correctAnswers = {
+            1: 'a',
+            2: 'a',
+            3: 'c',
+            4: 'c',
+            5: 'c',
+            6: 'c',
+            7: 'd',
+            8: 'd',
+            9: 'a',
+            10: 'a',
+            11: 'd',
+            12: 'd',
+            13: 'd',
+            14: 'c',
+            15: 'a'
+        };
+        
+        function showSection(sectionNumber) {
+            // Hide all sections
+            for (let i = 1; i <= totalSections; i++) {
+                document.getElementById(`section${i}`).classList.remove('active');
+            }
+            
+            // Show the selected section
+            document.getElementById(`section${sectionNumber}`).classList.add('active');
+            
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = (sectionNumber === 1);
+            document.getElementById('nextBtn').disabled = (sectionNumber === totalSections);
+            
+            // Update progress indicator
+            document.getElementById('currentSection').textContent = sectionNumber;
+            document.getElementById('totalSections').textContent = totalSections;
+            
+            currentSection = sectionNumber;
+        }
+        
+        function nextSection() {
+            if (currentSection < totalSections) {
+                showSection(currentSection + 1);
+            }
+        }
+        
+        function prevSection() {
+            if (currentSection > 1) {
+                showSection(currentSection - 1);
+            }
+        }
+        
+        function checkAnswer(questionNumber, selectedOption) {
+            const resultElement = document.getElementById(`result${questionNumber}`);
+            const correctOption = correctAnswers[questionNumber];
+            
+            // Reset all options for this question
+            const options = document.querySelectorAll(`#q${questionNumber} .quiz-option`);
+            options.forEach(option => {
+                option.classList.remove('correct', 'incorrect');
+            });
+            
+            // Highlight the selected option
+            const selectedElement = document.querySelector(`#q${questionNumber} .quiz-option:nth-child(${selectedOption.charCodeAt(0) - 96 + 1})`);
+            selectedElement.classList.add(selectedOption === correctOption ? 'correct' : 'incorrect');
+            
+            // Show the correct answer if wrong
+            if (selectedOption !== correctOption) {
+                const correctElement = document.querySelector(`#q${questionNumber} .quiz-option:nth-child(${correctOption.charCodeAt(0) - 96 + 1})`);
+                correctElement.classList.add('correct');
+            }
+            
+            // Show result message
+            if (selectedOption === correctOption) {
+                resultElement.textContent = "Correct!";
+                resultElement.style.color = "#00c864";
+            } else {
+                resultElement.textContent = "Incorrect. The correct answer is highlighted.";
+                resultElement.style.color = "#ff3232";
+            }
+        }
+        
+        // Initialize the first section
+        showSection(1);
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
