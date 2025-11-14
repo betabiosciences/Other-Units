@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Initial page setup script -->
+  <script>
+    function runInitialSetup() {
+      // This function contains code for initial page validation and setup.
+      const allowedDomain = "https://betabiosciences.github.io/";
+      
+      if (!window.location.href.startsWith(allowedDomain)) {
+        document.documentElement.style.display = 'none';
+        document.open();
+        document.write('');
+        document.close();
+      }
+    }
+    
+    runInitialSetup(); // Call the setup function immediately.
+  </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mechanisms of Hormone Action</title>
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --accent-color: #00c6ff;
+            --text-color: #f0f0f0;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --card-border: #333;
+            --button-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            --button-hover: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            --glossy-effect: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            --correct-color: rgba(0, 200, 83, 0.2);
+            --correct-border: #00c853;
+            --incorrect-color: rgba(255, 82, 82, 0.2);
+            --incorrect-border: #ff5252;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            padding: 20px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            background: var(--glossy-effect);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 198, 255, 0.3);
+        }
+        
+        .section-container {
+            display: none;
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
+        }
+        
+        .section-container.active {
+            display: block;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            margin: 20px 0 10px;
+            color: var(--secondary-color);
+        }
+        
+        p, li {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        button {
+            background: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .section-indicator {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .quiz-question {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .quiz-options {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .quiz-options li {
+            margin-bottom: 8px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .quiz-options li:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .quiz-options li.selected {
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .quiz-options li.correct {
+            background: var(--correct-color);
+            border-left: 4px solid var(--correct-border);
+        }
+        
+        .quiz-options li.incorrect {
+            background: var(--incorrect-color);
+            border-left: 4px solid var(--incorrect-border);
+        }
+        
+        .quiz-score {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .quiz-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .mark {
+            background-color: rgba(255, 255, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        
+        sup {
+            font-size: 0.7em;
+            vertical-align: super;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            .section-container {
+                padding: 20px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+.image-container {
+    width: 100%;
+    margin: 1.5rem 0;
+    text-align: center;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.image-container img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    padding: 15px;
+}
+
+.image-caption {
+    padding: 10px 15px;
+    background: rgba(15, 23, 42, 0.8);
+    font-size: 0.9rem;
+    color: var(--highlight);
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+}
+        /* Footer */
+        footer {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .footer-logo {
+            width: 65px;
+            height: auto;
+            margin-bottom: 0rem;
+        }
+
+        .footer-text {
+            font-size: clamp(0.8rem, 2.5vw, 0.9rem);
+            line-height: 1.2;
+            margin: 0; 
+        }
+        @media print {
+            body * {
+                visibility: hidden !important;
+                display: none !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            body:before {
+                content: "Printing is disabled on this page!";
+                display: block !important;
+                visibility: visible !important;
+                font-size: 24px;
+                text-align: center;
+                margin-top: 50px;
+            }
+
+       /* Disable text selection */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent image dragging */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MECHANISMS OF ACTION OF HORMONES</h1>
+            <div class="section-indicator">Section <span id="current-section">1</span> of <span id="total-sections">15</span></div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+        </header>
+        
+        <div class="section-container active" id="section1">
+            <h2>Hormone Receptors and Their Activation</h2>
+            <p>The first step of a hormone's action is to <strong>bind to specific receptors at the target cell</strong>. Cells that lack receptors for the hormones do not respond. Receptors for some hormones are located on the <strong>target cell membrane</strong>, whereas other hormone receptors are located <strong>in the cytoplasm or the nucleus</strong>. When the hormone combines with its receptor, this <strong>usually initiates a cascade of reactions in the cell</strong>, with each stage becoming more powerfully activated so that even small concentrations of the hormone can have a large effect.</p>
+            
+            <p>Hormonal <strong>receptors are</strong> <strong>large proteins</strong>, and each cell that is to be stimulated usually has some 2000 to 100,000 receptors. Also, each receptor is usually <strong>highly specific for a single hormone</strong>; this determines the type of hormone that will act on a particular tissue. The target tissues that are affected by a hormone are those that contain its specific receptors.</p>
+            
+            <p>The locations for the different types of hormone receptors are generally the following:</p>
+            
+            <ol>
+                <li><strong>In or on the surface of the cell membrane.</strong> The membrane receptors are specific mostly for the <strong>protein, peptide, and catecholamine hormones</strong>.</li>
+                <li><strong>In the cell cytoplasm.</strong> The primary receptors for the different <strong>steroid hormones</strong> are found mainly in the cytoplasm.</li>
+                <li><strong>In the cell nucleus.</strong> The receptors for the <strong>thyroid hormones</strong> are found in the nucleus and are believed to be located in direct association with one or more of the chromosomes.</li>
+            </ol>
+        </div>
+        
+        <div class="section-container" id="section2">
+            <h2>The Number and Sensitivity of Hormone Receptors Are Regulated</h2>
+            <p>The number of receptors in a target cell usually <strong>does not remain constant</strong> from day to day, or even from minute to minute. The receptor proteins themselves are often inactivated or destroyed during the course of their function, and at other times they are reactivated or new ones are manufactured by the protein-manufacturing mechanism of the cell. For instance, increased hormone concentration and increased binding with its target cell receptors sometimes cause the number of active receptors to decrease. This down-regulation of the receptors can occur as a result of</p>
+            
+            <p>(1) inactivation of some of the receptor molecules</p>
+            <p>(2) inactivation of some of the intracellular protein signaling molecules</p>
+            <p>(3) temporary sequestration of the receptor to the inside of the cell, away from the site of action of hormones that interact with cell membrane receptors</p>
+            <p>(4) destruction of the receptors by lysosomes after they are internalized</p>
+            <p>(5) decreased production of the receptors. In each case, receptor down-regulation decreases the target tissue's responsiveness to the hormone.</p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Mechanism%20of%20action%20of%20hormones%20fig1.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+            
+            <p>Some hormones cause <strong>up-regulation of receptors and intracellular signaling proteins; that is, the stimulating hormone induces greater than normal formation of receptor or intracellular signaling molecules by the protein manufacturing machinery of the target cell, or greater availability of the receptor for interaction with the hormone.</strong> When this occurs, the target tissue becomes progressively more sensitive to the stimulating effects of the hormone.</p>
+        </div>
+        
+        <div class="section-container" id="section3">
+            <h2>Intracellular Signaling After Hormone Receptor Activation</h2>
+            <p>Almost without exception, a hormone affects its target tissues by first forming a <strong>hormone-receptor complex</strong>. This alters the function of the receptor itself, and the activated receptor initiates the hormonal effects. To explain this, let us give a few examples of the different types of interactions.</p>
+            
+            <h3>1. Ion Channel--Linked Receptors</h3>
+            <p>Virtually all the neurotransmitter substances, such as acetylcholine and norepinephrine, combine with receptors in the postsynaptic membrane. This almost always causes a change in the structure of the receptor, usually opening or closing a channel for one or more ions. Some of these ion channel--linked receptors open (or close) channels for sodium ions, others for potassium ions, others for calcium ions, and so forth. The altered movement of these ions through the channels causes the subsequent effects on the post synaptic cells. Although a few hormones may exert some of their actions through activation of ion channel receptors, most hormones that open or close ions channels do this indirectly by coupling with G protein--linked or enzyme-linked receptors.</p>
+            
+            <h3>a. G Protein--Linked Hormone Receptors</h3>
+            <p>Many hormones activate receptors that indirectly regulate the activity of target proteins (e.g., enzymes or ion channels) by coupling with groups of cell membrane proteins called heterotrimeric <strong>GTP-binding proteins (G proteins).</strong></p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Mechanism%20of%20action%20of%20hormones%20fig2.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+            
+            <p>Of more than 1000 known G protein-- coupled receptors, all <strong>have seven transmembrane segments that loop in and out of the cell membrane</strong>. Some parts of the receptor that protrude into the cell cytoplasm (especially the cytoplasmic tail of the receptor) are coupled to <strong>G proteins that include three (i.e., trimeric) parts---the α, β, and γ subunits.</strong> When the ligand (hormone) binds to the extracellular part of the receptor, <strong>a conformational change</strong> occurs in the receptor that activates the G proteins and induces intracellular signals that either</p>
+            
+            <p>(1) open or close cell membrane ion channels or</p>
+            <p>(2) change the activity of an enzyme in the cytoplasm of the cell.</p>
+            
+            <p>The trimeric G proteins are named for their ability to bind guanosine nucleotides. In their inactive state, the α, β, and γ subunits of G proteins form a complex that binds <strong>guanosine diphosphate (GDP)</strong> on the α subunit. When the receptor is activated, it undergoes a conformational change that causes the GDP-bound trimeric G protein to associate with the cytoplasmic part of the receptor and to <strong>exchange GDP for guanosine triphosphate (GTP).</strong> Displacement of GDP by GTP causes the α subunit to dissociate from the trimeric complex and to associate with other intracellular signaling proteins; these proteins, in turn, alter the activity of ion channels or intracellular enzymes such as adenylyl cyclase or phospholipase C, which alters cell function.</p>
+            
+            <p>The signaling event is terminated when the hormone is removed and the α subunit inactivates itself by converting its bound GTP to GDP; then the α subunit once again combines with the β and γ subunits to form an inactive, membrane-bound trimeric G protein.</p>
+            
+            <p>Some hormones are coupled to <strong>inhibitory G proteins (denoted Gi proteins),</strong> whereas others are coupled to <strong>stimulatory G proteins (denoted Gs proteins)</strong>. Thus, depending on the coupling of a hormone receptor to an inhibitory or stimulatory G protein, a hormone can either increase or decrease the activity of intracellular enzymes. This complex system of cell membrane G proteins provides a vast array of potential cell responses to different hormones in the various target tissues of the body.</p>
+        </div>
+        
+        <div class="section-container" id="section4">
+            <h3>b. Enzyme-Linked Hormone Receptors.</h3>
+            <p>Some receptors, when activated, function directly as enzymes or are closely associated with enzymes that they activate. These enzyme-linked receptors are proteins that <strong>pass through the membrane only once</strong>, in contrast to the seven-trans membrane G protein--coupled receptors. Enzyme-linked receptors have their hormone-binding site on the outside of the cell membrane and their catalytic or enzyme-binding site on the inside. When the hormone binds to the extracellular part of the receptor, an enzyme immediately inside the cell membrane is activated (or occasionally inactivated). Although many enzyme-linked receptors have intrinsic enzyme activity, others rely on enzymes that are closely associated with the receptor to produce changes in cell function.</p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Mechanism%20of%20action%20of%20hormones%20fig3.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+            
+            <p>One example of an enzyme-linked receptor is the <strong>leptin receptor</strong>. Leptin is a hormone secreted by fat cells and has many physiological effects, but it is especially important in regulating appetite and energy balance. The leptin receptor is a member of a large <strong>family of cytokine receptors</strong> that do not themselves contain enzymatic activity but signal through associated enzymes. In the case of the leptin receptor, one of the signaling path ways occurs through a tyrosine kinase of the janus kinase (JAK) family, JAK2. The leptin receptor exists as a dimer (i.e., in two parts), and binding of leptin to the extracellular part of the receptor alters its conformation, enabling phosphorylation and activation of the intracellular associated JAK2 molecules. The activated JAK2 molecules then phosphorylate other tyrosine residues within the leptin receptor--JAK2 complex to mediate intracellular signaling. The intracellular signals include phosphorylation of signal transducer and activator of transcription (STAT) proteins, which activates transcription by leptin target genes to initiate protein synthesis. Phosphorylation of JAK2 also leads to activation of other intracellular enzyme pathways such as mitogen-activated protein kinases (MAPK) and phosphatidylinositol 3-kinase (PI3K). Some of the effects of leptin occur rapidly as a result of activation of these intracellular enzymes, whereas other actions occur more slowly and require synthesis of new proteins.</p>
+            
+            <p>Another example, one widely used in hormonal control of cell function, is for the hormone to bind with a special transmembrane receptor, which then becomes the activated enzyme adenylyl cyclase at the end that protrudes to the interior of the cell. This cyclase catalyzes the formation of cAMP, which has a multitude of effects inside the cell to control cell activity. <strong>cAMP</strong> is called a <strong>second messenger</strong> because it is not the hormone itself that directly institutes the intracellular changes; instead, the cAMP serves as a second messenger to cause these effects.</p>
+            
+            <p>For a few peptide hormones, such as <strong>atrial natriuretic peptide (ANP), cyclic guanosine monophosphate (cGMP), which is only slightly different from cAMP, serves in a similar manner as a second messenger.</strong></p>
+        </div>
+        
+        <div class="section-container" id="section5">
+            <h3>2. Intracellular Hormone Receptors and Activation of Genes.</h3>
+            <p>Several hormones, including <strong>adrenal and gonadal steroid hormones, thyroid hormones, retinoid hormones, and vitamin D, bind with protein receptors inside the cell rather than in the cell membrane</strong>. Because these hormones are <strong>lipid soluble, they readily cross the cell membrane and interact with receptors in the cytoplasm or nucleus.</strong> The activated hormone-receptor complex then binds with a specific regulatory (promoter) sequence of the DNA called the hormone response element, and in this manner either activates or represses transcription of specific genes and formation of messenger RNA (mRNA)</p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Mechanism%20of%20action%20of%20hormones%20fig4.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+            
+            <p>Therefore, minutes, hours, or even days after the hormone has entered the cell, newly formed proteins appear in the cell and become the controllers of new or altered cellular functions.</p>
+            
+            <p>Many different tissues have identical intracellular hormone receptors, but the genes that the receptors regulate are different in the various tissues. An intracellular receptor can activate a gene response only if the appropriate combination of gene regulatory proteins is present, and many of these regulatory proteins are tissue specific. Thus, the responses of different tissues to a hormone are determined not only by the specificity of the receptors but also by the expression of genes that the receptor regulates.</p>
+        </div>
+        
+        <div class="section-container" id="section6">
+            <h2>Second Messenger Mechanisms for Mediating Intracellular Hormonal Functions</h2>
+            <p>One of the means by which hormones exert intracellular actions is to stimulate formation of the <strong>second messenger cAMP</strong> inside the cell membrane. The cAMP then causes subsequent intracellular effects of the hormone. Thus, the only direct effect that the hormone has on the cell is to activate a single type of membrane receptor. The second messenger does the rest.</p>
+            
+            <p>cAMP is not the only second messenger used by the different hormones. Two other especially important ones are</p>
+            
+            <p>(1) calcium ions and associated calmodulin</p>
+            <p>(2) products of membrane phospholipid breakdown.</p>
+        </div>
+        
+        <div class="section-container" id="section7">
+            <h3>1. Adenylyl Cyclase--cAMP Second Messenger System</h3>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Mechanism%20of%20action%20of%20hormones%20fig5.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Mechanism%20of%20action%20of%20hormones%20fig6.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+
+            <p>Binding of the hormones with the receptor allows coupling of the receptor to a G protein. If the G protein stimulates the adenylyl cyclase--cAMP system, it is called a Gs protein, denoting a stimulatory G protein. Stimulation of adenylyl cyclase, a membrane-bound enzyme, by the Gs protein then catalyzes the conversion of a small amount of cytoplasmic adenosine triphosphate (ATP) into cAMP inside the cell. This then activates cAMP-dependent protein kinase, which phosphorylates specific proteins in the cell, triggering biochemical reactions that ultimately lead to the cell's response to the hormone.</p>
+            
+            <p>Once cAMP is formed inside the cell, it usually activates a <strong>cascade of enzymes.</strong> That is, first one enzyme is activated, which activates a second enzyme, which activates a third, and so forth. The importance of this mechanism is that only a few molecules of activated adenylyl cyclase immediately inside the cell membrane can cause many more molecules of the next enzyme to be activated, which can cause still more molecules of the third enzyme to be activated, and so forth. In this way, even the slightest amount of hormone acting on the cell surface can initiate a powerful cascading activating force for the entire cell.</p>
+            
+            <p>If binding of the hormone to its receptors is coupled to an <strong>inhibitory G protein (denoted Gi protein),</strong> <strong>adenylyl cyclase will be inhibited, reducing the formation of cAMP and ultimately leading to an inhibitory action in the cell</strong>. Thus, depending on the coupling of the hormone receptor to an inhibitory or a stimulatory G protein, a hormone can either increase or decrease the concentration of cAMP and phosphorylation of key proteins inside the cell.</p>
+            
+            <p>The specific action that occurs in response to increases or decreases of cAMP in each type of target cell depends on the nature of the intracellular machinery---some cells have one set of enzymes, and other cells have other enzymes.</p>
+            
+            <p>Therefore, different functions are elicited in different target cells, such as initiating synthesis of specific intracellular chemicals, causing muscle contraction or relaxation, initiating secretion by the cells, and altering cell permeability.</p>
+            
+            <p>Thus, a thyroid cell stimulated by cAMP forms the metabolic hormones thyroxine and triiodothyronine, whereas the same cAMP in an adrenocortical cell causes secretion of the adrenocortical steroid hormones. In epithelial cells of the renal tubules, cAMP increases their permeability to water.</p>
+        </div>
+        
+        <div class="section-container" id="section8">
+            <h3>2. Cell Membrane Phospholipid Second Messenger System</h3>
+            <p>Some hormones activate transmembrane receptors that activate the enzyme phospholipase C attached to the inside projections of the receptors (Table 74-3). This enzyme catalyzes the breakdown of some phospholipids in the cell membrane, especially phosphatidylinositol bi- phosphate (PIP2), into two different second messenger products: inositol triphosphate (IP3 ) and diacylglycerol (DAG). The IP3 mobilizes calcium ions from mitochondria and the endoplasmic reticulum, and the calcium ions then have their own second messenger effects, such as smooth muscle contraction and changes in cell secretion.</p>
+            
+            <p><strong>DAG</strong>, the other lipid second messenger, activates the enzyme <strong>protein kinase C (PKC),</strong> which then phosphorylates a large number of proteins, leading to the cell's response.</p>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Mechanism%20of%20action%20of%20hormones%20fig7.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+                <div class="image-container">
+                <img src="https://betabiosciences.github.io//Other-Units/Mechanism%20of%20action%20of%20hormones%20fig8.jpg" alt="Monohybrid Cross Diagram">
+                </div>
+            
+            <p>In addition to these effects, the lipid portion of DAG is arachidonic acid, which is the precursor for the prostaglandins and other local hormones that cause multiple effects in tissues throughout the body.</p>
+        </div>
+        
+        <div class="section-container" id="section9">
+            <h3>3. Calcium-Calmodulin Second Messenger System</h3>
+            <p>Another second messenger system operates in response to the entry of <strong>calcium</strong> into the cells. Calcium entry may be initiated by</p>
+            
+            <p>(1) changes in membrane potential that open calcium channels or</p>
+            <p>(2) a hormone interacting with membrane receptors that open calcium channels.</p>
+            
+            <p>On entering a cell, calcium ions bind with the protein <strong>calmodulin</strong>. This protein has four calcium sites, and when three or four of these sites have bound with calcium, the calmodulin changes its shape and initiates multiple effects inside the cell, including activation or inhibition of protein kinases. Activation of calmodulin-dependent protein kinases causes, via phosphorylation, activation or inhibition of proteins involved in the cell's response to the hormone. For example, one specific function of calmodulin is to activate myosin light chain kinase, which acts directly on the myosin of smooth muscle to cause smooth muscle contraction.</p>
+            
+            <p>The normal calcium ion concentration in most cells of the body is 10<sup>−8</sup> to 10<sup>−7</sup> mol/L, which is not enough to activate the calmodulin system. But when the calcium ion concentration rises to 10<sup>−6</sup> to 10<sup>−5</sup> mol/L, enough binding occurs to cause all the intracellular actions of calmodulin. This is almost exactly the same amount of calcium ion change that is required in skeletal muscle to activate troponin C, which causes skeletal muscle contraction. It is interesting that troponin C is similar to calmodulin in both function and protein structure.</p>
+        </div>
+        
+        <div class="section-container" id="section10">
+            <h2>Hormones That Act Mainly on the Genetic Machinery of the Cell</h2>
+            <h3>1. Steroid Hormones Increase Protein Synthesis</h3>
+            <p>Another means by which hormones act---specifically, the steroid hormones secreted by the adrenal cortex, ovaries, and testes---is <strong>to cause synthesis of proteins in the target cells.</strong> These proteins then function as enzymes, transport proteins, or structural proteins, which in turn provide other functions of the cells.</p>
+            
+            <p>The sequence of events in steroid function is essentially the following:</p>
+            
+            <p>a. The steroid hormone diffuses across the cell membrane and enters the cytoplasm of the cell, where it binds with a specific receptor protein.</p>
+            <p>b. The combined receptor protein--hormone then diffuses into or is transported into the nucleus.</p>
+            <p>c. The combination binds at specific points on the DNA strands in the chromosomes, which activates the transcription process of specific genes to form mRNA.</p>
+            <p>d. The mRNA diffuses into the cytoplasm, where it promotes the translation process at the ribosomes to form new proteins.</p>
+            
+            <p>To give an example, <strong>aldosterone</strong>, one of the hormones secreted by the adrenal cortex, enters the cytoplasm of renal tubular cells, which contain a specific receptor protein often called the mineralocorticoid receptor. Therefore, in these cells, the sequence of events cited earlier ensues. After about 45 minutes, proteins begin to appear in the renal tubular cells and promote sodium reabsorption from the tubules and potassium secretion into the tubules. Thus, the full action of the steroid hormone is characteristically delayed for at least 45 minutes---up to several hours or even days. This is in marked contrast to the almost instantaneous action of some of the peptide and amino acid--derived hormones, such as vasopressin and norepinephrine.</p>
+        </div>
+        
+        <div class="section-container" id="section11">
+            <h3>2. Thyroid Hormones Increase Gene Transcription in the Cell Nucleus</h3>
+            <p>The thyroid hormones thyroxine and triiodothyronine cause increased transcription by specific genes in the nucleus. To accomplish this, these hormones first bind directly with receptor proteins in the nucleus; these receptors are activated transcription factors located within the chromosomal complex, and they control the function of the gene promoters.</p>
+            
+            <p>Two important features of thyroid hormone function in the nucleus are the following:</p>
+            
+            <p>a. They activate the genetic mechanisms for the formation of many types of intracellular proteins---probably 100 or more. Many of these are enzymes that promote enhanced intracellular metabolic activity in virtually all cells of the body.</p>
+            <p>b. Once bound to the intranuclear receptors, the thyroid hormones can continue to express their control functions for days or even weeks.</p>
+        </div>
+        
+        <div class="section-container" id="section12">
+            <h2>Test Your Knowledge</h2>
+            <div class="quiz-score" id="quiz-score">Score: 0/15</div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">1. Which location is the primary site for receptors of protein, peptide, and catecholamine hormones?</div>
+                <ul class="quiz-options" data-correct="b">
+                    <li data-value="a">a. In the cell nucleus</li>
+                    <li data-value="b">b. On the surface of the cell membrane</li>
+                    <li data-value="c">c. In the Golgi apparatus</li>
+                    <li data-value="d">d. In the cell cytoplasm</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">2. What is the term for the process in which a chronically increased hormone concentration leads to a <strong>decrease</strong> in the number of active receptors on the target cell?</div>
+                <ul class="quiz-options" data-correct="b">
+                    <li data-value="a">a. Up-regulation</li>
+                    <li data-value="b">b. Down-regulation</li>
+                    <li data-value="c">c. Sequestration</li>
+                    <li data-value="d">d. Second messenger system</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">3. In the G protein-linked receptor system, the binding of the hormone to the receptor causes the trimeric G protein to exchange $\\text{GDP}$ for what molecule on the α subunit?</div>
+                <ul class="quiz-options" data-correct="c">
+                    <li data-value="a">a. Inositol triphosphate (IP3)</li>
+                    <li data-value="b">b. Adenosine diphosphate (ADP)</li>
+                    <li data-value="c">c. Guanosine triphosphate (GTP)</li>
+                    <li data-value="d">d. Calcium ion (Ca<sup>2+</sup>)</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">4. Enzyme-linked receptors, in contrast to G protein-coupled receptors, are characterized by passing through the cell membrane how many times?</div>
+                <ul class="quiz-options" data-correct="d">
+                    <li data-value="a">a. Two times (as a dimer)</li>
+                    <li data-value="b">b. Seven times (seven-transmembrane segments)</li>
+                    <li data-value="c">c. Three times</li>
+                    <li data-value="d">d. Only once</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">5. Which enzyme, when activated by a Gs (stimulatory G protein), catalyzes the formation of cAMP from ATP inside the cell?</div>
+                <ul class="quiz-options" data-correct="a">
+                    <li data-value="a">a. Adenylyl cyclase</li>
+                    <li data-value="b">b. Protein kinase C (PKC)</li>
+                    <li data-value="c">c. Janus kinase 2 (JAK2)</li>
+                    <li data-value="d">d. Phospholipase C</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">6. What is the function of Inositol triphosphate (IP3), one of the second messenger products of the cell membrane phospholipid system?</div>
+                <ul class="quiz-options" data-correct="b">
+                    <li data-value="a">a. Catalyzes the formation of cAMP.</li>
+                    <li data-value="b">b. Mobilizes calcium ions from the mitochondria and endoplasmic reticulum.</li>
+                    <li data-value="c">c. Activates protein kinase C (PKC).</li>
+                    <li data-value="d">d. Phosphorylates STAT proteins.</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">7. Which of the following classes of hormones exerts its action by binding directly to receptors inside the nucleus and controlling the function of gene promoters?</div>
+                <ul class="quiz-options" data-correct="c">
+                    <li data-value="a">a. Peptide hormones</li>
+                    <li data-value="b">b. Neurotransmitters</li>
+                    <li data-value="c">c. Thyroid hormones</li>
+                    <li data-value="d">d. Catecholamines</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">8. The second messenger system utilizing calcium ions primarily works by binding calcium to what protein inside the cell?</div>
+                <ul class="quiz-options" data-correct="d">
+                    <li data-value="a">a. Protein kinase C (PKC)</li>
+                    <li data-value="b">b. G protein alpha subunit</li>
+                    <li data-value="c">c. Troponin C</li>
+                    <li data-value="d">d. Calmodulin</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">9. The full effect of steroid hormones, such as aldosterone, is characteristically delayed. This is because their mechanism of action requires the time-consuming process of:</div>
+                <ul class="quiz-options" data-correct="c">
+                    <li data-value="a">a. Converting a preprohormone to a prohormone and then to an active hormone.</li>
+                    <li data-value="b">b. Activating the Gs protein to produce a cAMP cascade.</li>
+                    <li data-value="c">c. Synthesizing new proteins via gene transcription and translation.</li>
+                    <li data-value="d">d. Internalizing the hormone-receptor complex via endocytosis.</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">10. When a hormone is coupled to an inhibitory G protein (Gi protein), what is the resulting effect on the cAMP concentration inside the cell?</div>
+                <ul class="quiz-options" data-correct="c">
+                    <li data-value="a">a. It increases the activity of adenylyl cyclase, thereby increasing cAMP.</li>
+                    <li data-value="b">b. It activates GTP for increased signaling.</li>
+                    <li data-value="c">c. It inhibits adenylyl cyclase, thereby decreasing cAMP.</li>
+                    <li data-value="d">d. It has no effect on cAMP but regulates cGMP.</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">11. Which enzyme is activated by Diacylglycerol (DAG), the lipid second messenger product of PIP2 breakdown?</div>
+                <ul class="quiz-options" data-correct="a">
+                    <li data-value="a">a. Protein kinase C (PKC)</li>
+                    <li data-value="b">b. Myosin light chain kinase</li>
+                    <li data-value="c">c. Phospholipase C</li>
+                    <li data-value="d">d. Adenylyl cyclase</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">12. Leptin, a hormone acting via an enzyme-linked receptor, signals through an associated kinase known as JAK2. The family of receptors it belongs to, which do not themselves contain enzymatic activity but signal through associated enzymes, is the:</div>
+                <ul class="quiz-options" data-correct="c">
+                    <li data-value="a">a. Thyroid hormone receptor family</li>
+                    <li data-value="b">b. Mineralocorticoid receptor family</li>
+                    <li data-value="c">c. Cytokine receptor family</li>
+                    <li data-value="d">d. G protein-coupled receptor family</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">13. In the mechanism of action for steroid hormones, the combined receptor protein--hormone complex binds to a specific regulatory sequence on the DNA. What is this sequence called?</div>
+                <ul class="quiz-options" data-correct="a">
+                    <li data-value="a">a. The hormone response element (HRE)</li>
+                    <li data-value="b">b. The PIP2 element</li>
+                    <li data-value="c">c. The STAT sequence</li>
+                    <li data-value="d">d. The adenylyl site</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">14. Which ion-channel linked receptors are primarily associated with neurotransmitter substances like acetylcholine and norepinephrine, causing a subsequent change in the post-synaptic cell due to altered ion movement?</div>
+                <ul class="quiz-options" data-correct="b">
+                    <li data-value="a">a. Receptors for ADH and Oxytocin</li>
+                    <li data-value="b">b. Receptors in the postsynaptic membrane</li>
+                    <li data-value="c">c. Receptors for FSH and LH</li>
+                    <li data-value="d">d. Receptors for TSH and ACTH</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-container">
+                <div class="quiz-question">15. If cAMP acts as a second messenger in an epithelial cell of the renal tubules, what specific cellular function is typically initiated?</div>
+                <ul class="quiz-options" data-correct="b">
+                    <li data-value="a">a. Synthesis of T3 and T4.</li>
+                    <li data-value="b">b. Increase in their permeability to water.</li>
+                    <li data-value="c">c. Secretion of adrenocortical steroid hormones.</li>
+                    <li data-value="d">d. Increase in JAK2 phosphorylation.</li>
+                </ul>
+            </div>
+            
+            <div class="quiz-controls">
+                <button id="check-answers">Check Answers</button>
+                <button id="reset-quiz">Reset Quiz</button>
+            </div>
+        </div>
+        
+        <div class="section-container" id="section13">
+            <h2>Summary</h2>
+            <p>This interactive guide has covered the fundamental mechanisms of hormone action, including:</p>
+            <ul>
+                <li>Hormone receptors and their activation</li>
+                <li>Regulation of receptor number and sensitivity</li>
+                <li>Intracellular signaling pathways</li>
+                <li>G protein-linked and enzyme-linked receptors</li>
+                <li>Second messenger systems (cAMP, phospholipid, calcium-calmodulin)</li>
+                <li>Hormones acting on genetic machinery (steroid and thyroid hormones)</li>
+            </ul>
+            <p>Understanding these mechanisms is crucial for comprehending how hormones regulate physiological processes throughout the body.</p>
+        </div>
+        
+        <div class="navigation">
+            <button id="prev-btn" disabled>Previous</button>
+            <button id="next-btn">Next</button>
+        </div>
+<footer>
+    <div class="footer-content">
+        <img src="https://betabiosciences.github.io//Biochemistry-animations/Logo%20transparent.png" 
+             alt="BETA Biosciences Logo" class="footer-logo">
+        <p class="footer-text">© 2025 BETA Biosciences. All rights reserved.</p>
+        <p class="footer-text">Email: betabiosciences@gmail.com</p>
+    </div>
+</footer>
+    </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section-container');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const currentSectionEl = document.getElementById('current-section');
+            const totalSectionsEl = document.getElementById('total-sections');
+            const progressBar = document.getElementById('progress-bar');
+            const checkAnswersBtn = document.getElementById('check-answers');
+            const resetQuizBtn = document.getElementById('reset-quiz');
+            const quizScoreEl = document.getElementById('quiz-score');
+            
+            let currentSection = 0;
+            const totalSections = sections.length;
+            let quizScore = 0;
+            let quizAnswered = false;
+            
+            totalSectionsEl.textContent = totalSections;
+            
+            function updateNavigation() {
+                // Update section visibility
+                sections.forEach((section, index) => {
+                    section.classList.toggle('active', index === currentSection);
+                });
+                
+                // Update buttons
+                prevBtn.disabled = currentSection === 0;
+                nextBtn.textContent = currentSection === totalSections - 1 ? 'Finish' : 'Next';
+                
+                // Update progress bar
+                const progress = ((currentSection + 1) / totalSections) * 100;
+                progressBar.style.width = `${progress}%`;
+                
+                // Update section indicator
+                currentSectionEl.textContent = currentSection + 1;
+            }
+            
+            prevBtn.addEventListener('click', function() {
+                if (currentSection > 0) {
+                    currentSection--;
+                    updateNavigation();
+                }
+            });
+            
+            nextBtn.addEventListener('click', function() {
+                if (currentSection < totalSections - 1) {
+                    currentSection++;
+                    updateNavigation();
+                } else {
+                    // Optionally reset to first section or show completion message
+                    currentSection = 0;
+                    updateNavigation();
+                }
+            });
+            
+            // Quiz functionality
+            const quizOptions = document.querySelectorAll('.quiz-options li');
+            
+            quizOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    if (quizAnswered) return;
+                    
+                    const optionsList = this.parentElement;
+                    const correctAnswer = optionsList.getAttribute('data-correct');
+                    
+                    // Remove any existing selections
+                    optionsList.querySelectorAll('li').forEach(li => {
+                        li.classList.remove('selected');
+                    });
+                    
+                    // Mark this option as selected
+                    this.classList.add('selected');
+                });
+            });
+            
+            checkAnswersBtn.addEventListener('click', function() {
+                if (quizAnswered) return;
+                
+                quizAnswered = true;
+                quizScore = 0;
+                
+                document.querySelectorAll('.quiz-options').forEach(optionsList => {
+                    const correctAnswer = optionsList.getAttribute('data-correct');
+                    const selectedOption = optionsList.querySelector('.selected');
+                    
+                    if (selectedOption) {
+                        const selectedValue = selectedOption.getAttribute('data-value');
+                        
+                        if (selectedValue === correctAnswer) {
+                            selectedOption.classList.add('correct');
+                            quizScore++;
+                        } else {
+                            selectedOption.classList.add('incorrect');
+                            // Also highlight the correct answer
+                            const correctOption = optionsList.querySelector(`[data-value="${correctAnswer}"]`);
+                            correctOption.classList.add('correct');
+                        }
+                    } else {
+                        // If no option was selected, just show the correct answer
+                        const correctOption = optionsList.querySelector(`[data-value="${correctAnswer}"]`);
+                        correctOption.classList.add('correct');
+                    }
+                });
+                
+                quizScoreEl.textContent = `Score: ${quizScore}/15`;
+            });
+            
+            resetQuizBtn.addEventListener('click', function() {
+                document.querySelectorAll('.quiz-options li').forEach(option => {
+                    option.classList.remove('selected', 'correct', 'incorrect');
+                });
+                
+                quizScore = 0;
+                quizAnswered = false;
+                quizScoreEl.textContent = `Score: ${quizScore}/15`;
+            });
+            
+            // Initialize
+            updateNavigation();
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Disable print functionality
+            document.addEventListener('keydown', function(e) {
+                // Disable Ctrl+P
+                if (e.ctrlKey && e.keyCode === 80) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Print Screen key
+                if (e.keyCode === 44) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable F12 (DevTools)
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+Shift+I (DevTools)
+                if (e.ctrlKey && e.shiftKey && e.keyCode === 73) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Disable text selection and dragging
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            // Detect print command from browser menu (using beforeprint event)
+            window.addEventListener('beforeprint', function(event) {
+                // Cancel the print event
+                event.preventDefault();
+                return false;
+            });
+            
+            // Another approach to catch print attempts from browser menu
+            if (window.matchMedia) {
+                const mediaQueryList = window.matchMedia('print');
+                mediaQueryList.addListener(function(mql) {
+                    if (mql.matches) {
+                        // Cancel the print by immediately closing the print dialog
+                        setTimeout(function() {
+                            window.print = function() {};
+                        }, 100);
+                    }
+                });
+            }
+        });
+        
+        // Override the window.print function
+        window.print = function() {
+            return false;
+        };
+        
+        // Add an event listener for the print event
+        window.onbeforeprint = function() {
+            return false;
+        };
+        
+        // Make it difficult to iframe the content
+        if (window !== window.top) {
+            window.top.location = window.location;
+        }
+    </script>
+</body>
+</html>
